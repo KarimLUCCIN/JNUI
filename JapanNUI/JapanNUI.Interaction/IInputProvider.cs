@@ -5,7 +5,7 @@ using System.Text;
 
 namespace JapanNUI.Interaction
 {
-    public class Class1
+    public interface IInputProvider
     {
     }
 }
