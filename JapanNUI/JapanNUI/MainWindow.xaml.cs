@@ -15,6 +15,7 @@ using JapanNUI.Interaction;
 using System.Windows.Interop;
 using JapanNUI.Input.Mouse;
 using JapanNUI.Interaction.Maths;
+using JapanNUI.Input.Kinect;
 
 namespace JapanNUI
 {
@@ -28,12 +29,20 @@ namespace JapanNUI
         public WindowInteropHelper WindowInterop { get; private set; }
 
         public MouseProvider MouseProvider { get; private set; }
+        public KinectProvider KinectProvider { get; private set; }
 
         public MainWindow()
         {
             InitializeComponent();
 
             Loaded += new RoutedEventHandler(MainWindow_Loaded);
+            Closed += new EventHandler(MainWindow_Closed);
+        }
+
+        void MainWindow_Closed(object sender, EventArgs e)
+        {
+            MouseProvider.Shutdown();
+            KinectProvider.Shutdown();
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -47,6 +56,9 @@ namespace JapanNUI
             WindowHandle = WindowInterop.Handle;
 
             MouseProvider = new MouseProvider(this);
+            MouseProvider.Enabled = false;
+
+            KinectProvider = new KinectProvider(this);
         }
 
         void MainWindow_LocationChanged(object sender, EventArgs e)

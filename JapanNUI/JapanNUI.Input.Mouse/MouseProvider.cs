@@ -51,6 +51,11 @@ namespace JapanNUI.Input.Mouse
             get { return providers; }
         }
 
+        public void Shutdown()
+        {
+            actionsTimer.Dispose();
+        }
+
         #endregion
     }
 }

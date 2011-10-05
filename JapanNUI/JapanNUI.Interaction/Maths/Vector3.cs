@@ -90,5 +90,10 @@ namespace JapanNUI.Interaction.Maths
         {
             return new Vector3(Numbers.Clamp(x.X, min.X, max.X), Numbers.Clamp(x.Y, min.Y, max.Y), Numbers.Clamp(x.Z, min.Z, max.Z));
         }
+
+        public Vector2 XY
+        {
+            get { return new Vector2(X, Y); }
+        }
     }
 }
