@@ -94,7 +94,7 @@ namespace JapanNUI.Input.Kinect
             nui.NuiCamera.GetColorPixelCoordinatesFromDepthPixel(ImageResolution.Resolution640x480, iv, (int)depthX, (int)depthY, (short)0, out colorX, out colorY);
 
             // map back to skeleton.Width & skeleton.Height
-            return new Vector2((colorX / 640.0), (colorY / 480));
+            return new Vector2((colorX / 640.0), (colorY / 480.0));
         }
 
         //Polyline getBodySegment(Microsoft.Research.Kinect.Nui.JointsCollection joints, Brush brush, params JointID[] ids)

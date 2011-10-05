@@ -48,7 +48,7 @@ namespace JapanNUI.Input.Kinect
 
                 var clientMousePos = input.ClientArea.RelativePointToAbsolutePoint(skeletonPosition.XY);
 
-                var newPosition = new Vector3(clientMousePos - input.ClientArea.Origin, skeletonPosition.Z);
+                var newPosition = 0.9 * Position + 0.1 * new Vector3(clientMousePos - input.ClientArea.Origin, skeletonPosition.Z);
 
                 var newVelocity = newPosition - Position;
 
