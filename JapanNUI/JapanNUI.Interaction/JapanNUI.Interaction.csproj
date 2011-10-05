@@ -40,7 +40,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IInputListener.cs" />
     <Compile Include="IInputProvider.cs" />
+    <Compile Include="IPositionProvider.cs" />
+    <Compile Include="Maths\Numbers.cs" />
+    <Compile Include="Maths\Vector2.cs" />
+    <Compile Include="Maths\Rectangle.cs" />
+    <Compile Include="Maths\Vector3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

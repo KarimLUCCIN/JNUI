@@ -40,6 +40,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Interop\NativeFunctions.cs" />
+    <Compile Include="Interop\POINT.cs" />
+    <Compile Include="MousePositionProvider.cs" />
+    <Compile Include="MouseProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

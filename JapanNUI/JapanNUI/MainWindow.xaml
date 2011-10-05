@@ -1,8 +1,10 @@
 ﻿<Window x:Class="JapanNUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="MainWindow" Height="350" Width="525">
+        Title="MainWindow" Height="350" Width="525" Cursor="None">
     <Grid>
-        
+        <Canvas Name="clientCanvas">
+            <Image Name="defaultCursor" Width="24" Height="24" Source="/JapanNUI;component/Images/gear.ico" Margin="-12"/>
+        </Canvas>
     </Grid>
 </Window>

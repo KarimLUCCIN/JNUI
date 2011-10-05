@@ -7,5 +7,7 @@ namespace JapanNUI.Interaction
 {
     public interface IInputProvider
     {
+        bool Enabled { get; }
+        IPositionProvider[] Positions { get; }
     }
 }
