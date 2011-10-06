@@ -10,6 +10,7 @@ namespace JapanNUI.Interaction
     {
         public BasePositionProvider(string id)
         {
+            Id = id;
             CurrentPoint = new GesturePoint();
         }
 

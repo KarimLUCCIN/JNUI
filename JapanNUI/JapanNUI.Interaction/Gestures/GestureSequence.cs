@@ -46,7 +46,10 @@ namespace JapanNUI.Interaction.Gestures
             if (data.Count > 0)
             {
                 if (data[data.Count - 1].SameGestureAs(key))
+                {
                     shouldAdd = false;
+                    data[data.Count - 1] = new GestureSequenceKey() { simpleGestures = data[data.Count - 1].simpleGestures, keyTime = DateTime.Now };
+                }
             }
 
             if (shouldAdd)
@@ -60,7 +63,7 @@ namespace JapanNUI.Interaction.Gestures
             return shouldAdd;
         }
 
-        private void CleanOldValues()
+        public void CleanOldValues()
         {
             var refTime = DateTime.Now;
 

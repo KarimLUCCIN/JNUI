@@ -40,7 +40,9 @@ namespace JapanNUI.Interaction.Gestures
             currentSequenceKey.keyTime = DateTime.Now;
             currentSequenceKey.simpleGestures = new WeightedSimpleGestureKey[positions.Length];
 
-            for(int i = 0;i<Managers.Length;i++)
+            bool hasNonIdleContent = false;
+
+            for (int i = 0; i < Managers.Length; i++)
             {
                 var manager = Managers[i];
                 var position = positions[i];
@@ -49,9 +51,15 @@ namespace JapanNUI.Interaction.Gestures
                 manager.Update(position.CurrentPoint);
 
                 currentSequenceKey.simpleGestures[i] = manager.WeightedCurrentGesture;
+
+                if (!manager.Idle)
+                    hasNonIdleContent = true;
             }
 
-            CurrentSequence.Enqueue(currentSequenceKey);
+            if (hasNonIdleContent)
+                CurrentSequence.Enqueue(currentSequenceKey);
+            else
+                CurrentSequence.CleanOldValues();
         }
     }
 }

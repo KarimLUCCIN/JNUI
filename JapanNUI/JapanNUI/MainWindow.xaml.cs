@@ -80,7 +80,7 @@ namespace JapanNUI
             var positionProviders = CurrentProvider.Positions;
 
             GestureSequenceManager = new GestureSequenceManager(
-                (from position in positionProviders select new GestureManager(position.Id)).ToArray(), TimeSpan.FromSeconds(2));
+                (from position in positionProviders select new GestureManager(position.Id)).ToArray(), TimeSpan.FromSeconds(5));
         }
 
         void MainWindow_LocationChanged(object sender, EventArgs e)
@@ -147,7 +147,7 @@ namespace JapanNUI
             /* Maximize Test Sequence */
             var currentSequence = GestureSequenceManager.CurrentSequence;
 
-            if ((DateTime.Now - currentSequence.LastModificationTime) >= TimeSpan.FromMilliseconds(500))
+            if ((DateTime.Now - currentSequence.LastModificationTime) >= TimeSpan.FromMilliseconds(100))
             {
                 if (currentSequence.Count >= 2 &&
                     currentSequence[0].simpleGestures[0].MainGesture == SimpleGesture.Left &&
@@ -171,6 +171,23 @@ namespace JapanNUI
                     Dispatcher.Invoke((Action)delegate
                     {
                         Close();
+                    });
+                }
+                else if (currentSequence.Count >= 7 &&
+                    currentSequence[0].simpleGestures[0].MainGesture == SimpleGesture.Left &&
+                    currentSequence[1].simpleGestures[0].MainGesture == SimpleGesture.TopLeft &&
+                    currentSequence[2].simpleGestures[0].MainGesture == SimpleGesture.Top &&
+                    currentSequence[3].simpleGestures[0].MainGesture == SimpleGesture.TopRight &&
+                    currentSequence[4].simpleGestures[0].MainGesture == SimpleGesture.Right &&
+                    currentSequence[5].simpleGestures[0].MainGesture == SimpleGesture.BottomRight &&
+                    currentSequence[6].simpleGestures[0].MainGesture == SimpleGesture.Bottom)
+                {
+                    currentSequence.Reset();
+
+                    Dispatcher.Invoke((Action)delegate
+                    {
+                        WindowState = System.Windows.WindowState.Normal;
+                        Left = 0;
                     });
                 }
             }

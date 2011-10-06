@@ -193,7 +193,7 @@ namespace JapanNUI.Input.Kinect
                     {
                         var pt = getDisplayPosition(leftHand.Value);
 
-                        hasUpdate = hasUpdate || leftHandProvider.Update(new Vector3(pt, 0));
+                        hasUpdate = leftHandProvider.Update(new Vector3(pt, 0)) || hasUpdate;
 
                         b = true;
                     }
@@ -204,7 +204,7 @@ namespace JapanNUI.Input.Kinect
                     {
                         var pt = getDisplayPosition(rightHand.Value);
 
-                        hasUpdate = hasUpdate || rightHandProvider.Update(new Vector3(pt, 0));
+                        hasUpdate = rightHandProvider.Update(new Vector3(pt, 0)) || hasUpdate;
 
                         b = true;
                     }

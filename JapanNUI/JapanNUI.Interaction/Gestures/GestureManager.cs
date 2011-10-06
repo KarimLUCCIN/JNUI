@@ -67,7 +67,7 @@ namespace JapanNUI.Interaction.Gestures
         }
                 
         public GestureManager(string id)
-            :this(id, TimeSpan.FromSeconds(1 / 16.0))
+            :this(id, TimeSpan.FromSeconds(1 / 24.0))
         {
 
         }
@@ -164,15 +164,20 @@ namespace JapanNUI.Interaction.Gestures
                     }
                 }
 
-                currentGesture = selectedGesture;
-
-                /* weights */
-                foreach (var item in gestureDirections)
+                if (selectedGesture != SimpleGesture.None)
                 {
-                    currentGestureWeights[item.Key] /= maxLength;
-                }
+                    currentGesture = selectedGesture;
 
-                idle = false;
+                    /* weights */
+                    foreach (var item in gestureDirections)
+                    {
+                        currentGestureWeights[item.Key] /= maxLength;
+                    }
+                    
+                    idle = false;
+                }
+                else
+                    idle = true;
             }
             else
                 idle = true;
