@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using JapanNUI.Interaction.Recognition;
+using JapanNUI.Interaction.Gestures;
 
 namespace JapanNUI.Interaction
 {
     public abstract class BasePositionProvider : IPositionProvider
     {
-        public BasePositionProvider()
+        public BasePositionProvider(string id)
         {
             CurrentPoint = new GesturePoint();
         }
@@ -16,6 +16,8 @@ namespace JapanNUI.Interaction
         #region IPositionProvider Members
 
         public GesturePoint CurrentPoint { get; private set; }
+
+        public string Id { get; private set; }
 
         #endregion
 

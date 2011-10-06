@@ -16,7 +16,7 @@ using System.Windows.Interop;
 using JapanNUI.Input.Mouse;
 using JapanNUI.Interaction.Maths;
 using JapanNUI.Input.Kinect;
-using JapanNUI.Interaction.Recognition;
+using JapanNUI.Interaction.Gestures;
 
 namespace JapanNUI
 {
@@ -32,7 +32,7 @@ namespace JapanNUI
         public MouseProvider MouseProvider { get; private set; }
         public KinectProvider KinectProvider { get; private set; }
 
-        public GestureManager[] GestureManagers { get; private set; }
+        public GestureSequenceManager GestureSequenceManager { get; private set; }
 
         public MainWindow()
         {
@@ -79,10 +79,8 @@ namespace JapanNUI
 
             var positionProviders = CurrentProvider.Positions;
 
-            GestureManagers = new GestureManager[positionProviders.Length];
-
-            for (int i = 0; i < positionProviders.Length; i++)
-                GestureManagers[i] = new GestureManager();
+            GestureSequenceManager = new GestureSequenceManager(
+                (from position in positionProviders select new GestureManager(position.Id)).ToArray(), TimeSpan.FromSeconds(2));
         }
 
         void MainWindow_LocationChanged(object sender, EventArgs e)
@@ -114,11 +112,19 @@ namespace JapanNUI
 
         public void Update(IInputProvider provider)
         {
+            if (GestureSequenceManager == null)
+            {
+                /* not yet initialized */
+                return;
+            }
+
             bool primary = true;
 
             var positions = provider.Positions;
 
-            string gestureStr = "";
+            GestureSequenceManager.Update(positions, ClientArea);
+
+            string gestureStr = GestureSequenceManager.CurrentSequence.ToString();
 
             for (int i = 0; i < positions.Length; i++)
             {
@@ -128,21 +134,46 @@ namespace JapanNUI
                 {
                     primary = false;
                     UpdatePrimaryCursor(position.CurrentPoint.Position);
+
+                    break;
                 }
-
-                GestureManagers[i].MinimumGestureLength = 0.02 * Math.Min(ClientArea.Size.X, ClientArea.Size.Y);
-                GestureManagers[i].Update(position.CurrentPoint);
-
-                gestureStr+=GestureManagers[i].CurrentGesture;
-
-                if(i +1 < positions.Length)
-                    gestureStr += " ; ";
             }
 
             Dispatcher.Invoke((Action)delegate
             {
                 currentGesture.Text = gestureStr;
             });
+
+            /* Maximize Test Sequence */
+            var currentSequence = GestureSequenceManager.CurrentSequence;
+
+            if ((DateTime.Now - currentSequence.LastModificationTime) >= TimeSpan.FromMilliseconds(500))
+            {
+                if (currentSequence.Count >= 2 &&
+                    currentSequence[0].simpleGestures[0].MainGesture == SimpleGesture.Left &&
+                    currentSequence[1].simpleGestures[0].MainGesture == SimpleGesture.Right)
+                {
+                    currentSequence.Reset();
+
+                    Dispatcher.Invoke((Action)delegate
+                    {
+                        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+                    });
+                }
+                else if (currentSequence.Count >= 4 &&
+                    currentSequence[0].simpleGestures[0].MainGesture == SimpleGesture.Left &&
+                    currentSequence[1].simpleGestures[0].MainGesture == SimpleGesture.Top &&
+                    currentSequence[2].simpleGestures[0].MainGesture == SimpleGesture.Right &&
+                    currentSequence[3].simpleGestures[0].MainGesture == SimpleGesture.Bottom)
+                {
+                    currentSequence.Reset();
+
+                    Dispatcher.Invoke((Action)delegate
+                    {
+                        Close();
+                    });
+                }
+            }
         }
 
         private void UpdatePrimaryCursor(Vector3 position)

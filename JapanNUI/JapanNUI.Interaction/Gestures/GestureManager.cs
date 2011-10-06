@@ -5,16 +5,33 @@ using System.Text;
 using System.Diagnostics;
 using JapanNUI.Interaction.Maths;
 
-namespace JapanNUI.Interaction.Recognition
+namespace JapanNUI.Interaction.Gestures
 {
     public class GestureManager
     {
+        private List<KeyValuePair<SimpleGesture, Vector3>> gestureDirections = new List<KeyValuePair<SimpleGesture, Vector3>>();
+        private Dictionary<SimpleGesture, double> currentGestureWeights = new Dictionary<SimpleGesture, double>();
+
         private SimpleGesture currentGesture;
 
         public SimpleGesture CurrentGesture
         {
             get { return currentGesture; }
             set { currentGesture = value; }
+        }
+
+        public WeightedSimpleGestureKey WeightedCurrentGesture
+        {
+            get
+            {
+                var result = new WeightedSimpleGestureKey(Id);
+
+                result.WeightedSimpleGestures = (
+                    from entry in currentGestureWeights 
+                    select new WeightedSimpleGesture() { weight = entry.Value, gesture = entry.Key }).ToArray();
+
+                return result;
+            }
         }
         
         private GesturePoint lastPoint = null;
@@ -40,22 +57,28 @@ namespace JapanNUI.Interaction.Recognition
             get { return minimumGestureLength; }
             set { minimumGestureLength = value; }
         }
-        
-        public GestureManager()
-            :this(TimeSpan.FromSeconds(1 / 16.0))
+
+        private string id;
+
+        public string Id
+        {
+            get { return id; }
+            private set { id = value; }
+        }
+                
+        public GestureManager(string id)
+            :this(id, TimeSpan.FromSeconds(1 / 16.0))
         {
 
         }
 
-        public GestureManager(TimeSpan latency)
+        public GestureManager(string id, TimeSpan latency)
         {
+            this.id = id;
             this.latency = latency;
 
             InitializeSimpleGesturesPatterns();
         }
-
-        List<KeyValuePair<SimpleGesture, Vector3>> gestureDirections = new List<KeyValuePair<SimpleGesture, Vector3>>();
-        Dictionary<SimpleGesture, double> currentGestureWeights = new Dictionary<SimpleGesture, double>();
 
         private void InitializeSimpleGesturesPatterns()
         {
@@ -113,6 +136,14 @@ namespace JapanNUI.Interaction.Recognition
             }
         }
 
+        private bool idle;
+
+        public bool Idle
+        {
+            get { return idle; }
+            private set { idle = value; }
+        }
+
         private void ProcessGestureVector(Vector3 vector)
         {
             if (vector.Length() > minimumGestureLength)
@@ -133,15 +164,18 @@ namespace JapanNUI.Interaction.Recognition
                     }
                 }
 
-                if (selectedGesture != SimpleGesture.None)
-                    currentGesture = selectedGesture;
+                currentGesture = selectedGesture;
 
                 /* weights */
                 foreach (var item in gestureDirections)
                 {
                     currentGestureWeights[item.Key] /= maxLength;
                 }
+
+                idle = false;
             }
+            else
+                idle = true;
         }
     }
 }

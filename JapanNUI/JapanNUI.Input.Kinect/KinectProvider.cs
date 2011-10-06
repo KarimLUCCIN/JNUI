@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define RETRHOW_RUNTIME_EXCEPTION
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,9 +33,9 @@ namespace JapanNUI.Input.Kinect
 
             try
             {
-
                 nui = new Runtime();
 
+#if(RETRHOW_RUNTIME_EXCEPTION)
                 try
                 {
                     nui.Initialize(RuntimeOptions.UseDepthAndPlayerIndex | RuntimeOptions.UseSkeletalTracking);
@@ -52,13 +54,18 @@ namespace JapanNUI.Input.Kinect
                 {
                     throw new InvalidOperationException("Failed to open stream. Please make sure to specify a supported image type and resolution.");
                 }
+#else
+                nui.Initialize(RuntimeOptions.UseDepthAndPlayerIndex | RuntimeOptions.UseSkeletalTracking);
+
+                nui.DepthStream.Open(ImageStreamType.Depth, 2, ImageResolution.Resolution320x240, ImageType.DepthAndPlayerIndex);
+#endif
 
 
                 nui.DepthFrameReady += new EventHandler<ImageFrameReadyEventArgs>(nui_DepthFrameReady);
                 nui.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(nui_SkeletonFrameReady);
 
-                leftHandProvider = new KinectPositionProvider(this);
-                rightHandProvider = new KinectPositionProvider(this);
+                leftHandProvider = new KinectPositionProvider("left", this);
+                rightHandProvider = new KinectPositionProvider("right", this);
 
                 providers = new KinectPositionProvider[] { leftHandProvider, rightHandProvider };
             }
@@ -170,6 +177,8 @@ namespace JapanNUI.Input.Kinect
         {
             SkeletonFrame skeletonFrame = e.SkeletonFrame;
 
+            bool hasUpdate = false;
+
             foreach (SkeletonData data in skeletonFrame.Skeletons)
             {
                 if (SkeletonTrackingState.Tracked == data.TrackingState)
@@ -184,7 +193,7 @@ namespace JapanNUI.Input.Kinect
                     {
                         var pt = getDisplayPosition(leftHand.Value);
 
-                        leftHandProvider.Update(new Vector3(pt, 0));
+                        hasUpdate = hasUpdate || leftHandProvider.Update(new Vector3(pt, 0));
 
                         b = true;
                     }
@@ -195,7 +204,7 @@ namespace JapanNUI.Input.Kinect
                     {
                         var pt = getDisplayPosition(rightHand.Value);
 
-                        rightHandProvider.Update(new Vector3(pt, 0));
+                        hasUpdate = hasUpdate || rightHandProvider.Update(new Vector3(pt, 0));
 
                         b = true;
                     }
@@ -205,7 +214,8 @@ namespace JapanNUI.Input.Kinect
                 }
             }
 
-            Listener.Update(this);
+            if (hasUpdate)
+                Listener.Update(this);
         }
 
         private Joint? SelectHand(SkeletonData firstSq, JointID id)

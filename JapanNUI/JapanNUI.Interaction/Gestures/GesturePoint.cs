@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using JapanNUI.Interaction.Maths;
 
-namespace JapanNUI.Interaction.Recognition
+namespace JapanNUI.Interaction.Gestures
 {
     public class GesturePoint
     {
@@ -43,6 +43,14 @@ namespace JapanNUI.Interaction.Recognition
 
             Velocity = newVelocity;
             Acceleration = newAcceleration;
+        }
+
+        public GesturePoint Clone()
+        {
+            var pt = new GesturePoint();
+            pt.CopyFrom(this);
+
+            return pt;
         }
 
         public void CopyFrom(GesturePoint currentPoint)

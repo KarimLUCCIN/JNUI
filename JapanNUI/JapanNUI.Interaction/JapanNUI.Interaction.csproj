@@ -49,9 +49,14 @@
     <Compile Include="Maths\Rectangle.cs" />
     <Compile Include="Maths\Vector3.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Recognition\GestureManager.cs" />
-    <Compile Include="Recognition\GesturePoint.cs" />
-    <Compile Include="Recognition\SimpleGesture.cs" />
+    <Compile Include="Gestures\GestureManager.cs" />
+    <Compile Include="Gestures\GesturePoint.cs" />
+    <Compile Include="Gestures\GestureSequence.cs" />
+    <Compile Include="Gestures\GestureSequenceKey.cs" />
+    <Compile Include="Gestures\GestureSequenceManager.cs" />
+    <Compile Include="Gestures\SimpleGesture.cs" />
+    <Compile Include="Gestures\WeightedSimpleGesture.cs" />
+    <Compile Include="Gestures\WeightedSimpleGestureKey.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

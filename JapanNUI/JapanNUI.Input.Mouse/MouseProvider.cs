@@ -24,7 +24,7 @@ namespace JapanNUI.Input.Mouse
             Listener = listener;
             Enabled = true;
 
-            provider = new MousePositionProvider(this);
+            provider = new MousePositionProvider(String.Empty, this);
             providers = new IPositionProvider[] { provider };
 
             actionsTimer = new Timer(delegate
@@ -38,12 +38,31 @@ namespace JapanNUI.Input.Mouse
             get { return true; }
         }
 
+        private bool stillUpdating = false;
+        private object sync = new object();
+
         private void ThreadFunction()
         {
             if (Enabled)
             {
-                provider.Update();
-                Listener.Update(this);
+                lock (sync)
+                {
+                    if (stillUpdating)
+                        return;
+
+                    stillUpdating = true;
+                }
+
+                try
+                {
+                    if (provider.Update())
+                        Listener.Update(this);
+                }
+                finally
+                {
+                    lock (sync)
+                        stillUpdating = false;
+                }
             }
         }
 

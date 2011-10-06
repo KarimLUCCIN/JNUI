@@ -5,7 +5,6 @@ using System.Text;
 using JapanNUI.Interaction;
 using JapanNUI.Interaction.Maths;
 using JapanNUI.Input.Mouse.Interop;
-using JapanNUI.Interaction.Recognition;
 
 namespace JapanNUI.Input.Mouse
 {
@@ -13,13 +12,14 @@ namespace JapanNUI.Input.Mouse
     {
         public MouseProvider MouseProvider { get; private set; }
 
-        public MousePositionProvider(MouseProvider mouseProvider)
+        public MousePositionProvider(string id, MouseProvider mouseProvider)
+            :base(id)
         {
             MouseProvider = mouseProvider;
             CurrentPoint.Latency = 1;
         }
 
-        public void Update()
+        public bool Update()
         {
             if (BeginUpdate())
             {
@@ -37,7 +37,11 @@ namespace JapanNUI.Input.Mouse
                 {
                     EndUpdate();
                 }
+
+                return true;
             }
+            else
+                return false;
         }
     }
 }

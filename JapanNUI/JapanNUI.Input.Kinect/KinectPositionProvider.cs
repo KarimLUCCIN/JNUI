@@ -11,12 +11,13 @@ namespace JapanNUI.Input.Kinect
     {
         public KinectProvider KinectProvider { get; private set; }
 
-        public KinectPositionProvider(KinectProvider kinectProvider)
+        public KinectPositionProvider(string id, KinectProvider kinectProvider)
+            :base(id)
         {
             KinectProvider = kinectProvider;
         }
 
-        public void Update(Vector3 skeletonPosition)
+        public bool Update(Vector3 skeletonPosition)
         {
             if (BeginUpdate())
             {
@@ -32,7 +33,11 @@ namespace JapanNUI.Input.Kinect
                 {
                     EndUpdate();
                 }
+
+                return true;
             }
+            else
+                return false;
         }
     }
 }
