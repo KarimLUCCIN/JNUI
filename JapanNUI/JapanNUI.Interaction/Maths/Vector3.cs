@@ -59,19 +59,39 @@ namespace JapanNUI.Interaction.Maths
             return (b - a).Length();
         }
 
+        public static double Dot(Vector3 a, Vector3 b)
+        {
+            return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
+        }
+
         public static double Dot(ref Vector3 a, ref Vector3 b)
         {
             return a.X * b.X + a.Y * b.Y + a.Z * b.Z;
         }
 
-        public Vector3 Normalize()
+        public void Normalize()
         {
-            var l = Length();
+            Normalize(ref this);
+        }
+
+        public static Vector3 Normalize(Vector3 v)
+        {
+            var l = v.Length();
 
             if (l <= 0)
                 return new Vector3(double.NaN, double.NaN, double.NaN);
             else
-                return (1 / l) * this;
+                return (1 / l) * v;
+        }
+
+        public static Vector3 Normalize(ref Vector3 v)
+        {
+            var l = v.Length();
+
+            if (l <= 0)
+                return new Vector3(double.NaN, double.NaN, double.NaN);
+            else
+                return (1 / l) * v;
         }
 
         static Vector3 zero = new Vector3(0, 0, 0);
@@ -94,6 +114,7 @@ namespace JapanNUI.Interaction.Maths
         public Vector2 XY
         {
             get { return new Vector2(X, Y); }
+            set { X = value.X; Y = value.Y; }
         }
     }
 }

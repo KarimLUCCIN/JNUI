@@ -16,6 +16,7 @@ using System.Windows.Interop;
 using JapanNUI.Input.Mouse;
 using JapanNUI.Interaction.Maths;
 using JapanNUI.Input.Kinect;
+using JapanNUI.Interaction.Recognition;
 
 namespace JapanNUI
 {
@@ -31,6 +32,8 @@ namespace JapanNUI
         public MouseProvider MouseProvider { get; private set; }
         public KinectProvider KinectProvider { get; private set; }
 
+        public GestureManager[] GestureManagers { get; private set; }
+
         public MainWindow()
         {
             InitializeComponent();
@@ -43,6 +46,17 @@ namespace JapanNUI
         {
             MouseProvider.Shutdown();
             KinectProvider.Shutdown();
+        }
+
+        public IInputProvider CurrentProvider
+        {
+            get
+            {
+                if (KinectProvider.Available && KinectProvider.Enabled)
+                    return KinectProvider;
+                else
+                    return MouseProvider;
+            }
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -59,6 +73,16 @@ namespace JapanNUI
             MouseProvider.Enabled = false;
 
             KinectProvider = new KinectProvider(this);
+
+            if (!KinectProvider.Available)
+                MouseProvider.Enabled = true;
+
+            var positionProviders = CurrentProvider.Positions;
+
+            GestureManagers = new GestureManager[positionProviders.Length];
+
+            for (int i = 0; i < positionProviders.Length; i++)
+                GestureManagers[i] = new GestureManager();
         }
 
         void MainWindow_LocationChanged(object sender, EventArgs e)
@@ -92,14 +116,33 @@ namespace JapanNUI
         {
             bool primary = true;
 
-            foreach (var position in provider.Positions)
+            var positions = provider.Positions;
+
+            string gestureStr = "";
+
+            for (int i = 0; i < positions.Length; i++)
             {
+                var position = positions[i];
+
                 if (primary)
                 {
                     primary = false;
-                    UpdatePrimaryCursor(position.Position);
+                    UpdatePrimaryCursor(position.CurrentPoint.Position);
                 }
+
+                GestureManagers[i].MinimumGestureLength = 0.02 * Math.Min(ClientArea.Size.X, ClientArea.Size.Y);
+                GestureManagers[i].Update(position.CurrentPoint);
+
+                gestureStr+=GestureManagers[i].CurrentGesture;
+
+                if(i +1 < positions.Length)
+                    gestureStr += " ; ";
             }
+
+            Dispatcher.Invoke((Action)delegate
+            {
+                currentGesture.Text = gestureStr;
+            });
         }
 
         private void UpdatePrimaryCursor(Vector3 position)
@@ -109,6 +152,17 @@ namespace JapanNUI
                 Canvas.SetLeft(defaultCursor, position.X);
                 Canvas.SetTop(defaultCursor, position.Y);
             });
+        }
+
+        #endregion
+
+        #region IInputListener Members
+
+
+        public void DebugDisplayBgr32DepthImage(int width, int height, byte[] convertedDepthFrame, int stride)
+        {
+            debugDepthImage.Source = BitmapSource.Create(
+                width, height, 96, 96, PixelFormats.Bgr32, null, convertedDepthFrame, stride);
         }
 
         #endregion

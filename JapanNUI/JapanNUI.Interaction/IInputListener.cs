@@ -13,5 +13,7 @@ namespace JapanNUI.Interaction
         Rectangle ClientArea { get; }
 
         void Update(IInputProvider provider);
+
+        void DebugDisplayBgr32DepthImage(int width, int height, byte[] convertedDepthFrame, int stide);
     }
 }

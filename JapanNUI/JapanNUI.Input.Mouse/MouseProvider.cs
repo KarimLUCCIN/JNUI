@@ -33,6 +33,11 @@ namespace JapanNUI.Input.Mouse
                 }, null, TimeSpan.Zero, TimeSpan.FromSeconds(1 / 30.0));
         }
 
+        public bool Available
+        {
+            get { return true; }
+        }
+
         private void ThreadFunction()
         {
             if (Enabled)
