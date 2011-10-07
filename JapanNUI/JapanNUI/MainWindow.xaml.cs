@@ -17,6 +17,7 @@ using JapanNUI.Input.Mouse;
 using JapanNUI.Interaction.Maths;
 using JapanNUI.Input.Kinect;
 using JapanNUI.Interaction.Gestures;
+using JapanNUI.Interaction.Recognition;
 
 namespace JapanNUI
 {
@@ -34,9 +35,16 @@ namespace JapanNUI
 
         public GestureSequenceManager GestureSequenceManager { get; private set; }
 
+        List<RecognitionSequenceMachine> Tests = new List<RecognitionSequenceMachine>();
+
         public MainWindow()
         {
             InitializeComponent();
+
+            Tests.AddRange(new RecognitionSequenceMachine[]{
+                new RecognitionSequenceMachine(new SimpleGesture[]{SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom }),
+                new RecognitionSequenceMachine(new SimpleGesture[]{SimpleGesture.Left, SimpleGesture.Right }),
+            });
 
             Loaded += new RoutedEventHandler(MainWindow_Loaded);
             Closed += new EventHandler(MainWindow_Closed);
@@ -139,48 +147,45 @@ namespace JapanNUI
                 }
             }
 
+            var now = DateTime.Now;
+
             Dispatcher.Invoke((Action)delegate
             {
                 currentGesture.Text = gestureStr;
+
+#if(DEBUG)
+                if (Keyboard.IsKeyDown(Key.O))
+                {
+
+                }
+#endif
             });
 
             /* Maximize Test Sequence */
             var currentSequence = GestureSequenceManager.CurrentSequence;
 
-            if ((DateTime.Now - currentSequence.LastModificationTime) >= TimeSpan.FromMilliseconds(100))
+            if ((now - currentSequence.LastModificationTime) >= TimeSpan.FromMilliseconds(500))
             {
-                if (currentSequence.Count >= 2 &&
-                    currentSequence[0].simpleGestures[0].MainGesture == SimpleGesture.Left &&
-                    currentSequence[1].simpleGestures[0].MainGesture == SimpleGesture.Right)
+                foreach (var item in Tests)
+                {
+                    item.Reset();
+
+                    for (int i = 0; i < GestureSequenceManager.CurrentSequence.Count && !item.Valid; i++)
+                    {
+                        item.Update(GestureSequenceManager.CurrentSequence[GestureSequenceManager.CurrentSequence.Count - i - 1].simpleGestures[0]);
+                    }
+                }
+
+                if(Tests[0].Valid && (!Tests[1].Valid || Tests[0].Score > Tests[1].Score))
                 {
                     currentSequence.Reset();
 
                     Dispatcher.Invoke((Action)delegate
                     {
-                        WindowState = WindowState == WindowState.Maximized ? WindowState.Normal : WindowState.Maximized;
+                        WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
                     });
                 }
-                else if (currentSequence.Count >= 4 &&
-                    currentSequence[0].simpleGestures[0].MainGesture == SimpleGesture.Left &&
-                    currentSequence[1].simpleGestures[0].MainGesture == SimpleGesture.Top &&
-                    currentSequence[2].simpleGestures[0].MainGesture == SimpleGesture.Right &&
-                    currentSequence[3].simpleGestures[0].MainGesture == SimpleGesture.Bottom)
-                {
-                    currentSequence.Reset();
-
-                    Dispatcher.Invoke((Action)delegate
-                    {
-                        Close();
-                    });
-                }
-                else if (currentSequence.Count >= 7 &&
-                    currentSequence[0].simpleGestures[0].MainGesture == SimpleGesture.Left &&
-                    currentSequence[1].simpleGestures[0].MainGesture == SimpleGesture.TopLeft &&
-                    currentSequence[2].simpleGestures[0].MainGesture == SimpleGesture.Top &&
-                    currentSequence[3].simpleGestures[0].MainGesture == SimpleGesture.TopRight &&
-                    currentSequence[4].simpleGestures[0].MainGesture == SimpleGesture.Right &&
-                    currentSequence[5].simpleGestures[0].MainGesture == SimpleGesture.BottomRight &&
-                    currentSequence[6].simpleGestures[0].MainGesture == SimpleGesture.Bottom)
+                else if(Tests[1].Valid)
                 {
                     currentSequence.Reset();
 

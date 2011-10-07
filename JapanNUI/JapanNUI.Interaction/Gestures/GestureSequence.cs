@@ -34,7 +34,7 @@ namespace JapanNUI.Interaction.Gestures
         {
             get
             {
-                return data[index];
+                return data[data.Count - index - 1];
             }
         }
 
