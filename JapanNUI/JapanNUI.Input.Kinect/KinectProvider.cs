@@ -22,6 +22,14 @@ namespace JapanNUI.Input.Kinect
 
         public bool Available { get; private set; }
 
+        private double closestPointUpdateLatency = 0.5;
+
+        public double ClosestPointUpdateLatency
+        {
+            get { return closestPointUpdateLatency; }
+            set { closestPointUpdateLatency = value; }
+        }
+        
         public KinectProvider(IInputListener listener)
         {
             if (listener == null)
@@ -90,14 +98,26 @@ namespace JapanNUI.Input.Kinect
 
         byte[] depthFrame32 = new byte[320 * 240 * 4];
 
+        Vector2 closestPointCoordinates = new Vector2();
+
         // Converts a 16-bit grayscale depth frame which includes player indexes into a 32-bit frame
         // that displays different players in different colors
         byte[] convertDepthFrame(byte[] depthFrame16)
         {
+            int minDepth = int.MaxValue;
+            int minDepthIndex = 0;
+
             for (int i16 = 0, i32 = 0; i16 < depthFrame16.Length && i32 < depthFrame32.Length; i16 += 2, i32 += 4)
             {
                 int player = depthFrame16[i16] & 0x07;
                 int realDepth = (depthFrame16[i16 + 1] << 5) | (depthFrame16[i16] >> 3);
+
+                if (realDepth > 0 && minDepth > realDepth)
+                {
+                    minDepthIndex = i32;
+                    minDepth = realDepth;
+                }
+
                 // transform 13-bit depth information into an 8-bit intensity appropriate
                 // for display (we disregard information in most significant bit)
                 byte intensity = (byte)(255 - (255 * realDepth / 0x0fff));
@@ -147,6 +167,10 @@ namespace JapanNUI.Input.Kinect
                         break;
                 }
             }
+
+            minDepthIndex /= 4;
+            closestPointCoordinates = (1 - closestPointUpdateLatency) * closestPointCoordinates + closestPointUpdateLatency * new Vector2((minDepthIndex % 320) / 320.0, (minDepthIndex / 320) / 240.0);
+
             return depthFrame32;
         }
 
@@ -179,6 +203,12 @@ namespace JapanNUI.Input.Kinect
 
             bool hasUpdate = false;
 
+            bool hasLeft = false;
+            bool hasRight = false;
+
+            Vector2 leftHandPoint = Vector2.Zero;
+            Vector2 rightHandPoint = Vector2.Zero;
+            
             foreach (SkeletonData data in skeletonFrame.Skeletons)
             {
                 if (SkeletonTrackingState.Tracked == data.TrackingState)
@@ -191,9 +221,11 @@ namespace JapanNUI.Input.Kinect
 
                     if (leftHand != null && leftHand.HasValue)
                     {
-                        var pt = getDisplayPosition(leftHand.Value);
+                        hasLeft = true;
 
-                        hasUpdate = leftHandProvider.Update(new Vector3(pt, 0)) || hasUpdate;
+                        leftHandPoint = getDisplayPosition(leftHand.Value);
+                        
+                        hasUpdate = leftHandProvider.Update(new Vector3(leftHandPoint, 0)) || hasUpdate;
 
                         b = true;
                     }
@@ -202,9 +234,11 @@ namespace JapanNUI.Input.Kinect
 
                     if (rightHand != null && rightHand.HasValue)
                     {
-                        var pt = getDisplayPosition(rightHand.Value);
+                        hasRight = true;
 
-                        hasUpdate = rightHandProvider.Update(new Vector3(pt, 0)) || hasUpdate;
+                        rightHandPoint = getDisplayPosition(rightHand.Value);
+
+                        hasUpdate = rightHandProvider.Update(new Vector3(rightHandPoint, 0)) || hasUpdate;
 
                         b = true;
                     }
@@ -214,8 +248,13 @@ namespace JapanNUI.Input.Kinect
                 }
             }
 
-            if (hasUpdate)
-                Listener.Update(this);
+            if (!hasLeft)
+            {
+                /* only take account of the closest point */
+                leftHandProvider.Update(new Vector3(closestPointCoordinates, 0));
+            }
+            
+            Listener.Update(this);
         }
 
         private Joint? SelectHand(SkeletonData firstSq, JointID id)

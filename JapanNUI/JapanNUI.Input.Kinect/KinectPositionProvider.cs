@@ -15,7 +15,7 @@ namespace JapanNUI.Input.Kinect
             :base(id)
         {
             KinectProvider = kinectProvider;
-            CurrentPoint.Latency = 0.6;
+            CurrentPoint.Latency = 0.4;
         }
 
         public bool Update(Vector3 skeletonPosition)
