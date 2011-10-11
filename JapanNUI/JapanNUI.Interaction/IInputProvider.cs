@@ -7,8 +7,10 @@ namespace JapanNUI.Interaction
 {
     public interface IInputProvider
     {
+        int Priority { get; }
+
         bool Available { get; }
-        bool Enabled { get; }
+        bool Enabled { get; set; }
 
         IPositionProvider[] Positions { get; }
 

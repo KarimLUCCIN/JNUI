@@ -10,6 +10,9 @@ namespace JapanNUI.Interaction
     {
         public BasePositionProvider(string id)
         {
+            if (String.IsNullOrEmpty(id))
+                throw new ArgumentNullException("id");
+
             Id = id;
             CurrentPoint = new GesturePoint();
         }

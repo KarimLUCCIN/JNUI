@@ -266,11 +266,20 @@ namespace JapanNUI.Input.Kinect
 
         #region IInputProvider Members
 
-        public bool Enabled { get; private set; }
+        public bool Enabled { get; set; }
 
         public IPositionProvider[] Positions
         {
             get { return providers; }
+        }
+
+        #endregion
+
+        #region IInputProvider Members
+
+        public int Priority
+        {
+            get { return 0; }
         }
 
         #endregion

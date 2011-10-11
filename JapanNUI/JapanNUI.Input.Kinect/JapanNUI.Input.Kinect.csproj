@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="KinectPositionProvider.cs" />
     <Compile Include="KinectProvider.cs" />
+    <Compile Include="KinectProviderBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

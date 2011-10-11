@@ -30,21 +30,11 @@ namespace JapanNUI
 
         public WindowInteropHelper WindowInterop { get; private set; }
 
-        public MouseProvider MouseProvider { get; private set; }
-        public KinectProvider KinectProvider { get; private set; }
-
-        public GestureSequenceManager GestureSequenceManager { get; private set; }
-
-        List<RecognitionSequenceMachine> Tests = new List<RecognitionSequenceMachine>();
+        public InteractionsManager Manager { get; private set; }
 
         public MainWindow()
         {
             InitializeComponent();
-
-            Tests.AddRange(new RecognitionSequenceMachine[]{
-                new RecognitionSequenceMachine(new SimpleGesture[]{SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom }),
-                new RecognitionSequenceMachine(new SimpleGesture[]{SimpleGesture.Left, SimpleGesture.Right }),
-            });
 
             Loaded += new RoutedEventHandler(MainWindow_Loaded);
             Closed += new EventHandler(MainWindow_Closed);
@@ -52,19 +42,7 @@ namespace JapanNUI
 
         void MainWindow_Closed(object sender, EventArgs e)
         {
-            MouseProvider.Shutdown();
-            KinectProvider.Shutdown();
-        }
-
-        public IInputProvider CurrentProvider
-        {
-            get
-            {
-                if (KinectProvider.Available && KinectProvider.Enabled)
-                    return KinectProvider;
-                else
-                    return MouseProvider;
-            }
+            Manager.Shutdown();
         }
 
         void MainWindow_Loaded(object sender, RoutedEventArgs e)
@@ -77,18 +55,28 @@ namespace JapanNUI
             WindowInterop = new WindowInteropHelper(this);
             WindowHandle = WindowInterop.Handle;
 
-            MouseProvider = new MouseProvider(this);
-            MouseProvider.Enabled = false;
+            Manager = new InteractionsManager(this);
+            Manager.Initialize(new IInputProviderBuilder[] { new MouseProviderBuilder(), new KinectProviderBuilder() });
 
-            KinectProvider = new KinectProvider(this);
+            var closeGestureElements = new Dictionary<string, SimpleGesture[]>();
+            closeGestureElements["left"] = new SimpleGesture[]{SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom};
+            var closeGesture = new RecognizedGesture(closeGestureElements);
+            closeGesture.Activated += delegate
+            {
+                Close();
+            };
+            Manager.RecordRecognizedGesture(closeGesture);
 
-            if (!KinectProvider.Available)
-                MouseProvider.Enabled = true;
-
-            var positionProviders = CurrentProvider.Positions;
-
-            GestureSequenceManager = new GestureSequenceManager(
-                (from position in positionProviders select new GestureManager(position.Id)).ToArray(), TimeSpan.FromSeconds(5));
+            var maximizeMinimizeGestureElements = new Dictionary<string, SimpleGesture[]>();
+            maximizeMinimizeGestureElements["left"] = new SimpleGesture[] { SimpleGesture.Left, SimpleGesture.Right };
+            var maximizeMinimizeGesture = new RecognizedGesture(maximizeMinimizeGestureElements);
+            maximizeMinimizeGesture.Activated += delegate
+            {
+                WindowState = WindowState == System.Windows.WindowState.Maximized
+                    ? System.Windows.WindowState.Normal
+                    : System.Windows.WindowState.Maximized;
+            };
+            Manager.RecordRecognizedGesture(maximizeMinimizeGesture);
         }
 
         void MainWindow_LocationChanged(object sender, EventArgs e)
@@ -120,85 +108,18 @@ namespace JapanNUI
 
         public void Update(IInputProvider provider)
         {
-            if (GestureSequenceManager == null)
+            Manager.Update(provider);
+
+            if (Manager.GestureSequenceManager != null)
             {
-                /* not yet initialized */
-                return;
-            }
-
-            bool primary = true;
-
-            var positions = provider.Positions;
-
-            GestureSequenceManager.Update(positions, ClientArea);
-
-            string gestureStr = GestureSequenceManager.CurrentSequence.ToString();
-
-            for (int i = 0; i < positions.Length; i++)
-            {
-                var position = positions[i];
-
-                if (primary)
+                Dispatcher.Invoke((Action)delegate
                 {
-                    primary = false;
-                    UpdatePrimaryCursor(position.CurrentPoint.Position);
-
-                    break;
-                }
-            }
-
-            var now = DateTime.Now;
-
-            Dispatcher.Invoke((Action)delegate
-            {
-                currentGesture.Text = gestureStr;
-
-#if(DEBUG)
-                if (Keyboard.IsKeyDown(Key.O))
-                {
-
-                }
-#endif
-            });
-
-            /* Maximize Test Sequence */
-            var currentSequence = GestureSequenceManager.CurrentSequence;
-
-            if ((now - currentSequence.LastModificationTime) >= TimeSpan.FromMilliseconds(500))
-            {
-                foreach (var item in Tests)
-                {
-                    item.Reset();
-
-                    for (int i = 0; i < GestureSequenceManager.CurrentSequence.Count && !item.Valid; i++)
-                    {
-                        item.Update(GestureSequenceManager.CurrentSequence[GestureSequenceManager.CurrentSequence.Count - i - 1].simpleGestures[0]);
-                    }
-                }
-
-                if(Tests[0].Valid && (!Tests[1].Valid || Tests[0].Score > Tests[1].Score))
-                {
-                    currentSequence.Reset();
-
-                    Dispatcher.Invoke((Action)delegate
-                    {
-                        WindowState = WindowState == WindowState.Normal ? WindowState.Maximized : WindowState.Normal;
-                    });
-                }
-                else if(Tests[1].Valid)
-                {
-                    currentSequence.Reset();
-
-                    Dispatcher.Invoke((Action)delegate
-                    {
-                        WindowState = System.Windows.WindowState.Normal;
-                        Left = 0;
-                    });
-                }
+                    currentGesture.Text = Manager.GestureSequenceManager.CurrentSequence.ToString();
+                });
             }
         }
 
-        private void UpdatePrimaryCursor(Vector3 position)
+        public void UpdatePrimaryCursor(Vector3 position)
         {
             Dispatcher.Invoke((Action)delegate
             {
@@ -207,10 +128,13 @@ namespace JapanNUI
             });
         }
 
-        #endregion
-
-        #region IInputListener Members
-
+        public void ContextDelegateMethod(Action action)
+        {
+            if (action != null)
+            {
+                Dispatcher.Invoke(action);
+            }
+        }
 
         public void DebugDisplayBgr32DepthImage(int width, int height, byte[] convertedDepthFrame, int stride)
         {

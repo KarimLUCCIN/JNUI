@@ -11,6 +11,22 @@ namespace JapanNUI.Interaction.Gestures
 
         public DateTime keyTime;
 
+        public WeightedSimpleGestureKey GetById(string id)
+        {
+            if (simpleGestures == null)
+                return null;
+            else
+            {
+                for (int i = 0; i < simpleGestures.Length; i++)
+                {
+                    if (simpleGestures[i].ManagerId == id)
+                        return simpleGestures[i];
+                }
+
+                return null;
+            }
+        }
+
         public bool SameGestureAs(GestureSequenceKey other)
         {
             if (simpleGestures == null || simpleGestures.Length <= 0)

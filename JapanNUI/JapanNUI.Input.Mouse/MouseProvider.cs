@@ -24,7 +24,7 @@ namespace JapanNUI.Input.Mouse
             Listener = listener;
             Enabled = true;
 
-            provider = new MousePositionProvider(String.Empty, this);
+            provider = new MousePositionProvider("left", this);
             providers = new IPositionProvider[] { provider };
 
             actionsTimer = new Timer(delegate
@@ -78,6 +78,15 @@ namespace JapanNUI.Input.Mouse
         public void Shutdown()
         {
             actionsTimer.Dispose();
+        }
+
+        #endregion
+
+        #region IInputProvider Members
+
+        public int Priority
+        {
+            get { return 1; }
         }
 
         #endregion

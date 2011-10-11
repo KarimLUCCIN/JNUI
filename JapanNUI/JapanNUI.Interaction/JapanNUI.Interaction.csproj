@@ -44,6 +44,8 @@
     <Compile Include="Gestures\SimpleGestureClosenessEvaluator.cs" />
     <Compile Include="IInputListener.cs" />
     <Compile Include="IInputProvider.cs" />
+    <Compile Include="IInputProviderBuilder.cs" />
+    <Compile Include="InteractionsManager.cs" />
     <Compile Include="IPositionProvider.cs" />
     <Compile Include="Maths\Numbers.cs" />
     <Compile Include="Maths\Vector2.cs" />
@@ -61,6 +63,7 @@
     <Compile Include="Recognition\RecognitionSequence.cs" />
     <Compile Include="Recognition\RecognitionSequenceMachine.cs" />
     <Compile Include="Recognition\RecognitionState.cs" />
+    <Compile Include="RecognizedGesture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
