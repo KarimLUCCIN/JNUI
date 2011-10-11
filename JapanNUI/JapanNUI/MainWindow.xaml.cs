@@ -58,25 +58,57 @@ namespace JapanNUI
             Manager = new InteractionsManager(this);
             Manager.Initialize(new IInputProviderBuilder[] { new MouseProviderBuilder(), new KinectProviderBuilder() });
 
-            var closeGestureElements = new Dictionary<string, SimpleGesture[]>();
-            closeGestureElements["left"] = new SimpleGesture[]{SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom};
-            var closeGesture = new RecognizedGesture(closeGestureElements);
-            closeGesture.Activated += delegate
-            {
-                Close();
-            };
-            Manager.RecordRecognizedGesture(closeGesture);
+            //Manager.RecordSingleRecognizedGesture("left", 
+            //    delegate 
+            //    { 
+            //        Close(); 
+            //    },
+            //    SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
 
-            var maximizeMinimizeGestureElements = new Dictionary<string, SimpleGesture[]>();
-            maximizeMinimizeGestureElements["left"] = new SimpleGesture[] { SimpleGesture.Left, SimpleGesture.Right };
-            var maximizeMinimizeGesture = new RecognizedGesture(maximizeMinimizeGestureElements);
-            maximizeMinimizeGesture.Activated += delegate
-            {
-                WindowState = WindowState == System.Windows.WindowState.Maximized
-                    ? System.Windows.WindowState.Normal
-                    : System.Windows.WindowState.Maximized;
-            };
-            Manager.RecordRecognizedGesture(maximizeMinimizeGesture);
+            Manager.RecordSingleRecognizedGesture("left",
+                delegate
+                {
+                    WindowState = WindowState == System.Windows.WindowState.Maximized
+                        ? System.Windows.WindowState.Normal
+                        : System.Windows.WindowState.Maximized;
+                },
+                SimpleGesture.Left, SimpleGesture.Right);
+
+            Manager.RecordSingleRecognizedGesture("left",
+                delegate
+                {
+                    WindowState = WindowState.Normal;
+                    Left = 0;
+                    Top = ScreenArea.Size.Y - ActualHeight;
+                },
+                SimpleGesture.Bottom, SimpleGesture.Left);
+
+            Manager.RecordSingleRecognizedGesture("left",
+                delegate
+                {
+                    WindowState = WindowState.Normal;
+                    Left = 0;
+                    Top = 0;
+                },
+                SimpleGesture.Top, SimpleGesture.Left);
+
+            Manager.RecordSingleRecognizedGesture("left",
+                delegate
+                {
+                    WindowState = WindowState.Normal;
+                    Left = ScreenArea.Size.X - ActualWidth;
+                    Top = 0;
+                },
+                SimpleGesture.Top, SimpleGesture.Right);
+
+            Manager.RecordSingleRecognizedGesture("left",
+                delegate
+                {
+                    WindowState = WindowState.Normal;
+                    Left = ScreenArea.Size.X - ActualWidth;
+                    Top = ScreenArea.Size.Y - ActualHeight;
+                },
+                SimpleGesture.BottomRight, SimpleGesture.Right);
         }
 
         void MainWindow_LocationChanged(object sender, EventArgs e)

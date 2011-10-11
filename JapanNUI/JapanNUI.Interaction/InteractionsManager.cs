@@ -88,6 +88,21 @@ namespace JapanNUI.Interaction
                 provider.Shutdown();
         }
 
+        public void RecordSingleRecognizedGesture(string key, EventHandler actionDelegate, params SimpleGesture[] gestures)
+        {
+            if (actionDelegate != null)
+            {
+                var gestureElements = new Dictionary<string, SimpleGesture[]>();
+                gestureElements[key] = gestures;
+                var gestureContent = new RecognizedGesture(gestureElements);
+                gestureContent.Activated += delegate(object sender, EventArgs e)
+                {
+                    actionDelegate(sender, e);
+                };
+                RecordRecognizedGesture(gestureContent);
+            }
+        }
+
         public void RecordRecognizedGesture(RecognizedGesture gesture)
         {
             if (gesture == null)
