@@ -75,15 +75,17 @@ float4 PS(VSO input) : COLOR0
 		accY += vY * samples[i].z;
 	}
 
+	//return float4((accY + accX) / 2, 0, 0, 1);
+
 	float v = (tex2D(depthSampler, input.TexCoord).r);
 
 	//return float4((v > 0 && v < 16000) ? 1 : 0, 0, 0, 1);
 
 	float r = sqrt(accX * accX + accY * accY);
 
-	return float4((v > 0.5 ? 1 : 0) * (v / 0.5), 0, 0, 1);// float4((hasZero && (r > 0)) ? 1 : 0, 0, 0, 1);
+	//return float4((v > 0.5 ? 1 : 0) * (v / 0.5), 0, 0, 1);// float4((hasZero && (r > 0)) ? 1 : 0, 0, 0, 1);
 
-	//return float4(r > 60 ? 1 : 0,0,0,1);
+	return float4((v > 0.5 ? 1 : 0) * ((r > 60 && (hasZero && r > 0)) ? 1 : 0),0,0,1);
 
 	//return float4(r / 60, 0, 0, 1); 
 }

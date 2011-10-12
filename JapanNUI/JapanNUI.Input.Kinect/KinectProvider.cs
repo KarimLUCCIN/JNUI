@@ -196,11 +196,22 @@ namespace JapanNUI.Input.Kinect
                 ImageProcessingEngine.Process(depthFilteredFrame16);
 
             /* Test */
+            var max = 0;
             for (int i16 = 0, i32 = 0; i16 < depthFrame16.Length && i32 < depthFrame32.Length; i16 += 2, i32 += 4)
             {
                 int realDepth = (depthFilteredFrame16[i16 + 1] << 4) | (depthFilteredFrame16[i16]);
 
-                depthFrame32[i32] = (byte)(realDepth / 16384);
+                max = realDepth > max ? realDepth : max;
+
+                if (realDepth > 0)
+                {
+                    var d = (Math.Log(realDepth, 4096));
+
+                    depthFrame32[i32] = (byte)(2 * (1 - d) * 255);
+                }
+                else
+                    depthFrame32[i32] = 0;
+
                 depthFrame32[i32 + 1] = 0;// (byte)(realDepth << 4);
                 depthFrame32[i32 + 2] = 0;// (byte)(realDepth);
             }
