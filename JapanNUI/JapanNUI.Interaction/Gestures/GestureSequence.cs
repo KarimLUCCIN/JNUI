@@ -79,28 +79,35 @@ namespace JapanNUI.Interaction.Gestures
 
         public override string ToString()
         {
-            string res = "[";
-
-            for (int i = 0; i < data.Count; i++)
+            try
             {
-                res += "(";
+                string res = "[";
 
-                var seq = data[i];
-                for(int j = 0;j<seq.simpleGestures.Length;j++)
+                for (int i = 0; i < data.Count; i++)
                 {
-                    res += String.Format("\"{0}-{1}\"", seq.simpleGestures[j].ManagerId, seq.simpleGestures[j].MainGesture);
+                    res += "(";
 
-                    if (j + 1 < seq.simpleGestures.Length)
-                        res += ",";
+                    var seq = data[i];
+                    for (int j = 0; j < seq.simpleGestures.Length; j++)
+                    {
+                        res += String.Format("\"{0}-{1}\"", seq.simpleGestures[j].ManagerId, seq.simpleGestures[j].MainGesture);
+
+                        if (j + 1 < seq.simpleGestures.Length)
+                            res += ",";
+                    }
+
+                    res += ")";
+
+                    if (i + 1 < data.Count)
+                        res += " ; ";
                 }
 
-                res += ")";
-
-                if (i + 1 < data.Count)
-                    res += " ; ";
+                return res + "]";
             }
-
-            return res + "]";
+            catch
+            {
+                return "{invalid}";
+            }
         }
 
         public void Reset()

@@ -7,6 +7,7 @@ using System.Text;
 using JapanNUI.Interaction;
 using Microsoft.Research.Kinect.Nui;
 using JapanNUI.Interaction.Maths;
+using JapanNUI.ImageProcessing;
 
 namespace JapanNUI.Input.Kinect
 {
@@ -29,6 +30,8 @@ namespace JapanNUI.Input.Kinect
             get { return closestPointUpdateLatency; }
             set { closestPointUpdateLatency = value; }
         }
+
+        private ImageProcessingEngine ImageProcessingEngine { get; set; }
         
         public KinectProvider(IInputListener listener)
         {
@@ -63,7 +66,7 @@ namespace JapanNUI.Input.Kinect
                     throw new InvalidOperationException("Failed to open stream. Please make sure to specify a supported image type and resolution.");
                 }
 #else
-                nui.Initialize(RuntimeOptions.UseDepthAndPlayerIndex | RuntimeOptions.UseSkeletalTracking);
+                nui.Initialize(RuntimeOptions.UseDepthAndPlayerIndex | RuntimeOptions.UseSkeletalTracking | RuntimeOptions.UseColor);
 
                 nui.DepthStream.Open(ImageStreamType.Depth, 2, ImageResolution.Resolution320x240, ImageType.DepthAndPlayerIndex);
 #endif
@@ -81,12 +84,29 @@ namespace JapanNUI.Input.Kinect
             {
                 Available = false;
             }
+
+            if (Available)
+            {
+                try
+                {
+                    ImageProcessingEngine = new ImageProcessingEngine(320, 240);
+                }
+                catch
+                {
+                    ImageProcessingEngine = null;
+                    Available = false;
+                }
+            }
         }
 
         public void Shutdown()
         {
             if (Available)
+            {
                 nui.Uninitialize();
+
+                ImageProcessingEngine.Dispose();
+            }
         }
 
         // We want to control how depth data gets converted into false-color data
@@ -97,6 +117,7 @@ namespace JapanNUI.Input.Kinect
         const int BLUE_IDX = 0;
 
         byte[] depthFrame32 = new byte[320 * 240 * 4];
+        byte[] depthFilteredFrame16 = new byte[320 * 240 * 2];
 
         Vector2 closestPointCoordinates = new Vector2();
 
@@ -111,6 +132,9 @@ namespace JapanNUI.Input.Kinect
             {
                 int player = depthFrame16[i16] & 0x07;
                 int realDepth = (depthFrame16[i16 + 1] << 5) | (depthFrame16[i16] >> 3);
+
+                depthFilteredFrame16[i16] = (byte)realDepth;
+                depthFilteredFrame16[i16 + 1] = (byte)(realDepth >> 4);
 
                 if (realDepth > 0 && minDepth > realDepth)
                 {
@@ -166,6 +190,19 @@ namespace JapanNUI.Input.Kinect
                         depthFrame32[i32 + BLUE_IDX] = (byte)(255 - intensity);
                         break;
                 }
+            }
+
+            if (ImageProcessingEngine != null)
+                ImageProcessingEngine.Process(depthFilteredFrame16);
+
+            /* Test */
+            for (int i16 = 0, i32 = 0; i16 < depthFrame16.Length && i32 < depthFrame32.Length; i16 += 2, i32 += 4)
+            {
+                int realDepth = (depthFilteredFrame16[i16 + 1] << 4) | (depthFilteredFrame16[i16]);
+
+                depthFrame32[i32] = (byte)(realDepth / 16384);
+                depthFrame32[i32 + 1] = 0;// (byte)(realDepth << 4);
+                depthFrame32[i32 + 2] = 0;// (byte)(realDepth);
             }
 
             minDepthIndex /= 4;

@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{2B6885B2-E6A4-44CE-AAFA-B1952685CFC7}</ProjectGuid>
+    <ProjectGuid>{8072F996-1B06-4E3D-80F5-008D77CF0AF9}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>JapanNUI.Input.Kinect</RootNamespace>
-    <AssemblyName>JapanNUI.Input.Kinect</AssemblyName>
+    <RootNamespace>JapanNUI.ImageProcessing</RootNamespace>
+    <AssemblyName>JapanNUI.ImageProcessing</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -36,7 +36,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Debug\JapanNUI.Input.Kinect.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>bin\Debug\JapanNUI.ImageProcessing.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
@@ -52,21 +52,33 @@
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <CodeAnalysisLogFile>bin\Release\JapanNUI.Input.Kinect.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
+    <CodeAnalysisLogFile>bin\Release\JapanNUI.ImageProcessing.dll.CodeAnalysisLog.xml</CodeAnalysisLogFile>
     <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
     <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
     <CodeAnalysisRuleSetDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\\Rule Sets</CodeAnalysisRuleSetDirectories>
-    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
-    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.Research.Kinect, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Sora.GameEngine">
+      <HintPath>..\Runtime\Sora.GameEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="Sora.GameEngine.Storage">
+      <HintPath>..\Runtime\Sora.GameEngine.Storage.dll</HintPath>
+    </Reference>
+    <Reference Include="Sora.GameEngine.ThreadUtils">
+      <HintPath>..\Runtime\Sora.GameEngine.ThreadUtils.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -74,20 +86,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="KinectPositionProvider.cs" />
-    <Compile Include="KinectProvider.cs" />
-    <Compile Include="KinectProviderBuilder.cs" />
+    <Compile Include="ImageProcessingEngine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shaders\BordersDetect.cs">
+      <DependentUpon>BordersDetect.fx</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\BordersDetect.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BordersDetect.fx</DependentUpon>
+    </Compile>
+    <Compile Include="SoraEngineHost.cs" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="..\JapanNUI.ImageProcessing\JapanNUI.ImageProcessing.csproj">
-      <Project>{8072F996-1B06-4E3D-80F5-008D77CF0AF9}</Project>
-      <Name>JapanNUI.ImageProcessing</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\JapanNUI.Interaction\JapanNUI.Interaction.csproj">
-      <Project>{17529A4F-65E0-4CDB-A56A-C0C4CC8E9BE9}</Project>
-      <Name>JapanNUI.Interaction</Name>
-    </ProjectReference>
+    <None Include="Shaders\BordersDetect.fx">
+      <Generator>EffectCustomTool</Generator>
+      <LastGenOutput>BordersDetect.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

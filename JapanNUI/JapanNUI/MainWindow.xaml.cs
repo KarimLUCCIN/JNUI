@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define DISABLE_DEBUG_GESTURES
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -65,6 +67,7 @@ namespace JapanNUI
             //    },
             //    SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
 
+#if(!DISABLE_DEBUG_GESTURES)
             Manager.RecordSingleRecognizedGesture("left",
                 delegate
                 {
@@ -109,6 +112,7 @@ namespace JapanNUI
                     Top = ScreenArea.Size.Y - ActualHeight;
                 },
                 SimpleGesture.BottomRight, SimpleGesture.Right);
+#endif
         }
 
         void MainWindow_LocationChanged(object sender, EventArgs e)
@@ -146,7 +150,10 @@ namespace JapanNUI
             {
                 Dispatcher.Invoke((Action)delegate
                 {
-                    currentGesture.Text = Manager.GestureSequenceManager.CurrentSequence.ToString();
+                    if (Manager.GestureSequenceManager != null && Manager.GestureSequenceManager.CurrentSequence != null)
+                    {
+                        currentGesture.Text = Manager.GestureSequenceManager.CurrentSequence.ToString();
+                    }
                 });
             }
         }
