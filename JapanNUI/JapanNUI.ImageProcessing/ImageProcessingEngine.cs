@@ -41,8 +41,8 @@ namespace JapanNUI.ImageProcessing
 
             bordersDetect = new BordersDetect(Host.Device);
 
-            kinectDepthSource = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.HalfSingle, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
-            kinectProcessedOutput = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.HalfSingle, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
+            kinectDepthSource = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
+            kinectProcessedOutput = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
         }
 
         private void DisposeTextures()

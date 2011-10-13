@@ -8,6 +8,7 @@ using JapanNUI.Interaction;
 using Microsoft.Research.Kinect.Nui;
 using JapanNUI.Interaction.Maths;
 using JapanNUI.ImageProcessing;
+using System.Runtime.InteropServices;
 
 namespace JapanNUI.Input.Kinect
 {
@@ -117,9 +118,19 @@ namespace JapanNUI.Input.Kinect
         const int BLUE_IDX = 0;
 
         byte[] depthFrame32 = new byte[320 * 240 * 4];
-        byte[] depthFilteredFrame16 = new byte[320 * 240 * 2];
+        byte[] depthFilteredFrame32 = new byte[320 * 240 * 4];
 
         Vector2 closestPointCoordinates = new Vector2();
+
+        [StructLayout(LayoutKind.Explicit)]
+        struct floatByteConvert
+        {
+            [FieldOffset(0)]
+            public float[] floatValue;
+
+            [FieldOffset(0)]
+            public byte[] bValue;
+        }
 
         // Converts a 16-bit grayscale depth frame which includes player indexes into a 32-bit frame
         // that displays different players in different colors
@@ -128,13 +139,20 @@ namespace JapanNUI.Input.Kinect
             int minDepth = int.MaxValue;
             int minDepthIndex = 0;
 
+            var fBytes = new floatByteConvert();
+            fBytes.bValue = new byte[4];
+
             for (int i16 = 0, i32 = 0; i16 < depthFrame16.Length && i32 < depthFrame32.Length; i16 += 2, i32 += 4)
             {
                 int player = depthFrame16[i16] & 0x07;
                 int realDepth = (depthFrame16[i16 + 1] << 5) | (depthFrame16[i16] >> 3);
 
-                depthFilteredFrame16[i16] = (byte)realDepth;
-                depthFilteredFrame16[i16 + 1] = (byte)(realDepth >> 4);
+                fBytes.floatValue[0] = realDepth;
+
+                depthFilteredFrame32[i32 + 0] = fBytes.bValue[0];// (byte)(realDepth & 0x000000FF);
+                depthFilteredFrame32[i32 + 1] = fBytes.bValue[1];// (byte)((realDepth & 0x0000FF00) >> 8);
+                depthFilteredFrame32[i32 + 2] = fBytes.bValue[2];// (byte)((realDepth & 0x0000FF00) >> 8);
+                depthFilteredFrame32[i32 + 3] = fBytes.bValue[3];// (byte)((realDepth & 0x0000FF00) >> 8);
 
                 if (realDepth > 0 && minDepth > realDepth)
                 {
@@ -193,21 +211,24 @@ namespace JapanNUI.Input.Kinect
             }
 
             if (ImageProcessingEngine != null)
-                ImageProcessingEngine.Process(depthFilteredFrame16);
+                ImageProcessingEngine.Process(depthFilteredFrame32);
 
             /* Test */
-            var max = 0;
+            float max = 0;
             for (int i16 = 0, i32 = 0; i16 < depthFrame16.Length && i32 < depthFrame32.Length; i16 += 2, i32 += 4)
             {
-                int realDepth = (depthFilteredFrame16[i16 + 1] << 4) | (depthFilteredFrame16[i16]);
+                fBytes.bValue[0] = depthFilteredFrame32[i32 + 0];
+                fBytes.bValue[1] = depthFilteredFrame32[i32 + 1];
+                fBytes.bValue[2] = depthFilteredFrame32[i32 + 2];
+                fBytes.bValue[3] = depthFilteredFrame32[i32 + 3];
+
+                float realDepth = fBytes.floatValue[0];
 
                 max = realDepth > max ? realDepth : max;
 
                 if (realDepth > 0)
                 {
-                    var d = (Math.Log(realDepth, 4096));
-
-                    depthFrame32[i32] = (byte)(2 * (1 - d) * 255);
+                    depthFrame32[i32] = (byte)((1 - (realDepth / 4096.0)) * 255);
                 }
                 else
                     depthFrame32[i32] = 0;

@@ -43,6 +43,11 @@ VSO VS(VSI input)
 	return output;
 }
 
+float visibleRange(float v, float r)
+{
+	return ((v > 0 && v < 2000) && (r > 0)) ? 1 : 0;
+}
+
 //Pixel Shader
 float4 PS(VSO input) : COLOR0
 { 
@@ -75,9 +80,11 @@ float4 PS(VSO input) : COLOR0
 		accY += vY * samples[i].z;
 	}
 
-	//return float4((accY + accX) / 2, 0, 0, 1);
+	//return float4(((accY + accX) / 2), 0, 0, 1);
 
 	float v = (tex2D(depthSampler, input.TexCoord).r);
+
+	//return float4(v, 0, 0, 1);
 
 	//return float4((v > 0 && v < 16000) ? 1 : 0, 0, 0, 1);
 
@@ -85,7 +92,8 @@ float4 PS(VSO input) : COLOR0
 
 	//return float4((v > 0.5 ? 1 : 0) * (v / 0.5), 0, 0, 1);// float4((hasZero && (r > 0)) ? 1 : 0, 0, 0, 1);
 
-	return float4((v > 0.5 ? 1 : 0) * ((r > 60 && (hasZero && r > 0)) ? 1 : 0),0,0,1);
+	return float4(visibleRange(v, r) * r * ((hasZero || r > 150) ? 1 : 0),0,0,1);
+	//return float4((v > 0.5 ? 1 : 0) * ((r > 60 && (hasZero && r > 0)) ? 1 : 0),0,0,1);
 
 	//return float4(r / 60, 0, 0, 1); 
 }
