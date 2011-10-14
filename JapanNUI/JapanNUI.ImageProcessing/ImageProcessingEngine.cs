@@ -36,7 +36,9 @@ namespace JapanNUI.ImageProcessing
         private DebugTexturePresenter fliesDebugPresenter;
         private DebugTexturePresenter fliesPlotPresenter;
 
-        VertexPositionColor[] fliesArray;
+        VertexPositionTexture[] fliesArray;
+
+        RasterizerState wireFrameFlies;
 
         public ImageProcessingEngine(int width, int height)
         {
@@ -50,17 +52,26 @@ namespace JapanNUI.ImageProcessing
             Device_DeviceLost(this, EventArgs.Empty);
 
 #if(ENABLE_DEBUG_DISPLAY)
+            wireFrameFlies = new RasterizerState();
+            wireFrameFlies.CullMode = CullMode.None;
+            wireFrameFlies.FillMode = FillMode.WireFrame;
+
             bordersDebugPresenter = new DebugTexturePresenter("Borders", 320, 240);
             fliesDebugPresenter = new DebugTexturePresenter("Flies", fliesBaseCount, fliesBaseCount);
 
-            fliesArray = new VertexPositionColor[fliesCount * 2];
+            fliesArray = new VertexPositionTexture[fliesCount * 6];
 
             for (int i = 0; i < fliesBaseCount; i++)
             {
                 for (int j = 0; j < fliesBaseCount; j++)
                 {
-                    fliesArray[2 * (i * fliesBaseCount + j)] = new VertexPositionColor(){Position = new Vector3(i / (float)fliesBaseCount, j / (float)fliesBaseCount, 0)};
-                    fliesArray[2 * (i * fliesBaseCount + j) + 1] = new VertexPositionColor() { Position = new Vector3(i / (float)fliesBaseCount, j / (float)fliesBaseCount, 1) };
+                    fliesArray[6 * (i * fliesBaseCount + j) + 0] = new VertexPositionTexture() { Position = new Vector3(i / (float)fliesBaseCount, j / (float)fliesBaseCount, 0), TextureCoordinate = new Vector2(-1, -1) };
+                    fliesArray[6 * (i * fliesBaseCount + j) + 1] = new VertexPositionTexture() { Position = new Vector3(i / (float)fliesBaseCount, j / (float)fliesBaseCount, 0), TextureCoordinate = new Vector2(1, -1) };
+                    fliesArray[6 * (i * fliesBaseCount + j) + 2] = new VertexPositionTexture() { Position = new Vector3(i / (float)fliesBaseCount, j / (float)fliesBaseCount, 0), TextureCoordinate = new Vector2(1, 1) };
+
+                    fliesArray[6 * (i * fliesBaseCount + j) + 3] = new VertexPositionTexture() { Position = new Vector3(i / (float)fliesBaseCount, j / (float)fliesBaseCount, 0), TextureCoordinate = new Vector2(-1, -1) };
+                    fliesArray[6 * (i * fliesBaseCount + j) + 4] = new VertexPositionTexture() { Position = new Vector3(i / (float)fliesBaseCount, j / (float)fliesBaseCount, 0), TextureCoordinate = new Vector2(1, 1) };
+                    fliesArray[6 * (i * fliesBaseCount + j) + 5] = new VertexPositionTexture() { Position = new Vector3(i / (float)fliesBaseCount, j / (float)fliesBaseCount, 0), TextureCoordinate = new Vector2(-1, 1) };
                 }
             }
 
@@ -149,6 +160,7 @@ namespace JapanNUI.ImageProcessing
                 /* reset device state */
                 device.BlendState = BlendState.Opaque;
                 device.DepthStencilState = DepthStencilState.None;
+                device.RasterizerState = RasterizerState.CullNone;
 
                 for (int i = 0; i < 8; i++)
                     device.Textures[i] = null;
@@ -215,11 +227,12 @@ namespace JapanNUI.ImageProcessing
                         fliesShader.previousPopulationMap = kinectFlies1;
 
                         device.Clear(Color.Black);
+                        device.RasterizerState = wireFrameFlies;
 
                         fliesShader.CurrentTechnique = fliesShader.Techniques["Plot"];
                         fliesShader.CurrentTechnique.Passes[0].Apply();
 
-                        device.DrawUserPrimitives(PrimitiveType.LineList, fliesArray, 0, fliesCount);
+                        device.DrawUserPrimitives(PrimitiveType.TriangleList, fliesArray, 0, fliesCount * 2);
                     }
                     Host.RenderTargetManager.Pop();
 
