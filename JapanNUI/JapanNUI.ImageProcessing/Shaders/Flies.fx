@@ -216,7 +216,7 @@ VSO VS_PLOT(VSI_PLOT input)
 
 	float4 fly = tex2Dlod(previousPopulationMapSampler, float4(input.Position.xy, 0, 1));
 
-	output.Position = float4(2 * (float3(fly.r, 1 - fly.g, 0) - float3(0.5,0.5,0)), 1) + float4(2 * fliesHalfPixel * input.Side,0,0);
+	output.Position = float4(2 * (float3(fly.r, 1 - fly.g, 0) - float3(0.5,0.5,0)), 1) + float4(2 * bordersHalfPixel * input.Side,0,0);
 	output.TexCoord = fly.b > 0 ? float2(1,0) : float2(0,1);
 
 	//Return
