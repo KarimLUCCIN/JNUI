@@ -177,7 +177,8 @@ namespace JapanNUI.ImageProcessing
                     bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
 
                 /* init shader */
-                fliesShader.halfPixel = new Vector2(0.5f / ((float)fliesBaseCount), 0.5f / ((float)fliesBaseCount));
+                fliesShader.bordersHalfPixel = bordersDetectShader.halfPixel;
+                fliesShader.fliesHalfPixel = new Vector2(0.5f / ((float)fliesBaseCount), 0.5f / ((float)fliesBaseCount));
                 fliesShader.noiseMap = noise;
                 fliesShader.randomNoiseOffset = (float)(rd.NextDouble() + rd.NextDouble() / float.MaxValue);
 
