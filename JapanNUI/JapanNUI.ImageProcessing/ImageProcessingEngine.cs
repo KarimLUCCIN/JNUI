@@ -1,4 +1,5 @@
 ﻿#define ENABLE_DEBUG_DISPLAY
+//#define ENABLE_ONLY_BORDER_DISTANCE_LABELS
 
 using System;
 using System.Collections.Generic;
@@ -9,6 +10,7 @@ using JapanNUI.ImageProcessing.Shaders;
 using Microsoft.Xna.Framework;
 using JapanNUI.ImageProcessing.DebugTools;
 using System.IO;
+using System.Windows.Media;
 
 namespace JapanNUI.ImageProcessing
 {
@@ -21,7 +23,7 @@ namespace JapanNUI.ImageProcessing
 
         private Texture2D noise;
 
-        private RenderTarget2D kinectProcessedOutput;
+        private RenderTarget2D kinectProcessedOutput, grownBorders;
         private Texture2D kinectDepthSource;
 
         /* to allow ping pong between the two */
@@ -33,6 +35,7 @@ namespace JapanNUI.ImageProcessing
         private Flies fliesShader;
 
         private DebugTexturePresenter bordersDebugPresenter;
+        private DebugTexturePresenter bordersGrownDebugPresenter;
         private DebugTexturePresenter fliesDebugPresenter;
         private DebugTexturePresenter fliesPlotPresenter;
 
@@ -57,6 +60,8 @@ namespace JapanNUI.ImageProcessing
             wireFrameFlies.FillMode = FillMode.WireFrame;
 
             bordersDebugPresenter = new DebugTexturePresenter("Borders", 320, 240);
+            bordersGrownDebugPresenter = new DebugTexturePresenter("Borders Grown 1", Width >> 1, Height >> 1);
+
             fliesDebugPresenter = new DebugTexturePresenter("Flies", fliesBaseCount, fliesBaseCount);
 
             fliesArray = new VertexPositionTexture[fliesCount * 6];
@@ -91,6 +96,8 @@ namespace JapanNUI.ImageProcessing
             kinectDepthSource = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             kinectProcessedOutput = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
 
+            grownBorders = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, Width >> 1, Height >> 1, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
+
             kinectFlies1 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Vector4, fliesBaseCount, fliesBaseCount, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             kinectFlies2 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Vector4, fliesBaseCount, fliesBaseCount, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             fliesPlot = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, 320, 240, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
@@ -124,6 +131,9 @@ namespace JapanNUI.ImageProcessing
             if (kinectProcessedOutput != null)
                 kinectProcessedOutput.Dispose();
 
+            if (grownBorders != null)
+                grownBorders.Dispose();
+
             if (fliesPlot != null)
                 fliesPlot.Dispose();
 
@@ -151,6 +161,8 @@ namespace JapanNUI.ImageProcessing
 
         bool firstPass = true;
 
+        ContourBuilder contourBuilder = new ContourBuilder();
+
         public void Process(byte[] kinectDepthDataBytes)
         {
             lock (sync)
@@ -174,19 +186,43 @@ namespace JapanNUI.ImageProcessing
                 bordersDetectShader.depthMap = null;
                 bordersDetectShader.depthMap = kinectDepthSource;
 
+                /* Detect */
                 Host.RenderTargetManager.Push(kinectProcessedOutput);
                 {
+                    device.Clear(Microsoft.Xna.Framework.Color.Black);
+
+                    bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Detect"];
                     bordersDetectShader.CurrentTechnique.Passes[0].Apply();
 
                     Host.Renderer.QuadRenderer.RenderFullScreen();
                 }
                 Host.RenderTargetManager.Pop();
 
+                /* Downsize */
+                bordersDetectShader.depthMap = kinectProcessedOutput;
+                bordersDetectShader.halfPixel = new Vector2(0.5f / ((float)Width), 0.5f / ((float)Height));
+                Host.RenderTargetManager.Push(grownBorders);
+                {
+                    device.Clear(Microsoft.Xna.Framework.Color.Black);
+
+                    bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Down"];
+                    bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                    Host.Renderer.QuadRenderer.RenderFullScreen();
+                }
+                Host.RenderTargetManager.Pop();
+
+                bordersGrownDebugPresenter.Update(grownBorders, PixelFormats.Bgr32, 4);
+
+#if(!ENABLE_ONLY_BORDER_DISTANCE_LABELS)
                 /* get result : borders */
                 kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
 
                 if (bordersDebugPresenter != null)
                     bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
+
+#warning FUCKING SLOW
+                //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
 
                 /* init shader */
                 fliesShader.bordersHalfPixel = bordersDetectShader.halfPixel;
@@ -226,7 +262,7 @@ namespace JapanNUI.ImageProcessing
                     {
                         fliesShader.previousPopulationMap = kinectFlies1;
 
-                        device.Clear(Color.Black);
+                        device.Clear(Microsoft.Xna.Framework.Color.Black);
                         device.RasterizerState = wireFrameFlies;
 
                         fliesShader.CurrentTechnique = fliesShader.Techniques["Plot"];
@@ -240,6 +276,7 @@ namespace JapanNUI.ImageProcessing
                 }
 
                 Swap(ref kinectFlies1, ref kinectFlies2);
+#endif
 
                 firstPass = false;
             }

@@ -43,13 +43,21 @@ VSO VS(VSI input)
 	return output;
 }
 
+#define MAXIMUM_CONSIDERED_DEPTH 2000
+
+#define MINIMUM_KINECT_LITERAL_DEPTH 800
+
+/* it's somewhat larger, but we'll take 4000 has the maximum */
+#define MAXIMUM_KINECT_LITERAL_DEPTH 4000
+
+
 float visibleRange(float v, float r)
 {
-	return ((v > 0 && v < 2000) && (r > 0)) ? 1 : 0;
+	return ((v > 0 && v < MAXIMUM_CONSIDERED_DEPTH) && (r > 0)) ? 1 : 0;
 }
 
 //Pixel Shader
-float4 PS(VSO input) : COLOR0
+float4 PS_Detect(VSO input) : COLOR0
 { 
 	float3 samples[6] = 
 	{
@@ -68,17 +76,40 @@ float4 PS(VSO input) : COLOR0
 	float vX, vY;
 
 	bool hasZero = false;
+	float nonZeroCount = 0;
+
+	float med = 0;
 
 	for(int i = 0;i<6;i++)
 	{
 		vX = tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples[i].xy)).r;
 		vY = tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples[i].yx)).r;
 
+		med += vX + vY;
+
 		hasZero = hasZero || (vX == 0 || vY == 0);
+
+		nonZeroCount += (vX == 0 ? 0 : 1) + (vY == 0 ? 0 : 1);
 
 		accX += vX * samples[i].z;
 		accY += vY * samples[i].z;
 	}
+
+	med = nonZeroCount > 1 ? (med / nonZeroCount) : MAXIMUM_KINECT_LITERAL_DEPTH;
+	
+	med = min(MAXIMUM_KINECT_LITERAL_DEPTH, med);
+	
+	med = med == 0 ? MAXIMUM_KINECT_LITERAL_DEPTH : med;
+
+	med = med - MINIMUM_KINECT_LITERAL_DEPTH;
+
+	med /= MAXIMUM_CONSIDERED_DEPTH;
+
+	med = min(med, 1);
+
+	med = 1 - med;
+
+	//return float4(med, 0, 0, 1);
 
 	//return float4(((accY + accX) / 2), 0, 0, 1);
 
@@ -92,18 +123,74 @@ float4 PS(VSO input) : COLOR0
 
 	//return float4((v > 0.5 ? 1 : 0) * (v / 0.5), 0, 0, 1);// float4((hasZero && (r > 0)) ? 1 : 0, 0, 0, 1);
 
-	return float4(visibleRange(v, r) * r * ((hasZero || r > 150) ? 1 : 0),0,0,1);
+	return float4(visibleRange(v, r) * med * ((hasZero || r > 150) ? 1 : 0),0,0,1);
 	//return float4((v > 0.5 ? 1 : 0) * ((r > 60 && (hasZero && r > 0)) ? 1 : 0),0,0,1);
 
 	//return float4(r / 60, 0, 0, 1); 
 }
 
 //Technique
-technique Compose
+technique Detect
 {
 	pass p0
 	{
 		VertexShader = compile vs_3_0 VS();
-		PixelShader = compile ps_3_0 PS();
+		PixelShader = compile ps_3_0 PS_Detect();
+	}
+}
+
+/* To increase the size of borders and downsize the texture */
+
+static const float g_vOffsets[5] = {-2, -1, 0, 1, 2};
+
+float sum3(float3 s)
+{
+	return dot(s, float3(1,1,1));
+}
+
+#define LEVEL_NUMBERS 4.0
+
+float4 PS_Down(VSO input) : COLOR0
+{ 
+	float vMed = 0;
+
+	[unroll]
+	for (int x = 0; x < 5; x++)
+	{
+		[unroll]
+		for (int y = 0; y < 5; y++)
+		{
+			float2 vOffset;
+			vOffset = float2(g_vOffsets[x], g_vOffsets[y]) * 2 * halfPixel;
+
+			float vSample = tex2D(depthSampler, input.TexCoord + vOffset).r;
+			
+			vMed = max (vMed, vSample);
+		}
+	}
+
+	/* reduced to LEVEL_NUMBERS levels */
+	vMed = ((int)(vMed * LEVEL_NUMBERS));
+
+	if(vMed == 0)
+		return float4(0,0,0,1);
+	else if(vMed == 1)
+		return float4(1,0,0,1);
+	else if(vMed == 2)
+		return float4(0,1,0,1);
+	else if(vMed == 3)
+		return float4(0,0,1,1);
+	else
+		return float4(1,1,1,1);
+
+	return float4(vMed, 0, 0, 1); // (sum3(vColor / 16.0f) > 1) ? float4(1,1,1,1) : float4(0,0,0,1);
+}
+
+technique Down
+{
+	pass p0
+	{
+		VertexShader = compile vs_3_0 VS();
+		PixelShader = compile ps_3_0 PS_Down();
 	}
 }
