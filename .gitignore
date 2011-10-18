@@ -1,4 +1,11 @@
 
 *.suo
+*.dll
+*.pdb
+*.metagen
+*.ilk
+*.sdf
+*.opensdf
 bin
 obj
+/JapanNUI/JapanNUI.ImageProcessing.SectionsBuilders/Debug

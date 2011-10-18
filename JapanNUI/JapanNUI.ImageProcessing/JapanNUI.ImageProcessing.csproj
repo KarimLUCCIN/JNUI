@@ -45,6 +45,7 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisRuleDirectories>;C:\Program Files (x86)\Microsoft Visual Studio 10.0\Team Tools\Static Analysis Tools\FxCop\\Rules</CodeAnalysisRuleDirectories>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -136,6 +137,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\Noise.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\JapanNUI.ImageProcessing.SectionsBuilders\JapanNUI.ImageProcessing.SectionsBuilders.vcxproj">
+      <Project>{F7B8387C-2DBB-41BD-B6E2-C1370A9AE651}</Project>
+      <Name>JapanNUI.ImageProcessing.SectionsBuilders</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using JapanNUI.ImageProcessing.DebugTools;
 using System.IO;
 using System.Windows.Media;
+using JapanNUI.ImageProcessing.SectionsBuilders;
 
 namespace JapanNUI.ImageProcessing
 {
@@ -86,6 +87,8 @@ namespace JapanNUI.ImageProcessing
 
         MemoryStream noiseData;
 
+        byte[] grownBordersData;
+
         void Device_DeviceLost(object sender, EventArgs e)
         {
             DisposeTextures();
@@ -97,6 +100,8 @@ namespace JapanNUI.ImageProcessing
             kinectProcessedOutput = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
 
             grownBorders = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, Width >> 1, Height >> 1, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
+
+            grownBordersData = new byte[grownBorders.Width * grownBorders.Height * 4];
 
             kinectFlies1 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Vector4, fliesBaseCount, fliesBaseCount, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             kinectFlies2 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Vector4, fliesBaseCount, fliesBaseCount, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
@@ -163,6 +168,9 @@ namespace JapanNUI.ImageProcessing
 
         ContourBuilder contourBuilder = new ContourBuilder();
 
+        BlobDelimiter blobDelimiter = new BlobDelimiter();
+        List<Blob> blobs = new List<Blob>();
+
         public void Process(byte[] kinectDepthDataBytes)
         {
             lock (sync)
@@ -223,6 +231,8 @@ namespace JapanNUI.ImageProcessing
 
 #warning FUCKING SLOW
                 //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
+                grownBorders.GetData(grownBordersData);
+                ProcessBlobs(grownBordersData, 320, 240);
 
                 /* init shader */
                 fliesShader.bordersHalfPixel = bordersDetectShader.halfPixel;
@@ -279,6 +289,15 @@ namespace JapanNUI.ImageProcessing
 #endif
 
                 firstPass = false;
+            }
+        }
+
+        private unsafe void ProcessBlobs(byte[] kinectDepthDataBytes, int width, int height)
+        {
+            blobs.Clear();
+            fixed (byte* ptr_kinectDepthDataBytes = &kinectDepthDataBytes[0])
+            {
+                blobDelimiter.BuildBlobs(ptr_kinectDepthDataBytes, width, height, 4, blobs);
             }
         }
 
