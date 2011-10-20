@@ -39,6 +39,7 @@ namespace JapanNUI.ImageProcessing
         private DebugTexturePresenter bordersGrownDebugPresenter;
         private DebugTexturePresenter fliesDebugPresenter;
         private DebugTexturePresenter fliesPlotPresenter;
+        private DebugTexturePresenter blobsPresenter;
 
         VertexPositionTexture[] fliesArray;
 
@@ -102,6 +103,9 @@ namespace JapanNUI.ImageProcessing
             grownBorders = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, Width >> 1, Height >> 1, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
 
             grownBordersData = new byte[grownBorders.Width * grownBorders.Height * 4];
+
+            blobDelimiter = new BlobDelimiter(grownBorders.Height, grownBorders.Width, 4);
+            blobsPresenter = new DebugTexturePresenter("Blobs", grownBorders.Width, grownBorders.Height);
 
             kinectFlies1 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Vector4, fliesBaseCount, fliesBaseCount, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             kinectFlies2 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Vector4, fliesBaseCount, fliesBaseCount, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
@@ -168,7 +172,7 @@ namespace JapanNUI.ImageProcessing
 
         ContourBuilder contourBuilder = new ContourBuilder();
 
-        BlobDelimiter blobDelimiter = new BlobDelimiter();
+        BlobDelimiter blobDelimiter;
         List<Blob> blobs = new List<Blob>();
 
         public void Process(byte[] kinectDepthDataBytes)
@@ -232,7 +236,9 @@ namespace JapanNUI.ImageProcessing
 #warning FUCKING SLOW
                 //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
                 grownBorders.GetData(grownBordersData);
-                ProcessBlobs(grownBordersData, 320, 240);
+                ProcessBlobs(grownBordersData);
+
+                blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
 
                 /* init shader */
                 fliesShader.bordersHalfPixel = bordersDetectShader.halfPixel;
@@ -292,12 +298,12 @@ namespace JapanNUI.ImageProcessing
             }
         }
 
-        private unsafe void ProcessBlobs(byte[] kinectDepthDataBytes, int width, int height)
+        private unsafe void ProcessBlobs(byte[] kinectDepthDataBytes)
         {
             blobs.Clear();
             fixed (byte* ptr_kinectDepthDataBytes = &kinectDepthDataBytes[0])
             {
-                blobDelimiter.BuildBlobs(ptr_kinectDepthDataBytes, width, height, 4, blobs);
+                blobDelimiter.BuildBlobs(ptr_kinectDepthDataBytes, blobs);
             }
         }
 

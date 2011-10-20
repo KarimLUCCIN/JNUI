@@ -183,7 +183,7 @@ float4 PS_Down(VSO input) : COLOR0
 	else
 		return float4(1,1,1,1);
 
-	return float4(vMed, 0, 0, 1); // (sum3(vColor / 16.0f) > 1) ? float4(1,1,1,1) : float4(0,0,0,1);
+	//return float4(vMed, 0, 0, 1); // (sum3(vColor / 16.0f) > 1) ? float4(1,1,1,1) : float4(0,0,0,1);
 }
 
 technique Down

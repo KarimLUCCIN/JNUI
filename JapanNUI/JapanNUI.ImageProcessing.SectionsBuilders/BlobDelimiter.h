@@ -22,9 +22,19 @@ namespace JapanNUI
 
 			public ref class BlobDelimiter
 			{
+			private:
+				int lines;
+				int rows;
+				int stride;
+
+				/* Used when resolving blobs ids after the scan */
+				int * blobIdsCorrespondanceData;
 			public:
-				BlobDelimiter(void);
-				void BuildBlobs(unsigned char* data, int lines, int rows, int stride, List<Blob^>^ result);
+				BlobDelimiter(int lines, int rows, int stride);
+				~BlobDelimiter(void);
+
+
+				void BuildBlobs(unsigned char* data, List<Blob^>^ result);
 			};
 		}
 	}
