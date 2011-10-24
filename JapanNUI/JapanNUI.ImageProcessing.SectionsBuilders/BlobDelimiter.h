@@ -8,16 +8,26 @@ namespace JapanNUI
 	{
 		namespace SectionsBuilders
 		{
-			public ref struct Blob
+			public struct Blob
 			{
 			public:
-				double centerX;
-				double centerY;
+				double MinX;
+				double MinY;
+				double MaxX;
+				double MaxY;
 
-				double X;
-				double Y;
-				double Width;
-				double Height;
+				int PixelCount;
+			};
+
+			public ref struct ManagedBlob
+			{
+			public:
+				double MinX;
+				double MinY;
+				double MaxX;
+				double MaxY;
+
+				int PixelCount;
 			};
 
 			public ref class BlobDelimiter
@@ -29,12 +39,27 @@ namespace JapanNUI
 
 				/* Used when resolving blobs ids after the scan */
 				int * blobIdsCorrespondanceData;
+				unsigned char * processingIntermediateOutput;
+			public:
+				Blob * blobs;
+
+				void GetBlobData(int index, double& minX, double& maxX, double& minY, double& maxY, int& pixelCount)
+				{
+					Blob b = blobs[index+1];
+
+					minX = b.MinX;
+					minY = b.MinY;
+					maxX = b.MaxX;
+					maxY = b.MaxY;
+					pixelCount = b.PixelCount;
+				}
 			public:
 				BlobDelimiter(int lines, int rows, int stride);
 				~BlobDelimiter(void);
 
 
-				void BuildBlobs(unsigned char* data, List<Blob^>^ result);
+				/* Return the number of blobs identified, accessed via GetBlobData */
+				int BuildBlobs(unsigned char* data);
 			};
 		}
 	}

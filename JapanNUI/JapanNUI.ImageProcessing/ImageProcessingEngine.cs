@@ -1,5 +1,5 @@
 ﻿#define ENABLE_DEBUG_DISPLAY
-//#define ENABLE_ONLY_BORDER_DISTANCE_LABELS
+#define ENABLE_ONLY_BORDER_DISTANCE_LABELS
 
 using System;
 using System.Collections.Generic;
@@ -12,6 +12,7 @@ using JapanNUI.ImageProcessing.DebugTools;
 using System.IO;
 using System.Windows.Media;
 using JapanNUI.ImageProcessing.SectionsBuilders;
+using System.Runtime.InteropServices;
 
 namespace JapanNUI.ImageProcessing
 {
@@ -40,6 +41,7 @@ namespace JapanNUI.ImageProcessing
         private DebugTexturePresenter fliesDebugPresenter;
         private DebugTexturePresenter fliesPlotPresenter;
         private DebugTexturePresenter blobsPresenter;
+        private DebugTexturePresenter squaresPresenter;
 
         VertexPositionTexture[] fliesArray;
 
@@ -63,6 +65,7 @@ namespace JapanNUI.ImageProcessing
 
             bordersDebugPresenter = new DebugTexturePresenter("Borders", 320, 240);
             bordersGrownDebugPresenter = new DebugTexturePresenter("Borders Grown 1", Width >> 1, Height >> 1);
+            squaresPresenter = new DebugTexturePresenter("Squares", Width >> 1, Height >> 1);
 
             fliesDebugPresenter = new DebugTexturePresenter("Flies", fliesBaseCount, fliesBaseCount);
 
@@ -173,9 +176,11 @@ namespace JapanNUI.ImageProcessing
         ContourBuilder contourBuilder = new ContourBuilder();
 
         BlobDelimiter blobDelimiter;
-        List<Blob> blobs = new List<Blob>();
 
-        public void Process(byte[] kinectDepthDataBytes)
+        public const int MAXIMUM_CONSIDERED_DEPTH = 2000;
+        public const int MINIMUM_KINECT_LITERAL_DEPTH = 800;
+
+        public void Process(byte[] kinectDepthDataBytes, float minDepth, float maxDepth)
         {
             lock (sync)
             {
@@ -213,6 +218,13 @@ namespace JapanNUI.ImageProcessing
                 /* Downsize */
                 bordersDetectShader.depthMap = kinectProcessedOutput;
                 bordersDetectShader.halfPixel = new Vector2(0.5f / ((float)Width), 0.5f / ((float)Height));
+
+                minDepth = (minDepth - MINIMUM_KINECT_LITERAL_DEPTH) / MAXIMUM_CONSIDERED_DEPTH;
+                maxDepth = (maxDepth - MINIMUM_KINECT_LITERAL_DEPTH) / MAXIMUM_CONSIDERED_DEPTH;
+
+                bordersDetectShader.minimumDepthOffset = minDepth;
+                bordersDetectShader.maximumDepth = maxDepth;
+
                 Host.RenderTargetManager.Push(grownBorders);
                 {
                     device.Clear(Microsoft.Xna.Framework.Color.Black);
@@ -226,7 +238,7 @@ namespace JapanNUI.ImageProcessing
 
                 bordersGrownDebugPresenter.Update(grownBorders, PixelFormats.Bgr32, 4);
 
-#if(!ENABLE_ONLY_BORDER_DISTANCE_LABELS)
+
                 /* get result : borders */
                 kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
 
@@ -237,9 +249,12 @@ namespace JapanNUI.ImageProcessing
                 //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
                 grownBorders.GetData(grownBordersData);
                 ProcessBlobs(grownBordersData);
+                squaresPresenter.Update(grownBorders, PixelFormats.Bgr32, 4);
+                //grownBorders.GetData(grownBordersData);
 
                 blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
 
+#if(!ENABLE_ONLY_BORDER_DISTANCE_LABELS)
                 /* init shader */
                 fliesShader.bordersHalfPixel = bordersDetectShader.halfPixel;
                 fliesShader.fliesHalfPixel = new Vector2(0.5f / ((float)fliesBaseCount), 0.5f / ((float)fliesBaseCount));
@@ -298,13 +313,58 @@ namespace JapanNUI.ImageProcessing
             }
         }
 
-        private unsafe void ProcessBlobs(byte[] kinectDepthDataBytes)
+        private unsafe int ProcessBlobs(byte[] kinectDepthDataBytes)
         {
-            blobs.Clear();
+            int blobCount = 0;
+
             fixed (byte* ptr_kinectDepthDataBytes = &kinectDepthDataBytes[0])
             {
-                blobDelimiter.BuildBlobs(ptr_kinectDepthDataBytes, blobs);
+                blobCount = blobDelimiter.BuildBlobs(ptr_kinectDepthDataBytes);
             }
+
+            var device = Host.Device;
+            Host.RenderTargetManager.Push(grownBorders);
+            {
+                device.Clear(Microsoft.Xna.Framework.Color.Black);
+
+                bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["SolidFill"];
+                bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                double minX, minY, maxX, maxY;
+                int pixelCount;
+
+                Vector2 a, b;
+
+                int maxColor = 1 << 16;
+
+                var oldRasterizer = device.RasterizerState;
+                device.RasterizerState = wireFrameFlies;
+
+                for (int i = 0; i < blobCount; i++)
+                {
+                    blobDelimiter.GetBlobData(i, &minX, &maxX, &minY, &maxY, &pixelCount);
+
+                    a.X = 2 * ((float)minX / (float)grownBorders.Width) - 1;
+                    a.Y = (2 * ((float)minY / (float)grownBorders.Height) - 1) * (-1);
+                    b.X = 2 * ((float)maxX / (float)grownBorders.Width) - 1;
+                    b.Y = (2 * ((float)maxY / (float)grownBorders.Height) - 1) * (-1);
+
+                    var d = Vector2.Distance(a, b);
+                    if (d > 0.25f)
+                    {
+                        int currentColor = (maxColor / (blobCount + 1)) * (i+1);
+
+                        bordersDetectShader.SolidFillColor = new Vector3((byte)(currentColor), (byte)(currentColor >> 8), (byte)(currentColor >> 16));
+
+                        Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+                    }
+                }
+
+                device.RasterizerState = oldRasterizer;
+            }
+            Host.RenderTargetManager.Pop();
+
+            return blobCount;
         }
 
         private void FliesPass(string technique)

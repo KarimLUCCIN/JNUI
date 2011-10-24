@@ -1,4 +1,4 @@
-﻿
+
 float2 halfPixel;
 
 uniform const texture depthMap : register(t0);
@@ -121,6 +121,8 @@ float4 PS_Detect(VSO input) : COLOR0
 
 	float r = sqrt(accX * accX + accY * accY);
 
+	r = 200;
+
 	//return float4((v > 0.5 ? 1 : 0) * (v / 0.5), 0, 0, 1);// float4((hasZero && (r > 0)) ? 1 : 0, 0, 0, 1);
 
 	return float4(visibleRange(v, r) * med * ((hasZero || r > 150) ? 1 : 0),0,0,1);
@@ -148,7 +150,24 @@ float sum3(float3 s)
 	return dot(s, float3(1,1,1));
 }
 
-#define LEVEL_NUMBERS 4.0
+float minimumDepthOffset = 0;
+float maximumDepth = 1;
+
+int categorizeDepthBased(float depth)
+{
+	depth = (1 - depth) - minimumDepthOffset;
+	float localMaximumDepth = min(1, maximumDepth);
+	depth /= localMaximumDepth;
+
+	if(depth <= 0.1)
+		return 0;
+	else if(depth <= 0.3)
+		return 1;
+	else if(depth <= 0.6)
+		return 2;
+	else
+		return 3;
+}
 
 float4 PS_Down(VSO input) : COLOR0
 { 
@@ -170,16 +189,16 @@ float4 PS_Down(VSO input) : COLOR0
 	}
 
 	/* reduced to LEVEL_NUMBERS levels */
-	vMed = ((int)(vMed * LEVEL_NUMBERS));
+	vMed = categorizeDepthBased(vMed);
 
 	if(vMed == 0)
-		return float4(0,0,0,1);
+		return float4(0,0,1,1);
 	else if(vMed == 1)
 		return float4(1,0,0,1);
 	else if(vMed == 2)
 		return float4(0,1,0,1);
 	else if(vMed == 3)
-		return float4(0,0,1,1);
+		return float4(0,0,0,1);
 	else
 		return float4(1,1,1,1);
 
@@ -192,5 +211,21 @@ technique Down
 	{
 		VertexShader = compile vs_3_0 VS();
 		PixelShader = compile ps_3_0 PS_Down();
+	}
+}
+
+float3 SolidFillColor;
+
+float4 PS_SolidFill() : COLOR0
+{
+	return float4(SolidFillColor, 1);
+}
+
+technique SolidFill
+{
+	pass P0
+	{
+		VertexShader = compile vs_3_0 VS();
+		PixelShader = compile ps_3_0 PS_SolidFill();
 	}
 }

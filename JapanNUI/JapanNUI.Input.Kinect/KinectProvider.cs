@@ -127,6 +127,7 @@ namespace JapanNUI.Input.Kinect
         byte[] convertDepthFrame(byte[] depthFrame16)
         {
             int minDepth = int.MaxValue;
+            int maxDepth = int.MinValue;
             int minDepthIndex = 0;
 
             byte[] fData = new byte[4];
@@ -148,6 +149,8 @@ namespace JapanNUI.Input.Kinect
                     minDepthIndex = i32;
                     minDepth = realDepth;
                 }
+
+                maxDepth = Math.Max(maxDepth, realDepth);
 
                 // transform 13-bit depth information into an 8-bit intensity appropriate
                 // for display (we disregard information in most significant bit)
@@ -200,7 +203,7 @@ namespace JapanNUI.Input.Kinect
             }
 
             if (ImageProcessingEngine != null)
-                ImageProcessingEngine.Process(depthFilteredFrame32);
+                ImageProcessingEngine.Process(depthFilteredFrame32, minDepth, maxDepth);
 
             /* Test */
             float max = 0;
