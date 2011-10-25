@@ -330,9 +330,6 @@ namespace JapanNUI.ImageProcessing
                 bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["SolidFill"];
                 bordersDetectShader.CurrentTechnique.Passes[0].Apply();
 
-                double minX, minY, maxX, maxY;
-                int pixelCount;
-
                 Vector2 a, b;
 
                 int maxColor = 1 << 16;
@@ -340,14 +337,14 @@ namespace JapanNUI.ImageProcessing
                 var oldRasterizer = device.RasterizerState;
                 device.RasterizerState = wireFrameFlies;
 
+                var blobs = blobDelimiter.getBlobs();
+
                 for (int i = 0; i < blobCount; i++)
                 {
-                    blobDelimiter.GetBlobData(i, &minX, &maxX, &minY, &maxY, &pixelCount);
-
-                    a.X = 2 * ((float)minX / (float)grownBorders.Width) - 1;
-                    a.Y = (2 * ((float)minY / (float)grownBorders.Height) - 1) * (-1);
-                    b.X = 2 * ((float)maxX / (float)grownBorders.Width) - 1;
-                    b.Y = (2 * ((float)maxY / (float)grownBorders.Height) - 1) * (-1);
+                    a.X = 2 * ((float)blobs[i].MinX / (float)grownBorders.Width) - 1;
+                    a.Y = (2 * ((float)blobs[i].MinY / (float)grownBorders.Height) - 1) * (-1);
+                    b.X = 2 * ((float)blobs[i].MaxX / (float)grownBorders.Width) - 1;
+                    b.Y = (2 * ((float)blobs[i].MaxY / (float)grownBorders.Height) - 1) * (-1);
 
                     var d = Vector2.Distance(a, b);
                     if (d > 0.25f)
@@ -355,6 +352,16 @@ namespace JapanNUI.ImageProcessing
                         int currentColor = (maxColor / (blobCount + 1)) * (i+1);
 
                         bordersDetectShader.SolidFillColor = new Vector3((byte)(currentColor), (byte)(currentColor >> 8), (byte)(currentColor >> 16));
+
+                        Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+
+
+                        a.X = 2 * ((float)(blobs[i].AvgCenterX - 1) / (float)grownBorders.Width) - 1;
+                        a.Y = (2 * ((float)(blobs[i].AvgCenterY - 1) / (float)grownBorders.Height) - 1) * (-1);
+                        b.X = 2 * ((float)(blobs[i].AvgCenterX + 1) / (float)grownBorders.Width) - 1;
+                        b.Y = (2 * ((float)(blobs[i].AvgCenterY + 1) / (float)grownBorders.Height) - 1) * (-1);
+
+                        bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)0, (byte)0);
 
                         Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
                     }

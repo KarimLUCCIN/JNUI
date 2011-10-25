@@ -16,6 +16,12 @@ namespace JapanNUI
 				double MaxX;
 				double MaxY;
 
+				double AvgCenterX;
+				double AvgCenterY;
+
+				unsigned long accX;
+				unsigned long accY;
+
 				int PixelCount;
 			};
 
@@ -27,6 +33,9 @@ namespace JapanNUI
 				double MaxX;
 				double MaxY;
 
+				double AvgCenterX;
+				double AvgCenterY;
+
 				int PixelCount;
 			};
 
@@ -37,23 +46,27 @@ namespace JapanNUI
 				int rows;
 				int stride;
 
+				int currentBlobCount;
+				array<ManagedBlob^> ^ m_blobs;
+
 				/* Used when resolving blobs ids after the scan */
 				int * blobIdsCorrespondanceData;
 				unsigned char * processingIntermediateOutput;
-			public:
+			private:
 				Blob * blobs;
 
-				void GetBlobData(int index, double& minX, double& maxX, double& minY, double& maxY, int& pixelCount)
-				{
-					Blob b = blobs[index+1];
-
-					minX = b.MinX;
-					minY = b.MinY;
-					maxX = b.MaxX;
-					maxY = b.MaxY;
-					pixelCount = b.PixelCount;
-				}
+				int convertBlobs(int blobCount);
 			public:
+				array<ManagedBlob^> ^ getBlobs()
+				{
+					return m_blobs;
+				}
+
+				int getCurrentBlobCount()
+				{
+					return currentBlobCount;
+				}
+
 				BlobDelimiter(int lines, int rows, int stride);
 				~BlobDelimiter(void);
 
