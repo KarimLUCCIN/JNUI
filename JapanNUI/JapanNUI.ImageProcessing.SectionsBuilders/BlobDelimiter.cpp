@@ -127,9 +127,33 @@ namespace JapanNUI
 #define min2(a,b) ((a) < (b)) ? (a) : (b)
 #define max2(a,b) ((a) > (b)) ? (a) : (b)
 
+			void minimizeIds(int * blobIdsCorrespondanceData, int blobCount)
+			{
+				int id, newvalue;
+
+				for(int i = 0;i<blobCount;i++)
+				{
+					id = blobIdsCorrespondanceData[i];
+				
+					while(true)
+					{
+						newvalue = blobIdsCorrespondanceData[id];
+
+						if(newvalue != id)
+							id = newvalue;
+						else
+							break;
+					}
+
+					blobIdsCorrespondanceData[i] = id;
+				}
+			}
+
 			void match(Blob * blobs, int * blobIdsCorrespondanceData, unsigned char* data, unsigned char * processingIntermediateOutput, int lines, int rows, int stride, int blobsCount)
 			{	
 				memset(blobs, 0, sizeof(Blob) * lines * rows);
+
+				minimizeIds(blobIdsCorrespondanceData, blobsCount);
 
 				for(int line = 0;line < lines;line++)
 				{
@@ -139,16 +163,7 @@ namespace JapanNUI
 
 						if(blob > 0)
 						{
-							int c_blob = blob;
-
-							while(true)
-							{
-								int test = blobIdsCorrespondanceData[c_blob];
-								if(test == c_blob)
-									break;
-								else
-									c_blob = test;
-							}
+							int c_blob = blobIdsCorrespondanceData[blob];
 
 							if(blobs[c_blob].PixelCount <= 0)
 							{
