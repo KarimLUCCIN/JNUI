@@ -31,19 +31,33 @@ namespace JapanNUI
 				return data[prev_address + 0] | data[prev_address + 1] << 8 | data[prev_address + 2] << 16;
 			}
 
-			inline int min4NonNull(int a, int b, int c, int d)
+			inline int min4NonNull(int a, int b, int c, int d, int * nonNullCount)
 			{
+				(*nonNullCount) = 4;
+
 				if(a <= 0)
+				{
 					a = INT_MAX;
+					(*nonNullCount)--;
+				}
 
 				if(b <= 0)
+				{
 					b = INT_MAX;
+					(*nonNullCount)--;
+				}
 
 				if(c <= 0)
+				{
 					c = INT_MAX;
+					(*nonNullCount)--;
+				}
 
 				if(d <= 0)
+				{
 					d = INT_MAX;
+					(*nonNullCount)--;
+				}
 
 				int res = min(a, min(b,min(c, d)));
 
@@ -59,6 +73,7 @@ namespace JapanNUI
 
 				int current_blob_id = 0;
 				int label;
+				int nonNullCount;
 
 				for(int line = 0;line < lines;line++)
 				{
@@ -75,31 +90,21 @@ namespace JapanNUI
 							int northwest = (line > 0 && row > 0) ? pixelAt(processingIntermediateOutput, line-1, row-1) : 0;
 							int northeast = (line > 0 && row < rows - 1) ? pixelAt(processingIntermediateOutput, line-1, row+1) : 0;
 
-							int west_v = west > 0 ? pixelAt(data, line, row - 1) : 0;
-							int north_v = north > 0 ? pixelAt(data, line-1, row) : 0;
-							int northwest_v = northwest > 0 ? pixelAt(data, line-1,row-1) : 0;
-							int northeast_v = northeast > 0 ? pixelAt(data, line-1, row+1) : 0;
+							nonNullCount = 0;
 
-							west *= (west_v) == current ? 1 : 0;
-							north *= (north_v) == current ? 1 : 0;
-							northwest *= (northwest_v) == current ? 1 : 0;
-							northeast *= (northeast_v) == current ? 1 : 0;
-
-							int smallestLabel = min4NonNull(west, north, northwest, northeast);
+							int smallestLabel = min4NonNull(west, north, northwest, northeast, &nonNullCount);
 
 							if(smallestLabel > 0)
 							{
-								blobIdsCorrespondanceData[label] = min(label, smallestLabel);
+								if(nonNullCount > 0)
+								{
+									blobIdsCorrespondanceData[west] = west > 0 ? min(blobIdsCorrespondanceData[west], smallestLabel) : 0;
+									blobIdsCorrespondanceData[north] = north > 0 ? min(blobIdsCorrespondanceData[north], smallestLabel) : 0;
+									blobIdsCorrespondanceData[northwest] = northwest > 0 ? min(blobIdsCorrespondanceData[northwest], smallestLabel) : 0;
+									blobIdsCorrespondanceData[northeast] = northeast > 0 ? min(blobIdsCorrespondanceData[northeast], smallestLabel) : 0;
+								}
 
 								label = smallestLabel;
-
-								//TODO("Je pense qu'il y a une erreur ici, car je dois perdre certaines chaines");
-								//TODO("Il faudrait peut être explicitement lister avec un std::set<T> et pas juste faire ça");
-
-								blobIdsCorrespondanceData[west] = min(label, blobIdsCorrespondanceData[west]);
-								blobIdsCorrespondanceData[north] = min(label, blobIdsCorrespondanceData[north]);
-								blobIdsCorrespondanceData[northwest] = min(label, blobIdsCorrespondanceData[northwest]);
-								blobIdsCorrespondanceData[northeast] = min(label, blobIdsCorrespondanceData[northeast]);
 							}
 							else
 							{

@@ -191,6 +191,10 @@ float4 PS_Down(VSO input) : COLOR0
 	/* reduced to LEVEL_NUMBERS levels */
 	vMed = categorizeDepthBased(vMed);
 
+	/* Only taking the closer sections */
+	return vMed <= 0 ? float4(1,1,1,1) : float4(0,0,0,1);
+
+	/*
 	if(vMed == 0)
 		return float4(0,0,1,1);
 	else if(vMed == 1)
@@ -201,6 +205,7 @@ float4 PS_Down(VSO input) : COLOR0
 		return float4(0,0,0,1);
 	else
 		return float4(1,1,1,1);
+	*/
 
 	//return float4(vMed, 0, 0, 1); // (sum3(vColor / 16.0f) > 1) ? float4(1,1,1,1) : float4(0,0,0,1);
 }
