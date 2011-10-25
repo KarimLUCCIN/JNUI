@@ -22,6 +22,11 @@ namespace JapanNUI
 				unsigned long accX;
 				unsigned long accY;
 
+				unsigned long accBorderTypeHorizontal;
+				unsigned long accBorderTypeDiagMinusX;
+				unsigned long accBorderTypeVertical;
+				unsigned long accBorderTypeDiagPlusX;
+
 				int PixelCount;
 			};
 

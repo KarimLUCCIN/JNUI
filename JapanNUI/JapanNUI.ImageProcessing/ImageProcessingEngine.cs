@@ -25,13 +25,16 @@ namespace JapanNUI.ImageProcessing
 
         private Texture2D noise;
 
-        private RenderTarget2D kinectProcessedOutput, grownBorders;
+        private RenderTarget2D kinectProcessedOutput, grownRegions;
         private Texture2D kinectDepthSource;
 
         /* to allow ping pong between the two */
         private RenderTarget2D kinectFlies1, kinectFlies2, fliesPlot;
         private const int fliesBaseCount = 150;
         private const int fliesCount = fliesBaseCount * fliesBaseCount;
+
+        /* to detect contour direction on the detected blobs */
+        private RenderTarget2D gradDirectionDetect1, gradDirectionDetect2;
 
         private BordersDetect bordersDetectShader;
         private Flies fliesShader;
@@ -63,7 +66,7 @@ namespace JapanNUI.ImageProcessing
             wireFrameFlies.CullMode = CullMode.None;
             wireFrameFlies.FillMode = FillMode.WireFrame;
 
-            bordersDebugPresenter = new DebugTexturePresenter("Borders", 320, 240);
+            bordersDebugPresenter = new DebugTexturePresenter("Borders", Width >> 1, Height >> 1);
             bordersGrownDebugPresenter = new DebugTexturePresenter("Borders Grown 1", Width >> 1, Height >> 1);
             squaresPresenter = new DebugTexturePresenter("Squares", Width >> 1, Height >> 1);
 
@@ -103,17 +106,19 @@ namespace JapanNUI.ImageProcessing
             kinectDepthSource = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             kinectProcessedOutput = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
 
-            grownBorders = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, Width >> 1, Height >> 1, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
+            grownRegions = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, Width >> 1, Height >> 1, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
 
-            grownBordersData = new byte[grownBorders.Width * grownBorders.Height * 4];
+            gradDirectionDetect1 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, grownRegions.Width, grownRegions.Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
+            gradDirectionDetect2 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, grownRegions.Width, grownRegions.Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
 
-            blobDelimiter = new BlobDelimiter(grownBorders.Height, grownBorders.Width, 4);
-            blobsPresenter = new DebugTexturePresenter("Blobs", grownBorders.Width, grownBorders.Height);
+            grownBordersData = new byte[grownRegions.Width * grownRegions.Height * 4];
+
+            blobDelimiter = new BlobDelimiter(grownRegions.Height, grownRegions.Width, 4);
+            blobsPresenter = new DebugTexturePresenter("Blobs", grownRegions.Width, grownRegions.Height);
 
             kinectFlies1 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Vector4, fliesBaseCount, fliesBaseCount, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             kinectFlies2 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Vector4, fliesBaseCount, fliesBaseCount, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             fliesPlot = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, 320, 240, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
-
 
             var noiseBmp = Properties.Resources.Noise;
 
@@ -140,11 +145,17 @@ namespace JapanNUI.ImageProcessing
             if (kinectDepthSource != null)
                 kinectDepthSource.Dispose();
 
+            if (gradDirectionDetect1 != null)
+                gradDirectionDetect1.Dispose();
+
+            if (gradDirectionDetect2 != null)
+                gradDirectionDetect2.Dispose();
+
             if (kinectProcessedOutput != null)
                 kinectProcessedOutput.Dispose();
 
-            if (grownBorders != null)
-                grownBorders.Dispose();
+            if (grownRegions != null)
+                grownRegions.Dispose();
 
             if (fliesPlot != null)
                 fliesPlot.Dispose();
@@ -225,7 +236,7 @@ namespace JapanNUI.ImageProcessing
                 bordersDetectShader.minimumDepthOffset = minDepth;
                 bordersDetectShader.maximumDepth = maxDepth;
 
-                Host.RenderTargetManager.Push(grownBorders);
+                Host.RenderTargetManager.Push(grownRegions);
                 {
                     device.Clear(Microsoft.Xna.Framework.Color.Black);
 
@@ -236,20 +247,36 @@ namespace JapanNUI.ImageProcessing
                 }
                 Host.RenderTargetManager.Pop();
 
-                bordersGrownDebugPresenter.Update(grownBorders, PixelFormats.Bgr32, 4);
+                bordersGrownDebugPresenter.Update(grownRegions, PixelFormats.Bgr32, 4);
 
 
-                /* get result : borders */
+                /* get result : regions */
                 kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
 
+                /* Process regions to get borders directions */
+                bordersDetectShader.depthMap = grownRegions;
+                bordersDetectShader.halfPixel = new Vector2(0.5f / (float)grownRegions.Width, 0.5f / (float)grownRegions.Height);
+
+                Host.RenderTargetManager.Push(gradDirectionDetect1);
+                {
+                    device.Clear(Microsoft.Xna.Framework.Color.Black);
+
+                    bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Grad"];
+                    bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                    Host.Renderer.QuadRenderer.RenderFullScreen();
+                }
+                Host.RenderTargetManager.Pop();
+
                 if (bordersDebugPresenter != null)
-                    bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
+                    //bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
+                    bordersDebugPresenter.Update(gradDirectionDetect1, System.Windows.Media.PixelFormats.Bgr32, 4);
 
 #warning FUCKING SLOW
                 //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
-                grownBorders.GetData(grownBordersData);
+                grownRegions.GetData(grownBordersData);
                 ProcessBlobs(grownBordersData);
-                squaresPresenter.Update(grownBorders, PixelFormats.Bgr32, 4);
+                squaresPresenter.Update(grownRegions, PixelFormats.Bgr32, 4);
                 //grownBorders.GetData(grownBordersData);
 
                 blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
@@ -323,7 +350,7 @@ namespace JapanNUI.ImageProcessing
             }
 
             var device = Host.Device;
-            Host.RenderTargetManager.Push(grownBorders);
+            Host.RenderTargetManager.Push(grownRegions);
             {
                 device.Clear(Microsoft.Xna.Framework.Color.Black);
 
@@ -341,10 +368,10 @@ namespace JapanNUI.ImageProcessing
 
                 for (int i = 0; i < blobCount; i++)
                 {
-                    a.X = 2 * ((float)blobs[i].MinX / (float)grownBorders.Width) - 1;
-                    a.Y = (2 * ((float)blobs[i].MinY / (float)grownBorders.Height) - 1) * (-1);
-                    b.X = 2 * ((float)blobs[i].MaxX / (float)grownBorders.Width) - 1;
-                    b.Y = (2 * ((float)blobs[i].MaxY / (float)grownBorders.Height) - 1) * (-1);
+                    a.X = 2 * ((float)blobs[i].MinX / (float)grownRegions.Width) - 1;
+                    a.Y = (2 * ((float)blobs[i].MinY / (float)grownRegions.Height) - 1) * (-1);
+                    b.X = 2 * ((float)blobs[i].MaxX / (float)grownRegions.Width) - 1;
+                    b.Y = (2 * ((float)blobs[i].MaxY / (float)grownRegions.Height) - 1) * (-1);
 
                     var d = Vector2.Distance(a, b);
                     if (d > 0.25f)
@@ -356,10 +383,10 @@ namespace JapanNUI.ImageProcessing
                         Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
 
 
-                        a.X = 2 * ((float)(blobs[i].AvgCenterX - 1) / (float)grownBorders.Width) - 1;
-                        a.Y = (2 * ((float)(blobs[i].AvgCenterY - 1) / (float)grownBorders.Height) - 1) * (-1);
-                        b.X = 2 * ((float)(blobs[i].AvgCenterX + 1) / (float)grownBorders.Width) - 1;
-                        b.Y = (2 * ((float)(blobs[i].AvgCenterY + 1) / (float)grownBorders.Height) - 1) * (-1);
+                        a.X = 2 * ((float)(blobs[i].AvgCenterX - 1) / (float)grownRegions.Width) - 1;
+                        a.Y = (2 * ((float)(blobs[i].AvgCenterY - 1) / (float)grownRegions.Height) - 1) * (-1);
+                        b.X = 2 * ((float)(blobs[i].AvgCenterX + 1) / (float)grownRegions.Width) - 1;
+                        b.Y = (2 * ((float)(blobs[i].AvgCenterY + 1) / (float)grownRegions.Height) - 1) * (-1);
 
                         bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)0, (byte)0);
 

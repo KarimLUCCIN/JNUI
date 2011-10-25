@@ -234,3 +234,69 @@ technique SolidFill
 		PixelShader = compile ps_3_0 PS_SolidFill();
 	}
 }
+
+//Pixel Shader
+float4 PS_Grad(VSO input) : COLOR0
+{ 
+	float3 samples_vert[6] = 
+	{
+		float3(-1,-1,	-1),
+		float3(-1, 0,	-2),
+		float3(-1, 1,	-1),
+
+		float3( 1,-1,	 1),
+		float3( 1, 0,	 2),
+		float3( 1, 1,	 1)
+	};
+
+	float3 samples_diag[6] = 
+	{
+		float3(-1, 0,	-1),
+		float3(-1,-1,	-2),
+		float3( 0, 1,	-1),
+
+		float3( 0,-1,	 1),
+		float3( 1,-1,	 2),
+		float3( 1, 0,	 1)
+	};
+
+	float dUp, dHorz, dDiagUpLeft, dDiagUpRight;
+
+	dUp = dHorz = dDiagUpLeft = dDiagUpRight = 0;
+
+	for(int i = 0;i<6;i++)
+	{
+		dUp += tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples_vert[i].xy)).r * samples_vert[i].z;
+		dHorz += tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples_vert[i].yx)).r * samples_vert[i].z;
+
+		dDiagUpLeft += tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples_diag[i].xy)).r * samples_diag[i].z;
+		dDiagUpRight += tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples_diag[i].yx)).r * samples_diag[i].z;
+	}
+
+	dUp = abs(dUp);
+	dHorz = abs(dHorz);
+	dDiagUpLeft = abs(dDiagUpLeft);
+	dDiagUpRight = abs(dDiagUpRight);
+
+	float m = max(dUp, max(dHorz, max(dDiagUpLeft, dDiagUpRight)));
+
+	if(m == 0 || (dUp == dHorz && dUp == dDiagUpLeft && dUp == dDiagUpRight))
+		return float4(0,0,0,1);
+	else if(m == dUp)
+		return float4(1,0,0,1);
+	else if(m == dHorz)
+		return float4(0,1,0,1);
+	else if(m == dDiagUpLeft)
+		return float4(0,0,1,1);
+	else
+		return float4(1,0,1,1);
+}
+
+technique Grad
+{
+	pass P0
+	{
+		VertexShader = compile vs_3_0 VS();
+		PixelShader = compile ps_3_0 PS_Grad();
+	}
+}

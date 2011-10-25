@@ -189,6 +189,7 @@ namespace JapanNUI
 								blobs[c_blob].accY = 0;
 							}
 
+							/* counting the current pixel */
 							blobs[c_blob].PixelCount++;
 
 							blobs[c_blob].accX += column;
