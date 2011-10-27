@@ -253,10 +253,10 @@ float4 PS_Grad(VSO input) : COLOR0
 	{
 		float3(-1, 0,	-1),
 		float3(-1,-1,	-2),
-		float3( 0, 1,	-1),
+		float3( 0,-1,	-1),
 
-		float3( 0,-1,	 1),
-		float3( 1,-1,	 2),
+		float3( 0, 1,	 1),
+		float3( 1, 1,	 2),
 		float3( 1, 0,	 1)
 	};
 
@@ -270,7 +270,7 @@ float4 PS_Grad(VSO input) : COLOR0
 		dHorz += tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples_vert[i].yx)).r * samples_vert[i].z;
 
 		dDiagUpLeft += tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples_diag[i].xy)).r * samples_diag[i].z;
-		dDiagUpRight += tex2D(depthSampler, input.TexCoord + (2 * halfPixel * samples_diag[i].yx)).r * samples_diag[i].z;
+		dDiagUpRight += tex2D(depthSampler, input.TexCoord + (2 * halfPixel * float2(samples_diag[i].y, -samples_diag[i].x))).r * samples_diag[i].z;
 	}
 
 	dUp = abs(dUp);

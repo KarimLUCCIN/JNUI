@@ -22,10 +22,10 @@ namespace JapanNUI
 				unsigned long accX;
 				unsigned long accY;
 
-				unsigned long accBorderTypeHorizontal;
-				unsigned long accBorderTypeDiagMinusX;
-				unsigned long accBorderTypeVertical;
-				unsigned long accBorderTypeDiagPlusX;
+				unsigned long accBorderType[4];
+
+				double averageDirection;
+				double principalDirection;
 
 				int PixelCount;
 			};
@@ -40,6 +40,9 @@ namespace JapanNUI
 
 				double AvgCenterX;
 				double AvgCenterY;
+
+				double AverageDirection;
+				double PrincipalDirection;
 
 				int PixelCount;
 			};
@@ -77,7 +80,7 @@ namespace JapanNUI
 
 
 				/* Return the number of blobs identified, accessed via GetBlobData */
-				int BuildBlobs(unsigned char* data);
+				int BuildBlobs(unsigned char* data, unsigned char * grads);
 			};
 		}
 	}

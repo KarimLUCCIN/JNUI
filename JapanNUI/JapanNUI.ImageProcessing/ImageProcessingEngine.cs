@@ -95,10 +95,13 @@ namespace JapanNUI.ImageProcessing
         MemoryStream noiseData;
 
         byte[] grownBordersData;
+        byte[] gradDirectionDetect1Data;
 
         void Device_DeviceLost(object sender, EventArgs e)
         {
             DisposeTextures();
+
+            LineBatch.Init(Host.Device);
 
             bordersDetectShader = new BordersDetect(Host.Device);
             fliesShader = new Flies(Host.Device);
@@ -112,6 +115,7 @@ namespace JapanNUI.ImageProcessing
             gradDirectionDetect2 = Host.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, grownRegions.Width, grownRegions.Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
 
             grownBordersData = new byte[grownRegions.Width * grownRegions.Height * 4];
+            gradDirectionDetect1Data = new byte[gradDirectionDetect1.Width * gradDirectionDetect1.Height * 4];
 
             blobDelimiter = new BlobDelimiter(grownRegions.Height, grownRegions.Width, 4);
             blobsPresenter = new DebugTexturePresenter("Blobs", grownRegions.Width, grownRegions.Height);
@@ -268,15 +272,17 @@ namespace JapanNUI.ImageProcessing
                 }
                 Host.RenderTargetManager.Pop();
 
+                gradDirectionDetect1.GetData(gradDirectionDetect1Data);
+
                 if (bordersDebugPresenter != null)
                     //bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
-                    bordersDebugPresenter.Update(gradDirectionDetect1, System.Windows.Media.PixelFormats.Bgr32, 4);
+                    bordersDebugPresenter.Update(gradDirectionDetect1Data, System.Windows.Media.PixelFormats.Bgr32, 4);
 
 #warning FUCKING SLOW
                 //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
                 grownRegions.GetData(grownBordersData);
-                ProcessBlobs(grownBordersData);
-                squaresPresenter.Update(grownRegions, PixelFormats.Bgr32, 4);
+                ProcessBlobs(grownBordersData, gradDirectionDetect1Data);
+                squaresPresenter.Update(grownRegions, PixelFormats.Bgra32, 4);
                 //grownBorders.GetData(grownBordersData);
 
                 blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
@@ -340,13 +346,16 @@ namespace JapanNUI.ImageProcessing
             }
         }
 
-        private unsafe int ProcessBlobs(byte[] kinectDepthDataBytes)
+        private unsafe int ProcessBlobs(byte[] data, byte[] grad)
         {
             int blobCount = 0;
 
-            fixed (byte* ptr_kinectDepthDataBytes = &kinectDepthDataBytes[0])
+            fixed (byte* ptr_data = &data[0])
             {
-                blobCount = blobDelimiter.BuildBlobs(ptr_kinectDepthDataBytes);
+                fixed (byte* ptr_grad = &grad[0])
+                {
+                    blobCount = blobDelimiter.BuildBlobs(ptr_data, ptr_grad);
+                }
             }
 
             var device = Host.Device;
@@ -354,6 +363,12 @@ namespace JapanNUI.ImageProcessing
             {
                 device.Clear(Microsoft.Xna.Framework.Color.Black);
 
+                Host.Renderer.RendererSpriteBatch.Begin();
+                Host.Renderer.RendererSpriteBatch.Draw(gradDirectionDetect1, new Vector2(0, 0), Microsoft.Xna.Framework.Color.White);
+                Host.Renderer.RendererSpriteBatch.End();
+
+                device.BlendState = BlendState.Opaque;
+                device.RasterizerState = wireFrameFlies;
                 bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["SolidFill"];
                 bordersDetectShader.CurrentTechnique.Passes[0].Apply();
 
@@ -376,6 +391,11 @@ namespace JapanNUI.ImageProcessing
                     var d = Vector2.Distance(a, b);
                     if (d > 0.25f)
                     {
+                        device.BlendState = BlendState.Opaque;
+                        device.RasterizerState = wireFrameFlies;
+                        bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["SolidFill"];
+                        bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
                         int currentColor = (maxColor / (blobCount + 1)) * (i+1);
 
                         bordersDetectShader.SolidFillColor = new Vector3((byte)(currentColor), (byte)(currentColor >> 8), (byte)(currentColor >> 16));
@@ -391,6 +411,24 @@ namespace JapanNUI.ImageProcessing
                         bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)0, (byte)0);
 
                         Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+
+                        Host.Renderer.RendererSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
+
+                        var l_pos = new Vector2((float)blobs[i].AvgCenterX, (float)blobs[i].AvgCenterY);
+
+                        LineBatch.DrawLine(Host.Renderer.RendererSpriteBatch, Microsoft.Xna.Framework.Color.White,
+                            l_pos,
+                            l_pos + 
+                            Vector2.UnitX * (float)Math.Cos(blobs[i].AverageDirection) * 10f +
+                            Vector2.UnitY * (float)Math.Sin(blobs[i].AverageDirection) * -10f);
+                        
+                        LineBatch.DrawLine(Host.Renderer.RendererSpriteBatch, Microsoft.Xna.Framework.Color.Green,
+                            l_pos,
+                            l_pos +
+                            Vector2.UnitX * (float)Math.Cos(blobs[i].PrincipalDirection) * 10f +
+                            Vector2.UnitY * (float)Math.Sin(blobs[i].PrincipalDirection) * -10f);
+
+                        Host.Renderer.RendererSpriteBatch.End();
                     }
                 }
 

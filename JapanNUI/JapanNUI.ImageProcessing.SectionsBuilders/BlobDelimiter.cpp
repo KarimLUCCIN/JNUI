@@ -3,6 +3,9 @@
 #include <memory>
 #include <algorithm>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 using namespace std;
 
 #define MANAGED_DEBUG
@@ -149,19 +152,71 @@ namespace JapanNUI
 				}
 			}
 
+#define BLOB_DIRECTION_HORIZONTAL 0
+#define BLOB_DIRECTION_VERTICAL 1
+#define BLOB_DIRECTION_DIAG 2
+#define BLOB_DIRECTION_INVDIAG 3
+
 			void finalizeBlobs(Blob * blobs, int blobCount)
 			{
+				double directionsAngles[] = {0, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
+				double directionsAnglesInv[] = {M_PI, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
+
 				for(int i = 0;i<blobCount;i++)
 				{
 					if(blobs[i].PixelCount > 0)
 					{
 						blobs[i].AvgCenterX = ((double)blobs[i].accX / (double)blobs[i].PixelCount);
 						blobs[i].AvgCenterY = ((double)blobs[i].accY / (double)blobs[i].PixelCount);
+
+						int maxDirection = BLOB_DIRECTION_HORIZONTAL;
+						unsigned long score = 0;
+						unsigned long totalScore = 0;
+
+						for(int j = 0;j<4;j++)
+						{
+							totalScore += blobs[i].accBorderType[j];
+
+							if(score < blobs[i].accBorderType[j])
+							{
+								score = blobs[i].accBorderType[j];
+								maxDirection = j;
+							}
+						}
+						
+						double avgAngle = 0;
+						double mainAngle = 0;
+
+						if(blobs[i].accBorderType[BLOB_DIRECTION_DIAG] > blobs[i].accBorderType[BLOB_DIRECTION_INVDIAG])
+						{
+							/* on est normalement entre 0 et pi/2 */
+							for(int j = 0;j<4;j++)
+							{
+								avgAngle += directionsAngles[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
+							}
+
+							mainAngle = directionsAngles[maxDirection];
+						}
+						else
+						{
+							/* on est normalement entre pi/2 et pi */
+							for(int j = 0;j<4;j++)
+							{
+								avgAngle += directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
+							}
+
+							mainAngle = directionsAnglesInv[maxDirection];
+						}
+
+						//avgAngle = 0.8f * avgAngle + 0.2f * mainAngle;
+
+						blobs[i].principalDirection = mainAngle;
+						blobs[i].averageDirection = avgAngle;
 					}
 				}
 			}
 
-			void match(Blob * blobs, int * blobIdsCorrespondanceData, unsigned char* data, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
+			void match(Blob * blobs, int * blobIdsCorrespondanceData, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
 			{	
 				memset(blobs, 0, sizeof(Blob) * lines * columns);
 
@@ -200,6 +255,38 @@ namespace JapanNUI
 
 							blobs[c_blob].MinY = min2(blobs[c_blob].MinY, line);
 							blobs[c_blob].MaxY = max2(blobs[c_blob].MaxY, line);
+
+							/* Direction */
+							int directionVal = pixelAt(grads, line, column);
+
+							switch(directionVal)
+							{
+							case 255:
+								{
+									blobs[c_blob].accBorderType[BLOB_DIRECTION_VERTICAL]++;
+									break;
+								}
+							case (255 << 8):
+								{
+									blobs[c_blob].accBorderType[BLOB_DIRECTION_HORIZONTAL]++;
+									break;
+								}
+							case (255 << 16):
+								{
+									blobs[c_blob].accBorderType[BLOB_DIRECTION_DIAG]++;
+									break;
+								}
+							case (255 | (255 << 16)):
+								{
+									blobs[c_blob].accBorderType[BLOB_DIRECTION_INVDIAG]++;
+									break;
+								}
+							case 0:
+							default:
+								{
+									break;
+								}
+							}
 
 							pixelSet(data, line, column, c_blob * 150);
 						}
@@ -248,11 +335,16 @@ namespace JapanNUI
 					{
 						m_blobs[managed_blob_count]->AvgCenterX = blobs[native_blob_index].AvgCenterX;
 						m_blobs[managed_blob_count]->AvgCenterY = blobs[native_blob_index].AvgCenterY;
+						
 						m_blobs[managed_blob_count]->MinX = blobs[native_blob_index].MinX;
 						m_blobs[managed_blob_count]->MinY = blobs[native_blob_index].MinY;
 						m_blobs[managed_blob_count]->MaxX = blobs[native_blob_index].MaxX;
 						m_blobs[managed_blob_count]->MaxY = blobs[native_blob_index].MaxY;
+						
 						m_blobs[managed_blob_count]->PixelCount = blobs[native_blob_index].PixelCount;
+
+						m_blobs[managed_blob_count]->AverageDirection = blobs[native_blob_index].averageDirection;
+						m_blobs[managed_blob_count]->PrincipalDirection = blobs[native_blob_index].principalDirection;
 
 						managed_blob_count++;
 					}
@@ -261,7 +353,7 @@ namespace JapanNUI
 				return currentBlobCount = managed_blob_count;
 			}
 
-			int BlobDelimiter::BuildBlobs(unsigned char* data)
+			int BlobDelimiter::BuildBlobs(unsigned char* data, unsigned char * grads)
 			{
 				int nonNull, maxBlobs;
 
@@ -269,7 +361,7 @@ namespace JapanNUI
 
 				processData(blobIdsCorrespondanceData, data, processingIntermediateOutput, lines, rows, stride, &nonNull, &maxBlobs);
 
-				match(blobs, blobIdsCorrespondanceData, data, processingIntermediateOutput, lines, rows, stride, maxBlobs);
+				match(blobs, blobIdsCorrespondanceData, data, grads, processingIntermediateOutput, lines, rows, stride, maxBlobs);
 
 				return convertBlobs(maxBlobs);
 			}
