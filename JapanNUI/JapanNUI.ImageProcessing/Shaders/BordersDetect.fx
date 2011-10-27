@@ -153,11 +153,13 @@ float sum3(float3 s)
 float minimumDepthOffset = 0;
 float maximumDepth = 1;
 
-int categorizeDepthBased(float depth)
+int categorizeDepthBased(float depth, out float l_depth)
 {
 	depth = (1 - depth) - minimumDepthOffset;
 	float localMaximumDepth = min(1, maximumDepth);
 	depth /= localMaximumDepth;
+
+	l_depth = depth;
 
 	if(depth <= 0.1)
 		return 0;
@@ -189,10 +191,13 @@ float4 PS_Down(VSO input) : COLOR0
 	}
 
 	/* reduced to LEVEL_NUMBERS levels */
-	vMed = categorizeDepthBased(vMed);
+	float l_depth;
+	vMed = categorizeDepthBased(vMed, l_depth);
+
+	l_depth /= 0.1;
 
 	/* Only taking the closer sections */
-	return vMed <= 0 ? float4(1,1,1,1) : float4(0,0,0,1);
+	return vMed <= 0 ? float4(1,l_depth,1,1) : float4(0,l_depth,0,1);
 
 	/*
 	if(vMed == 0)

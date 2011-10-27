@@ -346,15 +346,15 @@ namespace JapanNUI.ImageProcessing
             }
         }
 
-        private unsafe int ProcessBlobs(byte[] data, byte[] grad)
+        private unsafe int ProcessBlobs(byte[] mask, byte[] grad)
         {
             int blobCount = 0;
 
-            fixed (byte* ptr_data = &data[0])
+            fixed (byte* ptr_mask = &mask[0])
             {
                 fixed (byte* ptr_grad = &grad[0])
                 {
-                    blobCount = blobDelimiter.BuildBlobs(ptr_data, ptr_grad);
+                    blobCount = blobDelimiter.BuildBlobs(ptr_mask, ptr_grad);
                 }
             }
 
@@ -398,7 +398,7 @@ namespace JapanNUI.ImageProcessing
 
                         int currentColor = (maxColor / (blobCount + 1)) * (i+1);
 
-                        bordersDetectShader.SolidFillColor = new Vector3((byte)(currentColor), (byte)(currentColor >> 8), (byte)(currentColor >> 16));
+                        bordersDetectShader.SolidFillColor = new Vector3(1, 0, 0) * (float)(1 - blobs[i].AverageDepth);
                         bordersDetectShader.CurrentTechnique.Passes[0].Apply();
 
                         Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);

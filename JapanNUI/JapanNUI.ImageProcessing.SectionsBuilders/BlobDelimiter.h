@@ -19,8 +19,12 @@ namespace JapanNUI
 				double AvgCenterX;
 				double AvgCenterY;
 
+				double AvgDepth;
+
 				unsigned long accX;
 				unsigned long accY;
+
+				unsigned long accDepth;
 
 				unsigned long accBorderType[4];
 
@@ -43,6 +47,8 @@ namespace JapanNUI
 
 				double EstimatedCursorX;
 				double EstimatedCursorY;
+
+				double AverageDepth;
 
 				double AverageDirection;
 				double PrincipalDirection;

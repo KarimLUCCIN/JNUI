@@ -82,7 +82,7 @@ namespace JapanNUI
 				{
 					for(int column = 0;column < columns;column++)
 					{
-						int current = pixelAt(data, line, column);
+						unsigned char current = data[pixel(line, column)];
 
 						if(current != 0)
 						{
@@ -168,6 +168,7 @@ namespace JapanNUI
 					{
 						blobs[i].AvgCenterX = ((double)blobs[i].accX / (double)blobs[i].PixelCount);
 						blobs[i].AvgCenterY = ((double)blobs[i].accY / (double)blobs[i].PixelCount);
+						blobs[i].AvgDepth = (blobs[i].accDepth / (double)blobs[i].PixelCount) / 255.0;
 
 						int maxDirection = BLOB_DIRECTION_HORIZONTAL;
 						unsigned long score = 0;
@@ -226,7 +227,7 @@ namespace JapanNUI
 
 			void match(Blob * blobs, int * blobIdsCorrespondanceData, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
 			{	
-				memset(blobs, 0, sizeof(Blob) * lines * columns);
+				memset(blobs, 0, sizeof(Blob) * (blobsCount+1)); //lines * columns);
 
 				minimizeIds(blobIdsCorrespondanceData, blobsCount);
 
@@ -257,6 +258,8 @@ namespace JapanNUI
 
 							blobs[c_blob].accX += column;
 							blobs[c_blob].accY += line;
+
+							blobs[c_blob].accDepth += data[pixel(line, column)+1];
 
 							blobs[c_blob].MinX = min2(blobs[c_blob].MinX, column);
 							blobs[c_blob].MaxX = max2(blobs[c_blob].MaxX, column);
@@ -353,6 +356,8 @@ namespace JapanNUI
 
 						m_blobs[managed_blob_count]->AverageDirection = blobs[native_blob_index].averageDirection;
 						m_blobs[managed_blob_count]->PrincipalDirection = blobs[native_blob_index].principalDirection;
+
+						m_blobs[managed_blob_count]->AverageDepth = blobs[native_blob_index].AvgDepth;
 
 						/* estimates the cursor position */
 						m_blobs[managed_blob_count]->EstimatedCursorX = m_blobs[managed_blob_count]->AvgCenterX + cos(m_blobs[managed_blob_count]->AverageDirection) * abs(m_blobs[managed_blob_count]->AvgCenterX - m_blobs[managed_blob_count]->MinX);
