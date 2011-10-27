@@ -42,6 +42,14 @@ namespace JapanNUI.Input.Kinect
 
         private BlobParametersRecord[] scoringBlobs;
 
+        private float updateLatency = 0.7f;
+
+        public float UpdateLatency
+        {
+            get { return updateLatency; }
+            set { updateLatency = value; }
+        }
+        
         /// <summary>
         /// 
         /// </summary>
@@ -114,7 +122,7 @@ namespace JapanNUI.Input.Kinect
                 //LeftHandBlob.CursorPosition = idealLeftHandPosition;
                 LeftHandBlob.empty = true;
 
-                RightHandBlob.CursorPosition = new Vector2(scoringBlobs[0].MBlob.EstimatedCursorX / DataWidth, scoringBlobs[0].MBlob.EstimatedCursorY / DataHeight);
+                RightHandBlob.CursorPosition = RightHandBlob.CursorPosition * updateLatency + (1 - updateLatency) * new Vector2(scoringBlobs[0].MBlob.EstimatedCursorX / DataWidth, scoringBlobs[0].MBlob.EstimatedCursorY / DataHeight);
                 RightHandBlob.MBlob = scoringBlobs[0].MBlob;
                 RightHandBlob.empty = false;
             }
@@ -174,10 +182,10 @@ namespace JapanNUI.Input.Kinect
                 }
 
                 LeftHandBlob.MBlob = leftData.MBlob;
-                LeftHandBlob.CursorPosition = new Vector2(leftData.MBlob.EstimatedCursorX / DataWidth, leftData.MBlob.EstimatedCursorY / DataHeight);
+                LeftHandBlob.CursorPosition = LeftHandBlob.CursorPosition * updateLatency + (1 - updateLatency) * new Vector2(leftData.MBlob.EstimatedCursorX / DataWidth, leftData.MBlob.EstimatedCursorY / DataHeight);
 
                 RightHandBlob.MBlob = rightData.MBlob;
-                RightHandBlob.CursorPosition = new Vector2(rightData.MBlob.EstimatedCursorX / DataWidth, rightData.MBlob.EstimatedCursorY / DataHeight);
+                RightHandBlob.CursorPosition = RightHandBlob.CursorPosition * updateLatency + (1 - updateLatency) * new Vector2(rightData.MBlob.EstimatedCursorX / DataWidth, rightData.MBlob.EstimatedCursorY / DataHeight);
             }
         }
 
