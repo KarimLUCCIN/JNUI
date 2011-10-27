@@ -167,6 +167,15 @@ namespace JapanNUI
             });
         }
 
+        public void UpdateSecondaryCursor(Vector3 position)
+        {
+            Dispatcher.Invoke((Action)delegate
+            {
+                Canvas.SetLeft(secondaryCursor, position.X);
+                Canvas.SetTop(secondaryCursor, position.Y);
+            });
+        }
+
         public void ContextDelegateMethod(Action action)
         {
             if (action != null)

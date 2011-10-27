@@ -33,6 +33,7 @@ namespace JapanNUI.Input.Kinect
         }
 
         private ImageProcessingEngine ImageProcessingEngine { get; set; }
+        private KinectBlobsMatcher KinectBlobsMatcher { get; set; }
         
         public KinectProvider(IInputListener listener)
         {
@@ -79,7 +80,7 @@ namespace JapanNUI.Input.Kinect
                 leftHandProvider = new KinectPositionProvider("left", this);
                 rightHandProvider = new KinectPositionProvider("right", this);
 
-                providers = new KinectPositionProvider[] { leftHandProvider, rightHandProvider };
+                providers = new KinectPositionProvider[] { rightHandProvider, leftHandProvider };
             }
             catch
             {
@@ -90,10 +91,12 @@ namespace JapanNUI.Input.Kinect
             {
                 try
                 {
-                    ImageProcessingEngine = new ImageProcessingEngine(320, 240);
+                    ImageProcessingEngine = new ImageProcessingEngine(320, 240, 4);
+                    KinectBlobsMatcher = new KinectBlobsMatcher(ImageProcessingEngine, 320 >> 1, 240 >> 1);
                 }
                 catch
                 {
+                    KinectBlobsMatcher = null;
                     ImageProcessingEngine = null;
                     Available = false;
                 }
@@ -119,8 +122,6 @@ namespace JapanNUI.Input.Kinect
 
         byte[] depthFrame32 = new byte[320 * 240 * 4];
         byte[] depthFilteredFrame32 = new byte[320 * 240 * 4];
-
-        Vector2 closestPointCoordinates = new Vector2();
 
         // Converts a 16-bit grayscale depth frame which includes player indexes into a 32-bit frame
         // that displays different players in different colors
@@ -202,40 +203,42 @@ namespace JapanNUI.Input.Kinect
                 }
             }
 
-            if (ImageProcessingEngine != null)
-                ImageProcessingEngine.Process(depthFilteredFrame32, minDepth, maxDepth);
-
-            /* Test */
-            float max = 0;
-            for (int i16 = 0, i32 = 0; i16 < depthFrame16.Length && i32 < depthFrame32.Length; i16 += 2, i32 += 4)
-            {
-                float realDepth = VectorUtils.FloatFromBytes(depthFilteredFrame32, i32);
-
-                max = realDepth > max ? realDepth : max;
-
-                if (realDepth > 0)
-                {
-                    depthFrame32[i32] = (byte)((1 - (realDepth / 4096.0)) * 255);
-                }
-                else
-                    depthFrame32[i32] = 0;
-
-                depthFrame32[i32 + 1] = 0;// (byte)(realDepth << 4);
-                depthFrame32[i32 + 2] = 0;// (byte)(realDepth);
-            }
-
-            minDepthIndex /= 4;
-            closestPointCoordinates = (1 - closestPointUpdateLatency) * closestPointCoordinates + closestPointUpdateLatency * new Vector2((minDepthIndex % 320) / 320.0, (minDepthIndex / 320) / 240.0);
+            if (KinectBlobsMatcher != null)
+                KinectBlobsMatcher.Process(depthFilteredFrame32, minDepth, maxDepth);
 
             return depthFrame32;
         }
 
+        bool processing = false;
+        object sync = new object();
+
         void nui_DepthFrameReady(object sender, ImageFrameReadyEventArgs e)
         {
-            PlanarImage Image = e.ImageFrame.Image;
-            byte[] convertedDepthFrame = convertDepthFrame(Image.Bits);
+            lock (sync)
+            {
+                if (processing)
+                    return;
 
-            Listener.DebugDisplayBgr32DepthImage(Image.Width, Image.Height, convertedDepthFrame, Image.Width * 4);
+                processing = true;
+            }
+
+            if (KinectBlobsMatcher != null)
+            {
+                PlanarImage Image = e.ImageFrame.Image;
+                byte[] convertedDepthFrame = convertDepthFrame(Image.Bits);
+
+                leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition, 0));
+                rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition, 0));
+
+                Listener.Update(this);
+
+                Listener.DebugDisplayBgr32DepthImage(Image.Width, Image.Height, convertedDepthFrame, Image.Width * 4);
+            }
+
+            lock (sync)
+            {
+                processing = false;
+            }
         }
 
         private Vector2 getDisplayPosition(Joint joint)
@@ -255,62 +258,62 @@ namespace JapanNUI.Input.Kinect
 
         void nui_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
         {
-            SkeletonFrame skeletonFrame = e.SkeletonFrame;
+            //SkeletonFrame skeletonFrame = e.SkeletonFrame;
 
-            bool hasUpdate = false;
+            //bool hasUpdate = false;
 
-            bool hasLeft = false;
-            bool hasRight = false;
+            //bool hasLeft = false;
+            //bool hasRight = false;
 
-            Vector2 leftHandPoint = Vector2.Zero;
-            Vector2 rightHandPoint = Vector2.Zero;
+            //Vector2 leftHandPoint = Vector2.Zero;
+            //Vector2 rightHandPoint = Vector2.Zero;
             
-            foreach (SkeletonData data in skeletonFrame.Skeletons)
-            {
-                if (SkeletonTrackingState.Tracked == data.TrackingState)
-                {
-                    bool b = false;
+            //foreach (SkeletonData data in skeletonFrame.Skeletons)
+            //{
+            //    if (SkeletonTrackingState.Tracked == data.TrackingState)
+            //    {
+            //        bool b = false;
 
-                    var firstSq = data;
+            //        var firstSq = data;
 
-                    var leftHand = SelectHand(firstSq, JointID.HandLeft);
+            //        var leftHand = SelectHand(firstSq, JointID.HandLeft);
 
-                    if (leftHand != null && leftHand.HasValue)
-                    {
-                        hasLeft = true;
+            //        if (leftHand != null && leftHand.HasValue)
+            //        {
+            //            hasLeft = true;
 
-                        leftHandPoint = getDisplayPosition(leftHand.Value);
+            //            leftHandPoint = getDisplayPosition(leftHand.Value);
                         
-                        hasUpdate = leftHandProvider.Update(new Vector3(leftHandPoint, 0)) || hasUpdate;
+            //            hasUpdate = leftHandProvider.Update(new Vector3(leftHandPoint, 0)) || hasUpdate;
 
-                        b = true;
-                    }
+            //            b = true;
+            //        }
 
-                    var rightHand = SelectHand(firstSq, JointID.HandRight);
+            //        var rightHand = SelectHand(firstSq, JointID.HandRight);
 
-                    if (rightHand != null && rightHand.HasValue)
-                    {
-                        hasRight = true;
+            //        if (rightHand != null && rightHand.HasValue)
+            //        {
+            //            hasRight = true;
 
-                        rightHandPoint = getDisplayPosition(rightHand.Value);
+            //            rightHandPoint = getDisplayPosition(rightHand.Value);
 
-                        hasUpdate = rightHandProvider.Update(new Vector3(rightHandPoint, 0)) || hasUpdate;
+            //            hasUpdate = rightHandProvider.Update(new Vector3(rightHandPoint, 0)) || hasUpdate;
 
-                        b = true;
-                    }
+            //            b = true;
+            //        }
 
-                    if (b)
-                        break;
-                }
-            }
+            //        if (b)
+            //            break;
+            //    }
+            //}
 
-            if (!hasLeft)
-            {
-                /* only take account of the closest point */
-                leftHandProvider.Update(new Vector3(closestPointCoordinates, 0));
-            }
+            //if (!hasLeft)
+            //{
+            //    /* only take account of the closest point */
+            //    leftHandProvider.Update(new Vector3(closestPointCoordinates, 0));
+            //}
             
-            Listener.Update(this);
+            //Listener.Update(this);
         }
 
         private Joint? SelectHand(SkeletonData firstSq, JointID id)

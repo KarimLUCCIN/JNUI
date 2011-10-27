@@ -74,12 +74,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="KinectBlobsMatcher.cs" />
     <Compile Include="KinectPositionProvider.cs" />
     <Compile Include="KinectProvider.cs" />
     <Compile Include="KinectProviderBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\JapanNUI.ImageProcessing.SectionsBuilders\JapanNUI.ImageProcessing.SectionsBuilders.vcxproj">
+      <Project>{F7B8387C-2DBB-41BD-B6E2-C1370A9AE651}</Project>
+      <Name>JapanNUI.ImageProcessing.SectionsBuilders</Name>
+    </ProjectReference>
     <ProjectReference Include="..\JapanNUI.ImageProcessing\JapanNUI.ImageProcessing.csproj">
       <Project>{8072F996-1B06-4E3D-80F5-008D77CF0AF9}</Project>
       <Name>JapanNUI.ImageProcessing</Name>

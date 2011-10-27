@@ -10,6 +10,7 @@
         <Image Name="debugDepthImage" Stretch="Fill" />
         <Canvas Name="clientCanvas" Grid.Row="0">
             <Image Name="defaultCursor" Width="24" Height="24" Source="/JapanNUI;component/Images/gear.ico" Margin="-12"/>
+            <Image Name="secondaryCursor" Width="24" Height="24" Source="/JapanNUI;component/Images/About.png" Margin="-12"/>
         </Canvas>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Current Gesture:</TextBlock>

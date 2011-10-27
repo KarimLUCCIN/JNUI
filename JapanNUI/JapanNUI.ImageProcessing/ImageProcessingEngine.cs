@@ -50,8 +50,38 @@ namespace JapanNUI.ImageProcessing
 
         RasterizerState wireFrameFlies;
 
-        public ImageProcessingEngine(int width, int height)
+        private ManagedBlob[] mainBlobs;
+
+        /// <summary>
+        /// Array of MaxMainBlobsCount describing the biggest blobs found in the data.
+        /// Empty blobs will have their PixelCount set to 0. Only the MaxMainBlobsCount biggest blobs
+        /// will then be considered by the processing engine.
+        /// </summary>
+        public ManagedBlob[] MainBlobs
         {
+            get { return mainBlobs; }
+        }
+
+        private int maxMainBlobsCount;
+
+        public int MaxMainBlobsCount
+        {
+            get { return maxMainBlobsCount; }
+        }
+        
+        public ImageProcessingEngine(int width, int height, int maxMainBlobsCount)
+        {
+            if (maxMainBlobsCount <= 0)
+                throw new OutOfMemoryException("maxMainBlobsCount <= 0");
+
+            this.maxMainBlobsCount = maxMainBlobsCount;
+
+            mainBlobs = new ManagedBlob[maxMainBlobsCount];
+            for (int i = 0; i < maxMainBlobsCount; i++)
+            {
+                mainBlobs[i] = new ManagedBlob();
+            }
+
             Width = width;
             Height = height;
 
@@ -346,6 +376,8 @@ namespace JapanNUI.ImageProcessing
             }
         }
 
+        private List<ManagedBlob> sortingList = new List<ManagedBlob>();
+
         private unsafe int ProcessBlobs(byte[] mask, byte[] grad)
         {
             int blobCount = 0;
@@ -356,6 +388,24 @@ namespace JapanNUI.ImageProcessing
                 {
                     blobCount = blobDelimiter.BuildBlobs(ptr_mask, ptr_grad);
                 }
+            }
+
+            sortingList.Clear();
+            for (int i = 0; i < blobDelimiter.BlobsValidCount; i++)
+            {
+                sortingList.Add(blobDelimiter.Blobs[i]);
+            }
+
+            sortingList.Sort((a, b) => (-1) * a.PixelCount.CompareTo(b.PixelCount));
+
+            for (int i = 0; i < maxMainBlobsCount && i < sortingList.Count; i++)
+            {
+                mainBlobs[i] = sortingList[i];
+            }
+
+            for (int i = sortingList.Count; i < maxMainBlobsCount; i++)
+            {
+                mainBlobs[i] = null;
             }
 
             var device = Host.Device;
@@ -379,7 +429,7 @@ namespace JapanNUI.ImageProcessing
                 var oldRasterizer = device.RasterizerState;
                 device.RasterizerState = wireFrameFlies;
 
-                var blobs = blobDelimiter.getBlobs();
+                var blobs = blobDelimiter.Blobs;
 
                 for (int i = 0; i < blobCount; i++)
                 {

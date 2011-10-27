@@ -134,7 +134,10 @@ namespace JapanNUI.Interaction
                 {
                     primary = false;
                     Listener.UpdatePrimaryCursor(position.CurrentPoint.Position);
-
+                }
+                else
+                {
+                    Listener.UpdateSecondaryCursor(position.CurrentPoint.Position);
                     break;
                 }
             }
