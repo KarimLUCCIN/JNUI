@@ -74,14 +74,20 @@ namespace JapanNUI
 
 				int convertBlobs(int blobCount);
 			public:
-				array<ManagedBlob^> ^ getBlobs()
+				property array<ManagedBlob^>^ Blobs
 				{
-					return m_blobs;
+					array<ManagedBlob^>^ get()
+					{
+						return m_blobs;
+					}
 				}
 
-				int getCurrentBlobCount()
+				property int BlobsValidCount
 				{
-					return currentBlobCount;
+					int get ()
+					{
+						return currentBlobCount;
+					}
 				}
 
 				BlobDelimiter(int lines, int rows, int stride);

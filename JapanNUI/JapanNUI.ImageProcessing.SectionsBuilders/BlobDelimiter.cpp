@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define MANAGED_DEBUG
+//#define MANAGED_DEBUG
 
 namespace JapanNUI
 {
