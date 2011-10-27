@@ -41,6 +41,9 @@ namespace JapanNUI
 				double AvgCenterX;
 				double AvgCenterY;
 
+				double EstimatedCursorX;
+				double EstimatedCursorY;
+
 				double AverageDirection;
 				double PrincipalDirection;
 

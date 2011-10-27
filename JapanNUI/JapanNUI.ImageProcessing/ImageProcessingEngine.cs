@@ -399,6 +399,7 @@ namespace JapanNUI.ImageProcessing
                         int currentColor = (maxColor / (blobCount + 1)) * (i+1);
 
                         bordersDetectShader.SolidFillColor = new Vector3((byte)(currentColor), (byte)(currentColor >> 8), (byte)(currentColor >> 16));
+                        bordersDetectShader.CurrentTechnique.Passes[0].Apply();
 
                         Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
 
@@ -409,6 +410,18 @@ namespace JapanNUI.ImageProcessing
                         b.Y = (2 * ((float)(blobs[i].AvgCenterY + 1) / (float)grownRegions.Height) - 1) * (-1);
 
                         bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)0, (byte)0);
+                        bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                        Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+
+
+                        a.X = 2 * ((float)(blobs[i].EstimatedCursorX - 1) / (float)grownRegions.Width) - 1;
+                        a.Y = (2 * ((float)(blobs[i].EstimatedCursorY - 1) / (float)grownRegions.Height) - 1) * (-1);
+                        b.X = 2 * ((float)(blobs[i].EstimatedCursorX + 1) / (float)grownRegions.Width) - 1;
+                        b.Y = (2 * ((float)(blobs[i].EstimatedCursorY + 1) / (float)grownRegions.Height) - 1) * (-1);
+
+                        bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)1, (byte)0);
+                        bordersDetectShader.CurrentTechnique.Passes[0].Apply();
 
                         Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
 

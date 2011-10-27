@@ -346,6 +346,10 @@ namespace JapanNUI
 						m_blobs[managed_blob_count]->AverageDirection = blobs[native_blob_index].averageDirection;
 						m_blobs[managed_blob_count]->PrincipalDirection = blobs[native_blob_index].principalDirection;
 
+						/* estimates the cursor position */
+						m_blobs[managed_blob_count]->EstimatedCursorX = m_blobs[managed_blob_count]->AvgCenterX + cos(m_blobs[managed_blob_count]->AverageDirection) * abs(m_blobs[managed_blob_count]->AvgCenterX - m_blobs[managed_blob_count]->MinX);
+						m_blobs[managed_blob_count]->EstimatedCursorY = m_blobs[managed_blob_count]->AvgCenterY - sin(m_blobs[managed_blob_count]->AverageDirection) * abs(m_blobs[managed_blob_count]->AvgCenterY - m_blobs[managed_blob_count]->MinY);
+
 						managed_blob_count++;
 					}
 				}
