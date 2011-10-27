@@ -184,31 +184,39 @@ namespace JapanNUI
 							}
 						}
 						
-						double avgAngle = 0;
-						double mainAngle = 0;
+						double avgDiagAngle = 0;
+						double avgDiagInvAngle = 0;
+
+						for(int j = 0;j<4;j++)
+						{
+							/* entre 0 et pi/2 */
+							avgDiagAngle += directionsAngles[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
+
+							/* entre pi/2 et pi */
+							avgDiagInvAngle += directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
+						}
+
+						double mainAngle;
+						
+						double avgAngle, avgSecondAngle;
 
 						if(blobs[i].accBorderType[BLOB_DIRECTION_DIAG] > blobs[i].accBorderType[BLOB_DIRECTION_INVDIAG])
 						{
-							/* on est normalement entre 0 et pi/2 */
-							for(int j = 0;j<4;j++)
-							{
-								avgAngle += directionsAngles[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
-							}
-
+							/* entre 0 et pi/2 */
 							mainAngle = directionsAngles[maxDirection];
+							avgAngle = avgDiagAngle;
 						}
 						else
 						{
-							/* on est normalement entre pi/2 et pi */
-							for(int j = 0;j<4;j++)
-							{
-								avgAngle += directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
-							}
-
+							/* entre pi/2 et pi */
 							mainAngle = directionsAnglesInv[maxDirection];
+							avgAngle = avgDiagInvAngle;
 						}
 
-						//avgAngle = 0.8f * avgAngle + 0.2f * mainAngle;
+						/*
+						TODO
+						Identifier lorsque les deux mains se croisent ... aucune idée de comment faire ...
+						*/
 
 						blobs[i].principalDirection = mainAngle;
 						blobs[i].averageDirection = avgAngle;
