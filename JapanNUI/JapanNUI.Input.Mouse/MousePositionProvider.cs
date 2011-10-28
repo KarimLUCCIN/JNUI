@@ -16,7 +16,7 @@ namespace JapanNUI.Input.Mouse
             :base(id)
         {
             MouseProvider = mouseProvider;
-            CurrentPoint.Latency = 1;
+            CurrentPoint.HistorySize = 1;
         }
 
         public bool Update()

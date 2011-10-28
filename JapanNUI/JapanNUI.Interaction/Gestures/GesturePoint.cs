@@ -10,34 +10,67 @@ namespace JapanNUI.Interaction.Gestures
     {
         public GesturePoint()
         {
-            Latency = 0.1;
-
             Position = Vector3.Zero;
             Velocity = Vector3.Zero;
             Acceleration = Vector3.Zero;
         }
 
-        public Vector3 Position { get; private set; }
+        private int pixelMoveTreshold = 0;
+
+        public int PixelMoveTreshold
+        {
+            get { return pixelMoveTreshold; }
+            set { pixelMoveTreshold = value; }
+        }
+        
+        private Vector3 position = Vector3.Zero;
+
+        public Vector3 Position
+        {
+            get { return position; }
+            private set { position = value; }
+        }
 
         public Vector3 Velocity { get; private set; }
 
         public Vector3 Acceleration { get; private set; }
 
-        private double latency;
+        private int historySize = 1;
 
-        public double Latency
+        public int HistorySize
         {
-            get { return latency; }
-            set { latency = value; }
+            get { return historySize; }
+            set { historySize = Math.Max(1, value); }
+        }
+
+        private List<Vector3> positions = new List<Vector3>();
+
+        private void EnqueuePosition(ref Vector3 position, out Vector3 medPosition)
+        {
+            positions.Insert(0, position);
+
+            while (positions.Count > historySize)
+                positions.RemoveAt(positions.Count - 1);
+
+            Vector3 res = Vector3.Zero;
+
+            for (int i = 0; i < positions.Count; i++)
+                res += positions[i];
+
+            medPosition = res * (1.0f / (float)positions.Count);
         }
         
         public void UpdatePosition(Vector3 newPosition)
         {
-            newPosition = latency * newPosition + (1 - latency) * Position;
+            Vector3 medPosition;
+            EnqueuePosition(ref newPosition, out medPosition);
 
-            var newVelocity = newPosition - Position;
+            if (pixelMoveTreshold > 0 && Vector3.Distance(ref medPosition, ref position) < pixelMoveTreshold)
+                medPosition = position;
 
-            Position = newPosition;
+            var newVelocity = medPosition - Position;
+
+            Position = medPosition;
 
             var newAcceleration = newVelocity - Velocity;
 
@@ -57,7 +90,8 @@ namespace JapanNUI.Interaction.Gestures
         {
             if (currentPoint != null)
             {
-                Latency = currentPoint.Latency;
+                HistorySize = currentPoint.HistorySize;
+                PixelMoveTreshold = currentPoint.PixelMoveTreshold;
 
                 Position = currentPoint.Position;
                 Velocity = currentPoint.Velocity;
