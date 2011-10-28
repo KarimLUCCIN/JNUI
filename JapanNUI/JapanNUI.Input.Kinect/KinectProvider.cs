@@ -212,12 +212,18 @@ namespace JapanNUI.Input.Kinect
         bool processing = false;
         object sync = new object();
 
+        DateTime lastFrameTime = DateTime.MinValue;
+
         void nui_DepthFrameReady(object sender, ImageFrameReadyEventArgs e)
         {
             lock (sync)
             {
-                if (processing)
+                var msSinceLast = (DateTime.Now - lastFrameTime).TotalMilliseconds;
+
+                if (processing || msSinceLast < 1 / 30.0)
                     return;
+
+                lastFrameTime = DateTime.Now;
 
                 processing = true;
             }

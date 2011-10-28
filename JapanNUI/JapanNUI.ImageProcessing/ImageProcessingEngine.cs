@@ -281,7 +281,7 @@ namespace JapanNUI.ImageProcessing
                 }
                 Host.RenderTargetManager.Pop();
 
-                bordersGrownDebugPresenter.Update(grownRegions, PixelFormats.Bgr32, 4);
+                //bordersGrownDebugPresenter.Update(grownRegions, PixelFormats.Bgr32, 4);
 
 
                 /* get result : regions */
@@ -304,9 +304,9 @@ namespace JapanNUI.ImageProcessing
 
                 gradDirectionDetect1.GetData(gradDirectionDetect1Data);
 
-                if (bordersDebugPresenter != null)
-                    //bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
-                    bordersDebugPresenter.Update(gradDirectionDetect1Data, System.Windows.Media.PixelFormats.Bgr32, 4);
+                //if (bordersDebugPresenter != null)
+                //    //bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
+                //    bordersDebugPresenter.Update(gradDirectionDetect1Data, System.Windows.Media.PixelFormats.Bgr32, 4);
 
 #warning FUCKING SLOW
                 //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
@@ -315,7 +315,7 @@ namespace JapanNUI.ImageProcessing
                 squaresPresenter.Update(grownRegions, PixelFormats.Bgra32, 4);
                 //grownBorders.GetData(grownBordersData);
 
-                blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
+                //blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
 
 #if(!ENABLE_ONLY_BORDER_DISTANCE_LABELS)
                 /* init shader */
