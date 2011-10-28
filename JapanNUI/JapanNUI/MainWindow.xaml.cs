@@ -58,12 +58,12 @@ namespace JapanNUI
             Manager = new InteractionsManager(this);
             Manager.Initialize(new IInputProviderBuilder[] { new MouseProviderBuilder(), new KinectProviderBuilder() });
 
-            //Manager.RecordSingleRecognizedGesture("left", 
-            //    delegate 
-            //    { 
-            //        Close(); 
-            //    },
-            //    SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
+            Manager.RecordSingleRecognizedGesture("right", 
+                delegate
+                {
+                    currentRecognizedMovement.Text = "CircleLeft";
+                },
+                SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
 
             Manager.RecordSingleRecognizedGesture("right",
                 delegate
