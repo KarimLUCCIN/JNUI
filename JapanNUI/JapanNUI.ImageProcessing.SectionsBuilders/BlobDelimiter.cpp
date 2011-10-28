@@ -435,13 +435,13 @@ namespace JapanNUI
 						{
 							/* équivalent à deux blobs avec chacun une des directions */
 							blobs[native_blob_index].averageDirection = blobs[native_blob_index].crossFirstAngle;
-							blobs[native_blob_index].AvgCenterX -= 5;
+							blobs[native_blob_index].AvgCenterX -= 1;
 							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index]);
 
 							managed_blob_count++;
 
 							blobs[native_blob_index].averageDirection = blobs[native_blob_index].crossSecondAngle;
-							blobs[native_blob_index].AvgCenterX += 10;
+							blobs[native_blob_index].AvgCenterX += 2;
 							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index]);
 						}
 
