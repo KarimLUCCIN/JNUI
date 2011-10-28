@@ -6,6 +6,7 @@
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Image Name="debugDepthImage" Stretch="Fill" />
         <Canvas Name="clientCanvas" Grid.Row="0">
@@ -15,6 +16,10 @@
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Current Gesture:</TextBlock>
             <TextBlock VerticalAlignment="Center" Name="currentGesture"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="2">
+            <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Current Movement:</TextBlock>
+            <TextBlock VerticalAlignment="Center" Name="currentRecognizedMovement"/>
         </StackPanel>
     </Grid>
 </Window>

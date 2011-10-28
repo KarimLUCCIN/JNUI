@@ -1,6 +1,4 @@
-﻿#define DISABLE_DEBUG_GESTURES
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -67,52 +65,40 @@ namespace JapanNUI
             //    },
             //    SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
 
-#if(!DISABLE_DEBUG_GESTURES)
-            Manager.RecordSingleRecognizedGesture("left",
+            Manager.RecordSingleRecognizedGesture("right",
                 delegate
                 {
-                    WindowState = WindowState == System.Windows.WindowState.Maximized
-                        ? System.Windows.WindowState.Normal
-                        : System.Windows.WindowState.Maximized;
+                    currentRecognizedMovement.Text = "Left And Right";
                 },
                 SimpleGesture.Left, SimpleGesture.Right);
 
-            Manager.RecordSingleRecognizedGesture("left",
+            Manager.RecordSingleRecognizedGesture("right",
                 delegate
                 {
-                    WindowState = WindowState.Normal;
-                    Left = 0;
-                    Top = ScreenArea.Size.Y - ActualHeight;
+                    currentRecognizedMovement.Text = "Bottom Left";
                 },
                 SimpleGesture.Bottom, SimpleGesture.Left);
 
-            Manager.RecordSingleRecognizedGesture("left",
+            Manager.RecordSingleRecognizedGesture("right",
                 delegate
                 {
-                    WindowState = WindowState.Normal;
-                    Left = 0;
-                    Top = 0;
+                    currentRecognizedMovement.Text = "Top Left";
                 },
                 SimpleGesture.Top, SimpleGesture.Left);
 
-            Manager.RecordSingleRecognizedGesture("left",
+            Manager.RecordSingleRecognizedGesture("right",
                 delegate
                 {
-                    WindowState = WindowState.Normal;
-                    Left = ScreenArea.Size.X - ActualWidth;
-                    Top = 0;
+                    currentRecognizedMovement.Text = "Top Right";
                 },
                 SimpleGesture.Top, SimpleGesture.Right);
 
-            Manager.RecordSingleRecognizedGesture("left",
+            Manager.RecordSingleRecognizedGesture("right",
                 delegate
                 {
-                    WindowState = WindowState.Normal;
-                    Left = ScreenArea.Size.X - ActualWidth;
-                    Top = ScreenArea.Size.Y - ActualHeight;
+                    currentRecognizedMovement.Text = "BottomRight And Right";
                 },
                 SimpleGesture.BottomRight, SimpleGesture.Right);
-#endif
         }
 
         void MainWindow_LocationChanged(object sender, EventArgs e)
