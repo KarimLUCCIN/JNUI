@@ -173,7 +173,7 @@ namespace JapanNUI.Input.Kinect
                     leftData = leftScoringSort[0].assigned ? leftScoringSort[1] : leftScoringSort[0];
                 }
 
-                if (leftData.MBlob.EstimatedCursorX > rightData.MBlob.EstimatedCursorX)
+                if (leftData.MBlob.AvgCenterX > rightData.MBlob.AvgCenterX)
                 {
                     /* exchange */
                     var tmp = leftData;

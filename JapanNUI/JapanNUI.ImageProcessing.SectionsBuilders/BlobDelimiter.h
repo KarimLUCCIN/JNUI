@@ -31,6 +31,22 @@ namespace JapanNUI
 				double averageDirection;
 				double principalDirection;
 
+				/* 
+				Dans le cas où on croise les mains, on obtient une structure en
+				X ou en A avec comme extrémité basses les deux coudes. Alors on recherche
+				une telle formation dans les blobs pour voir s'il s'agit a priori de deux mains
+				qui se croisent
+				*/
+				int CrossLeftBottomX;
+				int CrossLeftBottomY;
+				int CrossRightBottomX;
+				int CrossRightBottomY;
+
+				bool haveCrossingPattern;
+
+				double crossFirstAngle;
+				double crossSecondAngle;
+
 				int PixelCount;
 			};
 
