@@ -316,13 +316,15 @@ namespace JapanNUI
 							blobs[c_blob].MaxY = max2(blobs[c_blob].MaxY, line);
 
 							/* Bottom right & left edges (to detected crossing arms) */
-							if(line > blobs[c_blob].CrossLeftBottomY && column < blobs[c_blob].CrossLeftBottomX)
+							if((line > blobs[c_blob].CrossLeftBottomY && (blobs[c_blob].CrossLeftBottomX - column > 0)) ||
+								((line > blobs[c_blob].CrossLeftBottomY + 10) && (blobs[c_blob].CrossLeftBottomX - column) > -10 ))
 							{
 								blobs[c_blob].CrossLeftBottomX = column;
 								blobs[c_blob].CrossLeftBottomY = line;
 							}
 
-							if(line > blobs[c_blob].CrossRightBottomY && column > blobs[c_blob].CrossRightBottomX)
+							if((line > blobs[c_blob].CrossRightBottomY && (column - blobs[c_blob].CrossRightBottomX > 0)) ||
+								((line > blobs[c_blob].CrossLeftBottomY + 10) && (column - blobs[c_blob].CrossRightBottomX) > -10))
 							{
 								blobs[c_blob].CrossRightBottomX = column;
 								blobs[c_blob].CrossRightBottomY = line;
