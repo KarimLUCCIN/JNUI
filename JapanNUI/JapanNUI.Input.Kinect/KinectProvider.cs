@@ -1,4 +1,5 @@
 ﻿//#define RETRHOW_RUNTIME_EXCEPTION
+#define DISABLE_DEPTH_VIEW
 
 using System;
 using System.Collections.Generic;
@@ -153,6 +154,7 @@ namespace JapanNUI.Input.Kinect
 
                 maxDepth = Math.Max(maxDepth, realDepth);
 
+#if(!DISABLE_DEPTH_VIEW)
                 // transform 13-bit depth information into an 8-bit intensity appropriate
                 // for display (we disregard information in most significant bit)
                 byte intensity = (byte)(255 - (255 * realDepth / 0x0fff));
@@ -201,6 +203,7 @@ namespace JapanNUI.Input.Kinect
                         depthFrame32[i32 + BLUE_IDX] = (byte)(255 - intensity);
                         break;
                 }
+#endif
             }
 
             if (KinectBlobsMatcher != null)
@@ -237,8 +240,10 @@ namespace JapanNUI.Input.Kinect
                 rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition, 0));
 
                 Listener.Update(this);
-
+                
+#if(!DISABLE_DEPTH_VIEW)
                 Listener.DebugDisplayBgr32DepthImage(Image.Width, Image.Height, convertedDepthFrame, Image.Width * 4);
+#endif
             }
 
             lock (sync)
