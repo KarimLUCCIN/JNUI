@@ -415,8 +415,8 @@ namespace JapanNUI
 				dst->AverageDepth = src->AvgDepth;
 
 				/* estimates the cursor position */
-				dst->EstimatedCursorX = dst->AvgCenterX + cos(dst->AverageDirection) * abs(dst->AvgCenterX - dst->MinX);
-				dst->EstimatedCursorY = dst->AvgCenterY - sin(dst->AverageDirection) * abs(dst->AvgCenterY - dst->MinY);
+				dst->EstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, dst->AvgCenterX + cos(dst->AverageDirection) * abs(dst->AvgCenterX - dst->MinX)));
+				dst->EstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, dst->AvgCenterY - sin(dst->AverageDirection) * abs(dst->AvgCenterY - dst->MinY)));
 			}
 
 			int BlobDelimiter::convertBlobs(int blobCount)

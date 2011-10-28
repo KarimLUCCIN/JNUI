@@ -67,6 +67,8 @@ namespace JapanNUI.Interaction.Gestures
 
             if (pixelMoveTreshold > 0 && Vector3.Distance(ref medPosition, ref position) < pixelMoveTreshold)
                 medPosition = position;
+            else
+                positions.Clear();
 
             var newVelocity = medPosition - Position;
 
