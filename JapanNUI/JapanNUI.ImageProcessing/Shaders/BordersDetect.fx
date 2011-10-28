@@ -186,9 +186,12 @@ float4 PS_Down(VSO input) : COLOR0
 
 			float vSample = tex2D(depthSampler, input.TexCoord + vOffset).r;
 			
-			vMed = max (vMed, vSample);
+			//vMed = max (vMed, vSample);
+			vMed += vSample;
 		}
 	}
+
+	vMed /= (float)(5 * 5);
 
 	/* reduced to LEVEL_NUMBERS levels */
 	float l_depth;
