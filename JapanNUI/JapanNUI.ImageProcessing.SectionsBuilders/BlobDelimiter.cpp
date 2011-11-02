@@ -159,6 +159,13 @@ namespace JapanNUI
 
 #define dot(ax, ay, bx, by) (ax) * (bx) + (ay) * (by)
 
+#define abs2(a) max2((a),-(a))
+
+			inline double p2(double a)
+			{
+				return a * a;
+			}
+
 			void finalizeBlobs(unsigned char* data, Blob * blobs, int blobCount, int lines, int columns, int stride)
 			{
 				double directionsAngles[] = {0, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
@@ -172,13 +179,28 @@ namespace JapanNUI
 						blobs[i].AvgCenterY = ((double)blobs[i].accY / (double)blobs[i].PixelCount);
 						blobs[i].AvgDepth = (blobs[i].accDepth / (double)blobs[i].PixelCount) / 255.0;
 
+						blobs[i].AvgCenterXleft = blobs[i].pointCountLeft > 0 ? ((double)blobs[i].accXleft / (double)blobs[i].pointCountLeft) : 0;
+						blobs[i].AvgCenterYleft = blobs[i].pointCountLeft > 0 ? ((double)blobs[i].accYleft / (double)blobs[i].pointCountLeft) : 0;
+
+						blobs[i].AvgCenterXright = blobs[i].pointCountRight > 0 ? ((double)blobs[i].accXright / (double)blobs[i].pointCountRight) : 0;
+						blobs[i].AvgCenterYright = blobs[i].pointCountRight > 0 ? ((double)blobs[i].accYright / (double)blobs[i].pointCountRight) : 0;
+
 						int maxDirection = BLOB_DIRECTION_HORIZONTAL;
-						unsigned long score = 0;
-						unsigned long totalScore = 0;
+						double score = 0;
+						double totalScore = 0;
+
+						double leftOnlyScore = 0;
+						double rightOnlyScore = 0;
 
 						for(int j = 0;j<4;j++)
 						{
 							totalScore += blobs[i].accBorderType[j];
+
+							if(j != BLOB_DIRECTION_DIAG)
+								leftOnlyScore += blobs[i].accBorderType[j];
+							
+							if(j != BLOB_DIRECTION_INVDIAG)
+								rightOnlyScore += blobs[i].accBorderType[j];
 
 							if(score < blobs[i].accBorderType[j])
 							{
@@ -190,6 +212,9 @@ namespace JapanNUI
 						double avgDiagAngle = 0;
 						double avgDiagInvAngle = 0;
 
+						double leftOnlyDirection = 0;
+						double rightOnlyDirection = 0;
+
 						for(int j = 0;j<4;j++)
 						{
 							/* entre 0 et pi/2 */
@@ -197,6 +222,12 @@ namespace JapanNUI
 
 							/* entre pi/2 et pi */
 							avgDiagInvAngle += directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
+
+							if(j != BLOB_DIRECTION_INVDIAG)
+								rightOnlyDirection += directionsAngles[j] * ((double)blobs[i].accBorderType[j] / rightOnlyScore);
+
+							if(j != BLOB_DIRECTION_DIAG)
+								leftOnlyDirection += directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / leftOnlyScore);
 						}
 
 						double mainAngle;
@@ -223,9 +254,20 @@ namespace JapanNUI
 						/* Vérifier si deux mains se croisent */
 						
 						/* Step 1 : Vérifier que BottomLeft & BottomRight sont bien les extrémités de la BBox */
-						if(abs(blobs[i].CrossLeftBottomX - blobs[i].MinX) < 10 &&
+						bool areCornersRepresentativeOfSeparatedArms =
+							abs(blobs[i].CrossLeftBottomX - blobs[i].MinX) < 10 &&
 							abs(blobs[i].CrossRightBottomX - blobs[i].MaxX) < 10 &&
-							abs(max2(blobs[i].CrossLeftBottomY, blobs[i].CrossRightBottomY) - blobs[i].MaxY) < 10)
+							abs(max2(blobs[i].CrossLeftBottomY, blobs[i].CrossRightBottomY) - blobs[i].MaxY) < 10;
+
+						double differenceInPixelInRightAndLeftPercentage = (((double)abs2((double)blobs[i].pointCountRight - (double)blobs[i].pointCountLeft)) / ((double)blobs[i].PixelCount));
+
+						bool isEnouphPointsInRightAndLeftStacks =
+							differenceInPixelInRightAndLeftPercentage <= 0.02;
+
+						bool areCentersSpacedEnouphForSeparatedArms =
+							sqrt(p2(blobs[i].AvgCenterXleft - blobs[i].AvgCenterXright) + p2(blobs[i].AvgCenterYleft - blobs[i].AvgCenterYright)) > 10;
+
+						if(areCornersRepresentativeOfSeparatedArms || (areCentersSpacedEnouphForSeparatedArms && isEnouphPointsInRightAndLeftStacks))
 						{
 							/* Step 2 : l'angle principal doit être la verticale */
 							//if(maxDirection == BLOB_DIRECTION_VERTICAL)
@@ -255,14 +297,28 @@ namespace JapanNUI
 									{
 										blobs[i].haveCrossingPattern = true;
 
-										blobs[i].crossFirstAngle = avgDiagAngle;
-										blobs[i].crossSecondAngle = avgDiagInvAngle;
+										blobs[i].crossFirstAngle = leftOnlyDirection; //avgDiagAngle;
+										blobs[i].crossSecondAngle = rightOnlyDirection; // avgDiagInvAngle;
 									}
 								}
 							}
 						}
 					}
 				}
+			}
+
+			inline int indexOfMax(double a, double b, double c, double d)
+			{
+				double m = max(a, max(b, max(c,d)));
+
+				if(m == a)
+					return 0;
+				else if(m == b)
+					return 1;
+				else if(m == c)
+					return 2;
+				else
+					return 3;
 			}
 
 			void match(Blob * blobs, int * blobIdsCorrespondanceData, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
@@ -331,35 +387,33 @@ namespace JapanNUI
 							}
 
 							/* Direction */
-							int directionVal = pixelAt(grads, line, column);
+							double d_v = grads[pixel((line), (column))+0] / 255.0;
+							double d_h = grads[pixel((line), (column))+1] / 255.0;
+							double d_d = grads[pixel((line), (column))+2] / 255.0;
+							double d_id = grads[pixel((line), (column))+3] / 255.0;
 
-							switch(directionVal)
+							int max_i = indexOfMax(d_v, d_h, d_d, d_id);
+
+							if(grads[pixel((line), (column))+max_i] > 0)
 							{
-							case 255:
+								if(max_i == BLOB_DIRECTION_INVDIAG)
 								{
-									blobs[c_blob].accBorderType[BLOB_DIRECTION_VERTICAL]++;
-									break;
+									blobs[c_blob].accXleft += column;
+									blobs[c_blob].accYleft += line;
+									blobs[c_blob].pointCountLeft++;
 								}
-							case (255 << 8):
+
+								if(max_i == BLOB_DIRECTION_DIAG)
 								{
-									blobs[c_blob].accBorderType[BLOB_DIRECTION_HORIZONTAL]++;
-									break;
+									blobs[c_blob].accXright += column;
+									blobs[c_blob].accYright += line;
+									blobs[c_blob].pointCountRight++;
 								}
-							case (255 << 16):
-								{
-									blobs[c_blob].accBorderType[BLOB_DIRECTION_DIAG]++;
-									break;
-								}
-							case (255 | (255 << 16)):
-								{
-									blobs[c_blob].accBorderType[BLOB_DIRECTION_INVDIAG]++;
-									break;
-								}
-							case 0:
-							default:
-								{
-									break;
-								}
+
+								blobs[c_blob].accBorderType[BLOB_DIRECTION_VERTICAL] += d_v;
+								blobs[c_blob].accBorderType[BLOB_DIRECTION_HORIZONTAL] += d_h;
+								blobs[c_blob].accBorderType[BLOB_DIRECTION_DIAG] += d_d;
+								blobs[c_blob].accBorderType[BLOB_DIRECTION_INVDIAG] += d_id;
 							}
 
 							pixelSet(data, line, column, c_blob * 150);
@@ -397,7 +451,7 @@ namespace JapanNUI
 				delete m_blobs;
 			}
 
-			void convertBlob(ManagedBlob ^ dst, Blob * src)
+			void convertBlob(ManagedBlob ^ dst, Blob * src, double primaryCenterX, double primaryCenterY)
 			{
 				dst->AvgCenterX = src->AvgCenterX;
 				dst->AvgCenterY = src->AvgCenterY;
@@ -415,8 +469,8 @@ namespace JapanNUI
 				dst->AverageDepth = src->AvgDepth;
 
 				/* estimates the cursor position */
-				dst->EstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, dst->AvgCenterX + cos(dst->AverageDirection) * abs(dst->AvgCenterX - dst->MinX)));
-				dst->EstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, dst->AvgCenterY - sin(dst->AverageDirection) * abs(dst->AvgCenterY - dst->MinY)));
+				dst->EstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, src->AvgCenterX + cos(dst->AverageDirection) * abs(primaryCenterX - dst->MinX)));
+				dst->EstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, src->AvgCenterY - sin(dst->AverageDirection) * abs(primaryCenterY - dst->MinY)));
 			}
 
 			int BlobDelimiter::convertBlobs(int blobCount)
@@ -429,20 +483,29 @@ namespace JapanNUI
 
 					if(blobs[native_blob_index].PixelCount > 0)
 					{
+						double primaryCenterX = blobs[native_blob_index].AvgCenterX;
+						double primaryCenterY = blobs[native_blob_index].AvgCenterY;
+
 						if(!blobs[native_blob_index].haveCrossingPattern)
-							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index]);
+							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY);
 						else
 						{
 							/* équivalent à deux blobs avec chacun une des directions */
 							blobs[native_blob_index].averageDirection = blobs[native_blob_index].crossFirstAngle;
-							blobs[native_blob_index].AvgCenterX -= 1;
-							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index]);
+
+							blobs[native_blob_index].AvgCenterX = blobs[native_blob_index].AvgCenterXleft;
+							blobs[native_blob_index].AvgCenterY = blobs[native_blob_index].AvgCenterYleft;
+
+							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY);
 
 							managed_blob_count++;
 
 							blobs[native_blob_index].averageDirection = blobs[native_blob_index].crossSecondAngle;
-							blobs[native_blob_index].AvgCenterX += 2;
-							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index]);
+
+							blobs[native_blob_index].AvgCenterX = blobs[native_blob_index].AvgCenterXright;
+							blobs[native_blob_index].AvgCenterY = blobs[native_blob_index].AvgCenterYright;
+
+							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY);
 						}
 
 						managed_blob_count++;

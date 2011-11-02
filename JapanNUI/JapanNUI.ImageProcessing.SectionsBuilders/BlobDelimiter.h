@@ -19,14 +19,30 @@ namespace JapanNUI
 				double AvgCenterX;
 				double AvgCenterY;
 
+				double AvgCenterXleft;
+				double AvgCenterYleft;
+
+				double AvgCenterXright;
+				double AvgCenterYright;
+
 				double AvgDepth;
 
 				unsigned long accX;
 				unsigned long accY;
 
+				unsigned long accXright;
+				unsigned long accYright;
+
+				unsigned long pointCountRight;
+
+				unsigned long accXleft;
+				unsigned long accYleft;
+
+				unsigned long pointCountLeft;
+
 				unsigned long accDepth;
 
-				unsigned long accBorderType[4];
+				double accBorderType[4];
 
 				double averageDirection;
 				double principalDirection;

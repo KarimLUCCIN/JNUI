@@ -286,6 +286,9 @@ float4 PS_Grad(VSO input) : COLOR0
 	dDiagUpLeft = abs(dDiagUpLeft);
 	dDiagUpRight = abs(dDiagUpRight);
 
+	return float4(dUp / 4.0, dHorz / 4.0, dDiagUpLeft / 4.0, dDiagUpRight / 4.0);
+
+	/*
 	float m = max(dUp, max(dHorz, max(dDiagUpLeft, dDiagUpRight)));
 
 	if(m == 0 || (dUp == dHorz && dUp == dDiagUpLeft && dUp == dDiagUpRight))
@@ -298,6 +301,7 @@ float4 PS_Grad(VSO input) : COLOR0
 		return float4(0,0,1,1);
 	else
 		return float4(1,0,1,1);
+	*/
 }
 
 technique Grad
