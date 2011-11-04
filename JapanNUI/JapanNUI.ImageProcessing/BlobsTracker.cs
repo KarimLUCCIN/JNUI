@@ -28,6 +28,8 @@ namespace JapanNUI.ImageProcessing
             internal int waitingCycles = 0;
 
             internal bool attached = false;
+
+            public bool InvertedCursor { get; internal set; }
         }
 
         internal class TrackedBlobIntermediate
@@ -104,7 +106,7 @@ namespace JapanNUI.ImageProcessing
             }
 
             /* Sort et assignation des blobs les plus proches en priorité */
-            intermediatesData.Sort((a, b) => a.score.CompareTo(b.score));
+            SortIntermediateData();
 
             foreach (var i_blob in intermediatesData)
             {
@@ -113,17 +115,41 @@ namespace JapanNUI.ImageProcessing
 
                 TrackedBlob closest = null;
                 double score = double.MaxValue;
+                bool closestIsInverted = false;
 
                 foreach (var actual in TrackedBlobs)
                 {
                     if (!actual.attached)
                     {
-                        var d = Distance(i_blob.blob.EstimatedCursorX, i_blob.blob.EstimatedCursorY, actual.Current.EstimatedCursorX, actual.Current.EstimatedCursorY);
+                        var directDistance = Distance(i_blob.blob.EstimatedCursorX, i_blob.blob.EstimatedCursorY, actual.Current.EstimatedCursorX, actual.Current.EstimatedCursorY);
+                        var invertedDistance = Distance(i_blob.blob.InvertedEstimatedCursorX, i_blob.blob.InvertedEstimatedCursorY, actual.Current.EstimatedCursorX, actual.Current.EstimatedCursorY);
+
+                        if (actual.InvertedCursor)
+                        {
+                            var tmp = directDistance;
+                            directDistance = invertedDistance;
+                            invertedDistance = tmp;
+                        }
+
+                        double d;
+                        bool invert;
+
+                        if (directDistance <= invertedDistance)
+                        {
+                            d = directDistance;
+                            invert = false;
+                        }
+                        else
+                        {
+                            d = invertedDistance;
+                            invert = true;
+                        }
 
                         if (d < score)
                         {
                             closest = actual;
                             score = d;
+                            closestIsInverted = invert;
                         }
                     }
                 }
@@ -134,6 +160,7 @@ namespace JapanNUI.ImageProcessing
                     closest.Status = Status.Tracking;
                     closest.attached = true;
                     closest.waitingCycles = 0;
+                    closest.InvertedCursor = closestIsInverted;
                 }
             }
 
@@ -160,6 +187,11 @@ namespace JapanNUI.ImageProcessing
                     TrackedBlobs.Add(new TrackedBlob() { Current = i_blob.blob, attached = true, Status = Status.Tracking });
                 }
             }
+        }
+
+        private void SortIntermediateData()
+        {
+            intermediatesData.Sort((a, b) => a.score.CompareTo(b.score));
         }
 
         private static double Distance(double x1, double y1, double x2, double y2)

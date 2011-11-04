@@ -473,8 +473,8 @@ namespace JapanNUI
 				dst->EstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, src->AvgCenterX + cos(dst->AverageDirection) * abs(primaryCenterX - dst->MinX)));
 				dst->EstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, src->AvgCenterY - sin(dst->AverageDirection) * abs(primaryCenterY - dst->MinY)));
 
-				dst->InvertedEstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, src->AvgCenterX + cos(dst->AverageDirection + M_PI) * abs(primaryCenterX - dst->MinX)));
-				dst->InvertedEstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, src->AvgCenterY - sin(dst->AverageDirection + M_PI) * abs(primaryCenterY - dst->MinY)));
+				dst->InvertedEstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, src->AvgCenterX - cos(dst->AverageDirection) * abs(primaryCenterX - dst->MinX)));
+				dst->InvertedEstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, src->AvgCenterY + sin(dst->AverageDirection) * abs(primaryCenterY - dst->MinY)));
 
 				dst->Crossed = crossed;
 			}

@@ -475,6 +475,16 @@ namespace JapanNUI.ImageProcessing
 
                         Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
 
+                        a.X = 2 * ((float)(blobs[i].InvertedEstimatedCursorX - 1) / (float)grownRegions.Width) - 1;
+                        a.Y = (2 * ((float)(blobs[i].InvertedEstimatedCursorY - 1) / (float)grownRegions.Height) - 1) * (-1);
+                        b.X = 2 * ((float)(blobs[i].InvertedEstimatedCursorX + 1) / (float)grownRegions.Width) - 1;
+                        b.Y = (2 * ((float)(blobs[i].InvertedEstimatedCursorY + 1) / (float)grownRegions.Height) - 1) * (-1);
+
+                        bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)0, (byte)1);
+                        bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                        Host.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+
                         Host.Renderer.RendererSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
 
                         var l_pos = new Vector2((float)blobs[i].AvgCenterX, (float)blobs[i].AvgCenterY);

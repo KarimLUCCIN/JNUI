@@ -209,7 +209,11 @@ namespace JapanNUI.Input.Kinect
 
             if (handBlob.MBlob != null)
             {
-                var newPos = handBlob.CursorPosition * updateLatency + (1 - updateLatency) * new Vector2(handBlob.MBlob.Current.EstimatedCursorX / DataWidth, handBlob.MBlob.Current.EstimatedCursorY / DataHeight);
+                var blobCursor = handBlob.MBlob.InvertedCursor
+                ? new Vector2(handBlob.MBlob.Current.InvertedEstimatedCursorX / DataWidth, handBlob.MBlob.Current.InvertedEstimatedCursorY / DataHeight)
+                : new Vector2(handBlob.MBlob.Current.EstimatedCursorX / DataWidth, handBlob.MBlob.Current.EstimatedCursorY / DataHeight);
+
+                var newPos = handBlob.CursorPosition * updateLatency + (1 - updateLatency) * blobCursor;
 
                 if (!double.IsNaN(newPos.X) && !double.IsNaN(newPos.Y))
                     handBlob.CursorPosition = newPos;
