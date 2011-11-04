@@ -80,12 +80,37 @@ namespace JapanNUI
 				double EstimatedCursorX;
 				double EstimatedCursorY;
 
+				double InvertedEstimatedCursorX;
+				double InvertedEstimatedCursorY;
+
 				double AverageDepth;
 
 				double AverageDirection;
 				double PrincipalDirection;
 
 				int PixelCount;
+
+				bool Crossed;
+
+				ManagedBlob^ Clone()
+				{
+					ManagedBlob^ res = gcnew ManagedBlob();
+
+					res->AverageDepth = AverageDepth;
+					res->AverageDirection = AverageDirection;
+					res->AvgCenterX = AvgCenterX;
+					res->AvgCenterY = AvgCenterY;
+					res->EstimatedCursorX = EstimatedCursorX;
+					res->EstimatedCursorY = EstimatedCursorY;
+					res->InvertedEstimatedCursorX = InvertedEstimatedCursorX;
+					res->InvertedEstimatedCursorY = InvertedEstimatedCursorY;
+					res->AverageDepth = AverageDepth;
+					res->PrincipalDirection = PrincipalDirection;
+					res->PixelCount = PixelCount;
+					res->Crossed = Crossed;
+
+					return res;
+				}
 			};
 
 			public ref class BlobDelimiter

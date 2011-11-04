@@ -18,10 +18,10 @@ namespace JapanNUI.Input.Kinect
             internal bool empty = true;
             internal bool assigned = false;
 
-            internal ManagedBlob MBlob = new ManagedBlob();
+            internal BlobsTracker.TrackedBlob MBlob = new BlobsTracker.TrackedBlob();
 
-            internal double ScoreForLeftHand;
-            internal double ScoreForRightHand;
+            internal bool useInvertedLeftCursor = false;
+            internal bool useInvertedRightCursor = false;
 
             /// <summary>
             /// Position du curseur associé, entre (-1,-1) et (1,1)
@@ -49,6 +49,8 @@ namespace JapanNUI.Input.Kinect
             get { return updateLatency; }
             set { updateLatency = value; }
         }
+
+        public BlobsTracker BlobsTracker { get; private set; }
         
         /// <summary>
         /// 
@@ -65,6 +67,8 @@ namespace JapanNUI.Input.Kinect
 
             if (ProcessingEngine.MaxMainBlobsCount <= 1)
                 throw new ArgumentOutOfRangeException("processingEngine.MaxMainBlobsCount <= 1");
+
+            BlobsTracker = new ImageProcessing.BlobsTracker();
 
             DataWidth = dataWidth;
             DataHeight = dataHeight;
@@ -87,11 +91,15 @@ namespace JapanNUI.Input.Kinect
         private List<BlobParametersRecord> leftScoringSort = new List<BlobParametersRecord>();
         private List<BlobParametersRecord> rightScoringSort = new List<BlobParametersRecord>();
 
+        List<ManagedBlob> stepBlobs = new List<ManagedBlob>();
+
         public void Process(byte[] depthFilteredFrame32, float minDepth, float maxDepth)
         {
             ProcessingEngine.Process(depthFilteredFrame32, minDepth, maxDepth);
 
             int validScoringBlobs = 0;
+
+            stepBlobs.Clear();
 
             for (int i = 0; i < scoringBlobs.Length; i++)
             {
@@ -102,100 +110,115 @@ namespace JapanNUI.Input.Kinect
                 else
                 {
                     validScoringBlobs++;
-                    scoringBlobs[i].MBlob = i_blob;
+                    //scoringBlobs[i].MBlob = i_blob;
+
+                    stepBlobs.Add(i_blob);
                 }
             }
 
-            if (validScoringBlobs < 1)
+            BlobsTracker.Update(stepBlobs);
+
+            UpdateCursors();
+        }
+
+        bool wasCrossed = false;
+
+        private void UpdateCursors()
+        {
+            var validBlobs = BlobsTracker.TrackedBlobs;
+
+            if (validBlobs.Count < 1)
             {
                 /* Nothing */
 
                 //LeftHandBlob.CursorPosition = idealLeftHandPosition;
                 LeftHandBlob.empty = true;
-                
+
                 //RightHandBlob.CursorPosition = idealRightHandPosition;
                 RightHandBlob.empty = true;
             }
-            else if (validScoringBlobs == 1)
+
+            CheckHandBlob(validBlobs, RightHandBlob, LeftHandBlob.MBlob, ref idealRightHandPosition);
+            CheckHandBlob(validBlobs, LeftHandBlob, RightHandBlob.MBlob, ref idealLeftHandPosition);
+
+            if (RightHandBlob.MBlob != null && LeftHandBlob.MBlob != null)
             {
-                /* Right hand has priority */
-                //LeftHandBlob.CursorPosition = idealLeftHandPosition;
-                LeftHandBlob.empty = true;
-
-                RightHandBlob.CursorPosition = RightHandBlob.CursorPosition * updateLatency + (1 - updateLatency) * new Vector2(scoringBlobs[0].MBlob.EstimatedCursorX / DataWidth, scoringBlobs[0].MBlob.EstimatedCursorY / DataHeight);
-                RightHandBlob.MBlob = scoringBlobs[0].MBlob;
-                RightHandBlob.empty = false;
-            }
-            else
-            {
-                double maxLeftScore = 0;
-                double maxRightScore = 0;
-
-                leftScoringSort.Clear();
-                rightScoringSort.Clear();
-
-                for (int i = 0; i < validScoringBlobs; i++)
+                if (RightHandBlob.MBlob.Current.Crossed && LeftHandBlob.MBlob.Current.Crossed)
                 {
-                    var current = scoringBlobs[i];
+                    var toTheLeft = RightHandBlob.MBlob.Current.EstimatedCursorX > LeftHandBlob.MBlob.Current.EstimatedCursorX
+                        ? RightHandBlob.MBlob
+                        : LeftHandBlob.MBlob;
 
-                    current.assigned = false;
-                    current.ScoreForLeftHand = ComputeScore(ref current.MBlob, ref LeftHandBlob.MBlob, LeftHandBlob.empty, ref idealLeftHandPosition);
-                    current.ScoreForRightHand = ComputeScore(ref current.MBlob, ref RightHandBlob.MBlob, RightHandBlob.empty, ref idealRightHandPosition);
+                    var toTheRight = RightHandBlob.MBlob == toTheLeft ? LeftHandBlob.MBlob : RightHandBlob.MBlob;
 
-                    maxLeftScore = Math.Max(maxLeftScore, current.ScoreForLeftHand);
-                    maxRightScore = Math.Max(maxRightScore, current.ScoreForRightHand);
+                    RightHandBlob.MBlob = toTheRight;
+                    LeftHandBlob.MBlob = toTheLeft;
 
-                    leftScoringSort.Add(current);
-                    rightScoringSort.Add(current);
+                    wasCrossed = true;
+                }
+                else if (wasCrossed)
+                {
+                    wasCrossed = false;
+
+                    var toTheRight = RightHandBlob.MBlob.Current.EstimatedCursorX < LeftHandBlob.MBlob.Current.EstimatedCursorX
+                        ? RightHandBlob.MBlob
+                        : LeftHandBlob.MBlob;
+
+                    var toTheLeft = RightHandBlob.MBlob == toTheRight ? LeftHandBlob.MBlob : RightHandBlob.MBlob;
+
+                    RightHandBlob.MBlob = toTheLeft;
+                    LeftHandBlob.MBlob = toTheRight;
+                }
+            }
+        }
+
+        private void CheckHandBlob(List<BlobsTracker.TrackedBlob> blobs, BlobParametersRecord handBlob, BlobsTracker.TrackedBlob excludedBlob, ref Vector2 idealHandPosition)
+        {
+            if (!blobs.Contains(handBlob.MBlob) || handBlob.MBlob == excludedBlob || handBlob.MBlob == null)
+            {
+                var p_idealPosition = new Vector2(idealHandPosition.X * DataWidth, idealHandPosition.Y * DataHeight);
+
+                BlobsTracker.TrackedBlob closestBlob = null;
+                double score = double.MaxValue;
+
+                foreach (var item in blobs)
+                {
+                    if (item != excludedBlob)
+                    {
+                        var d = (new Vector2(item.Current.EstimatedCursorX, item.Current.EstimatedCursorY) - p_idealPosition).Length();
+
+                        if (d < score)
+                        {
+                            score = d;
+                            closestBlob = item;
+                        }
+                    }
                 }
 
-                SortScorings();
-
-                BlobParametersRecord leftData;
-                BlobParametersRecord rightData;
-
-                if (maxLeftScore > maxRightScore)
+                if (score < 20)
                 {
-                    /* priority to the left */
-                    leftData = leftScoringSort[0];
-                    leftData.assigned = true;
-
-                    /* now the right */
-                    rightData = rightScoringSort[0].assigned ? rightScoringSort[1] : rightScoringSort[0];
+                    handBlob.MBlob = closestBlob;
+                    handBlob.empty = false;
                 }
                 else
                 {
-                    /* priority to the right */
-                    rightData = rightScoringSort[0];
-                    rightData.assigned = true;
-
-                    /* now the left */
-                    leftData = leftScoringSort[0].assigned ? leftScoringSort[1] : leftScoringSort[0];
+                    handBlob.MBlob = null;
+                    handBlob.empty = true;
                 }
-
-                if (leftData.MBlob.AvgCenterX > rightData.MBlob.AvgCenterX)
-                {
-                    /* exchange */
-                    var tmp = leftData;
-                    leftData = rightData;
-                    rightData = tmp;
-                }
-
-                LeftHandBlob.MBlob = leftData.MBlob;
-                LeftHandBlob.CursorPosition = LeftHandBlob.CursorPosition * updateLatency + (1 - updateLatency) * new Vector2(leftData.MBlob.EstimatedCursorX / DataWidth, leftData.MBlob.EstimatedCursorY / DataHeight);
-
-                RightHandBlob.MBlob = rightData.MBlob;
-                RightHandBlob.CursorPosition = RightHandBlob.CursorPosition * updateLatency + (1 - updateLatency) * new Vector2(rightData.MBlob.EstimatedCursorX / DataWidth, rightData.MBlob.EstimatedCursorY / DataHeight);
             }
+
+            if (handBlob.MBlob != null)
+            {
+                var newPos = handBlob.CursorPosition * updateLatency + (1 - updateLatency) * new Vector2(handBlob.MBlob.Current.EstimatedCursorX / DataWidth, handBlob.MBlob.Current.EstimatedCursorY / DataHeight);
+
+                if (!double.IsNaN(newPos.X) && !double.IsNaN(newPos.Y))
+                    handBlob.CursorPosition = newPos;
+            }
+            else
+                handBlob.CursorPosition = idealHandPosition;
         }
 
-        private void SortScorings()
-        {
-            leftScoringSort.Sort((a, b) => (-1) * a.ScoreForLeftHand.CompareTo(b.ScoreForLeftHand));
-            rightScoringSort.Sort((a, b) => (-1) * a.ScoreForRightHand.CompareTo(b.ScoreForRightHand));
-        }
-
-        private double ComputeScore(ref ManagedBlob newblob, ref ManagedBlob oldBlob, bool isEmptyOldBlob, ref Vector2 idealHandPosition)
+        private double ComputeScore(ref ManagedBlob newblob, ref ManagedBlob oldBlob, bool isEmptyOldBlob, bool considerInvertedCursor, ref Vector2 idealHandPosition)
         {
             /*
              * Le score dépend de:
@@ -206,8 +229,15 @@ namespace JapanNUI.Input.Kinect
              * - Orientation par rapport à l'ancienne orientation
              * */
 
-            var oldCenter = new Vector2(oldBlob.AvgCenterX / DataWidth, oldBlob.AvgCenterY / DataHeight);
-            var newCenter = new Vector2(newblob.AvgCenterX / DataWidth, newblob.AvgCenterY / DataHeight);
+            if (considerInvertedCursor && isEmptyOldBlob)
+                return 0;
+
+            var oldCenter = considerInvertedCursor
+                ? new Vector2(oldBlob.InvertedEstimatedCursorX / DataWidth, oldBlob.InvertedEstimatedCursorY / DataHeight)
+                : new Vector2(oldBlob.EstimatedCursorX / DataWidth, oldBlob.EstimatedCursorY / DataHeight);
+            var newCenter = considerInvertedCursor 
+                ? new Vector2(newblob.InvertedEstimatedCursorX / DataWidth, newblob.InvertedEstimatedCursorY / DataHeight)
+                : new Vector2(newblob.EstimatedCursorX / DataWidth, newblob.EstimatedCursorY / DataHeight);
 
             var oldSize = (float)oldBlob.PixelCount / (DataWidth * DataHeight);
             var newSize = (float)newblob.PixelCount / (DataWidth * DataHeight);

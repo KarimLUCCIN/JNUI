@@ -168,6 +168,7 @@ namespace JapanNUI
 
 			void finalizeBlobs(unsigned char* data, Blob * blobs, int blobCount, int lines, int columns, int stride)
 			{
+				double globalWeights[] = {1,1,1,1};
 				double directionsAngles[] = {0, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
 				double directionsAnglesInv[] = {M_PI, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
 
@@ -194,13 +195,13 @@ namespace JapanNUI
 
 						for(int j = 0;j<4;j++)
 						{
-							totalScore += blobs[i].accBorderType[j];
+							totalScore += globalWeights[j] * blobs[i].accBorderType[j];
 
 							if(j != BLOB_DIRECTION_DIAG)
-								leftOnlyScore += blobs[i].accBorderType[j];
+								leftOnlyScore += globalWeights[j] * blobs[i].accBorderType[j];
 							
 							if(j != BLOB_DIRECTION_INVDIAG)
-								rightOnlyScore += blobs[i].accBorderType[j];
+								rightOnlyScore += globalWeights[j] * blobs[i].accBorderType[j];
 
 							if(score < blobs[i].accBorderType[j])
 							{
@@ -218,16 +219,16 @@ namespace JapanNUI
 						for(int j = 0;j<4;j++)
 						{
 							/* entre 0 et pi/2 */
-							avgDiagAngle += directionsAngles[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
+							avgDiagAngle += globalWeights[j] * directionsAngles[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
 
 							/* entre pi/2 et pi */
-							avgDiagInvAngle += directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
+							avgDiagInvAngle += globalWeights[j] * directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / (double)totalScore);
 
 							if(j != BLOB_DIRECTION_INVDIAG)
-								rightOnlyDirection += directionsAngles[j] * ((double)blobs[i].accBorderType[j] / rightOnlyScore);
+								rightOnlyDirection += globalWeights[j] * directionsAngles[j] * ((double)blobs[i].accBorderType[j] / rightOnlyScore);
 
 							if(j != BLOB_DIRECTION_DIAG)
-								leftOnlyDirection += directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / leftOnlyScore);
+								leftOnlyDirection += globalWeights[j] * directionsAnglesInv[j] * ((double)blobs[i].accBorderType[j] / leftOnlyScore);
 						}
 
 						double mainAngle;
@@ -451,7 +452,7 @@ namespace JapanNUI
 				delete m_blobs;
 			}
 
-			void convertBlob(ManagedBlob ^ dst, Blob * src, double primaryCenterX, double primaryCenterY)
+			void convertBlob(ManagedBlob ^ dst, Blob * src, double primaryCenterX, double primaryCenterY, bool crossed)
 			{
 				dst->AvgCenterX = src->AvgCenterX;
 				dst->AvgCenterY = src->AvgCenterY;
@@ -471,6 +472,11 @@ namespace JapanNUI
 				/* estimates the cursor position */
 				dst->EstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, src->AvgCenterX + cos(dst->AverageDirection) * abs(primaryCenterX - dst->MinX)));
 				dst->EstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, src->AvgCenterY - sin(dst->AverageDirection) * abs(primaryCenterY - dst->MinY)));
+
+				dst->InvertedEstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, src->AvgCenterX + cos(dst->AverageDirection + M_PI) * abs(primaryCenterX - dst->MinX)));
+				dst->InvertedEstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, src->AvgCenterY - sin(dst->AverageDirection + M_PI) * abs(primaryCenterY - dst->MinY)));
+
+				dst->Crossed = crossed;
 			}
 
 			int BlobDelimiter::convertBlobs(int blobCount)
@@ -487,7 +493,7 @@ namespace JapanNUI
 						double primaryCenterY = blobs[native_blob_index].AvgCenterY;
 
 						if(!blobs[native_blob_index].haveCrossingPattern)
-							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY);
+							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY, false);
 						else
 						{
 							/* équivalent à deux blobs avec chacun une des directions */
@@ -496,7 +502,7 @@ namespace JapanNUI
 							blobs[native_blob_index].AvgCenterX = blobs[native_blob_index].AvgCenterXleft;
 							blobs[native_blob_index].AvgCenterY = blobs[native_blob_index].AvgCenterYleft;
 
-							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY);
+							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY, true);
 
 							managed_blob_count++;
 
@@ -505,7 +511,7 @@ namespace JapanNUI
 							blobs[native_blob_index].AvgCenterX = blobs[native_blob_index].AvgCenterXright;
 							blobs[native_blob_index].AvgCenterY = blobs[native_blob_index].AvgCenterYright;
 
-							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY);
+							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY, true);
 						}
 
 						managed_blob_count++;

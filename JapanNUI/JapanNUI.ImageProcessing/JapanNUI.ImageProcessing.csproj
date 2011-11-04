@@ -91,6 +91,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlobsTracker.cs" />
     <Compile Include="ContourBuilder.cs" />
     <Compile Include="DebugTools\DebugTexturePresenter.cs" />
     <Compile Include="ImageProcessingEngine.cs" />
