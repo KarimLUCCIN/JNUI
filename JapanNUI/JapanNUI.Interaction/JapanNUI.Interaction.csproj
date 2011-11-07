@@ -74,6 +74,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BasePositionProvider.cs" />
+    <Compile Include="CursorState.cs" />
     <Compile Include="Gestures\SimpleGestureClosenessEvaluator.cs" />
     <Compile Include="IInputListener.cs" />
     <Compile Include="IInputProvider.cs" />

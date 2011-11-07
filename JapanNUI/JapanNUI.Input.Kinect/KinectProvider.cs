@@ -236,8 +236,8 @@ namespace JapanNUI.Input.Kinect
                 PlanarImage Image = e.ImageFrame.Image;
                 byte[] convertedDepthFrame = convertDepthFrame(Image.Bits);
 
-                leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition, 0));
-                rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition, 0));
+                leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition, 0), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
+                rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition, 0), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
 
                 Listener.Update(this);
                 
@@ -249,6 +249,26 @@ namespace JapanNUI.Input.Kinect
             lock (sync)
             {
                 processing = false;
+            }
+        }
+
+        private CursorState ParseKinectCursorState(KinectBlobsMatcher.BlobParametersRecord blobRecord)
+        {
+            if (blobRecord == null || blobRecord.MBlob == null)
+                return CursorState.Default;
+            else
+            {
+                var mblob = blobRecord.MBlob;
+                switch (mblob.Status)
+                {
+                    default:
+                    case BlobsTracker.Status.Lost:
+                        return CursorState.Default;
+                    case BlobsTracker.Status.Tracking:
+                        return CursorState.Tracked;
+                    case BlobsTracker.Status.Waiting:
+                        return CursorState.StandBy;
+                }
             }
         }
 

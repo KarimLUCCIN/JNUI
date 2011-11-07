@@ -144,7 +144,7 @@ namespace JapanNUI
             }
         }
 
-        public void UpdatePrimaryCursor(Vector3 position)
+        public void UpdatePrimaryCursor(Vector3 position, CursorState state)
         {
             Dispatcher.Invoke((Action)delegate
             {
@@ -153,7 +153,7 @@ namespace JapanNUI
             });
         }
 
-        public void UpdateSecondaryCursor(Vector3 position)
+        public void UpdateSecondaryCursor(Vector3 position, CursorState state)
         {
             Dispatcher.Invoke((Action)delegate
             {

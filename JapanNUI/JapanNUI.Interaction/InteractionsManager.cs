@@ -133,11 +133,11 @@ namespace JapanNUI.Interaction
                 if (primary)
                 {
                     primary = false;
-                    Listener.UpdatePrimaryCursor(position.CurrentPoint.Position);
+                    Listener.UpdatePrimaryCursor(position.CurrentPoint.Position, position.CurrentPoint.State);
                 }
                 else
                 {
-                    Listener.UpdateSecondaryCursor(position.CurrentPoint.Position);
+                    Listener.UpdateSecondaryCursor(position.CurrentPoint.Position, position.CurrentPoint.State);
                     break;
                 }
             }
