@@ -1,6 +1,7 @@
 ﻿<Window x:Class="JapanNUI.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Name="mainWindow"
         Title="MainWindow" Height="350" Width="525" Cursor="None">
     <Grid>
         <Grid.RowDefinitions>
@@ -10,8 +11,34 @@
         </Grid.RowDefinitions>
         <Image Name="debugDepthImage" Stretch="Fill" />
         <Canvas Name="clientCanvas" Grid.Row="0">
-            <Image Name="defaultCursor" Width="24" Height="24" Source="/JapanNUI;component/Images/gear.ico" Margin="-12"/>
-            <Image Name="secondaryCursor" Width="24" Height="24" Source="/JapanNUI;component/Images/About.png" Margin="-12"/>
+            <Image Name="defaultCursor" Width="24" Height="24" Margin="-12" DataContext="{Binding ElementName=mainWindow}">
+                <Image.Style>
+                    <Style TargetType="{x:Type Image}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsPrimaryCursorTracked}" Value="True">
+                                <Setter Property="Source" Value="/JapanNUI;component/Images/right-tracked.png"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsPrimaryCursorTracked}" Value="False">
+                                <Setter Property="Source" Value="/JapanNUI;component/Images/right-default.png"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
+            <Image Name="secondaryCursor" Width="24" Height="24" Margin="-12" DataContext="{Binding ElementName=mainWindow}">
+                <Image.Style>
+                    <Style TargetType="{x:Type Image}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsPrimaryCursorTracked}" Value="True">
+                                <Setter Property="Source" Value="/JapanNUI;component/Images/left-tracked.png"/>
+                            </DataTrigger>
+                            <DataTrigger Binding="{Binding IsPrimaryCursorTracked}" Value="False">
+                                <Setter Property="Source" Value="/JapanNUI;component/Images/left-default.png"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Image.Style>
+            </Image>
         </Canvas>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Current Gesture:</TextBlock>
