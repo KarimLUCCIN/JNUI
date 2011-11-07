@@ -69,7 +69,7 @@ namespace JapanNUI.Input.Kinect
                     throw new InvalidOperationException("Failed to open stream. Please make sure to specify a supported image type and resolution.");
                 }
 #else
-                nui.Initialize(RuntimeOptions.UseDepthAndPlayerIndex | RuntimeOptions.UseSkeletalTracking | RuntimeOptions.UseColor);
+                nui.Initialize(RuntimeOptions.UseDepthAndPlayerIndex);// | RuntimeOptions.UseSkeletalTracking | RuntimeOptions.UseColor);
 
                 nui.DepthStream.Open(ImageStreamType.Depth, 2, ImageResolution.Resolution320x240, ImageType.DepthAndPlayerIndex);
 #endif
