@@ -452,6 +452,22 @@ namespace JapanNUI
 				delete m_blobs;
 			}
 
+			inline void normalize(double x, double y, double * d_x, double * d_y)
+			{
+				double length = sqrt(p2(x) + p2(y));
+
+				if(length <= 0)
+				{
+					*d_x = 0;
+					*d_y = 0;
+				}
+				else
+				{
+					*d_x = x / length;
+					*d_y = x / length;
+				}
+			}
+
 			void convertBlob(ManagedBlob ^ dst, Blob * src, double primaryCenterX, double primaryCenterY, bool crossed)
 			{
 				dst->AvgCenterX = src->AvgCenterX;
@@ -475,6 +491,13 @@ namespace JapanNUI
 
 				dst->InvertedEstimatedCursorX = min2(dst->MaxX, max2(dst->MinX, src->AvgCenterX - cos(dst->AverageDirection) * abs(primaryCenterX - dst->MinX)));
 				dst->InvertedEstimatedCursorY = min2(dst->MaxY, max2(dst->MinY, src->AvgCenterY + sin(dst->AverageDirection) * abs(primaryCenterY - dst->MinY)));
+
+				/* correct the angle, based on the cursor location within the bounding box of the blob */
+				double c_x, c_y;
+				normalize(dst->EstimatedCursorX - dst->AvgCenterX, dst->EstimatedCursorY - dst->AvgCenterY,
+					&c_x, &c_y);
+
+				dst->AverageDirection = acos(dot(c_x, c_y, 1, 0));
 
 				dst->Crossed = crossed;
 			}
