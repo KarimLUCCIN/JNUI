@@ -121,6 +121,11 @@ namespace JapanNUI.ImageProcessing
                 {
                     if (!actual.attached)
                     {
+                        bool canConsiderInverted = actual.Current.Width > actual.Current.Height;
+
+                        if (!canConsiderInverted && actual.InvertedCursor)
+                            actual.InvertedCursor = false;
+
                         var directDistance = Distance(i_blob.blob.EstimatedCursorX, i_blob.blob.EstimatedCursorY, actual.Current.EstimatedCursorX, actual.Current.EstimatedCursorY);
                         var invertedDistance = Distance(i_blob.blob.InvertedEstimatedCursorX, i_blob.blob.InvertedEstimatedCursorY, actual.Current.EstimatedCursorX, actual.Current.EstimatedCursorY);
 
@@ -134,7 +139,7 @@ namespace JapanNUI.ImageProcessing
                         double d;
                         bool invert;
 
-                        if (directDistance <= invertedDistance)
+                        if (directDistance <= invertedDistance || !canConsiderInverted)
                         {
                             d = directDistance;
                             invert = false;
