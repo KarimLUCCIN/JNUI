@@ -225,5 +225,28 @@ namespace JapanNUI
         }
 
         #endregion
+
+        #region Processing Times
+
+        TimeSpan l_totalProcessingTime = TimeSpan.Zero;
+        TimeSpan l_cgProcessingTime = TimeSpan.Zero;
+
+        public void UpdateProcessingTimes(TimeSpan totalProcessingTime, TimeSpan cgProcessingTime)
+        {
+            Dispatcher.Invoke((Action)delegate
+            {
+                l_totalProcessingTime = TimeSpan.FromMilliseconds(0.8 * l_totalProcessingTime.TotalMilliseconds + 0.2 * totalProcessingTime.TotalMilliseconds);
+                l_cgProcessingTime = TimeSpan.FromMilliseconds(0.8 * l_cgProcessingTime.TotalMilliseconds + 0.2 * cgProcessingTime.TotalMilliseconds);
+
+                var percentage = l_totalProcessingTime.TotalMilliseconds / ((1 / 30.0) * 1000);
+
+                timesBox.Text = String.Format("Total: {0} ms, CG:{1} ms ({2} %)",
+                    l_totalProcessingTime.TotalMilliseconds.ToString("#.##"),
+                    l_cgProcessingTime.TotalMilliseconds.ToString("#.##"),
+                    (percentage * 100).ToString("#"));
+            });
+        }
+
+        #endregion
     }
 }

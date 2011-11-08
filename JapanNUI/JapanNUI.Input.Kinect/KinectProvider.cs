@@ -240,6 +240,7 @@ namespace JapanNUI.Input.Kinect
                 rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition, 0), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
 
                 Listener.Update(this);
+                Listener.UpdateProcessingTimes(KinectBlobsMatcher.ProcessingTime, KinectBlobsMatcher.ImageProcessingTime);
                 
 #if(!DISABLE_DEPTH_VIEW)
                 Listener.DebugDisplayBgr32DepthImage(Image.Width, Image.Height, convertedDepthFrame, Image.Width * 4);

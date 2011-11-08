@@ -5,6 +5,7 @@ using System.Text;
 using JapanNUI.ImageProcessing;
 using JapanNUI.ImageProcessing.SectionsBuilders;
 using JapanNUI.Interaction.Maths;
+using System.Diagnostics;
 
 namespace JapanNUI.Input.Kinect
 {
@@ -93,32 +94,55 @@ namespace JapanNUI.Input.Kinect
 
         List<ManagedBlob> stepBlobs = new List<ManagedBlob>();
 
+        TimeSpan processingTime = TimeSpan.Zero;
+        Stopwatch processingTimeWatch = new Stopwatch();
+
+        public TimeSpan ProcessingTime
+        {
+            get { return processingTime; }
+        }
+
+        public TimeSpan ImageProcessingTime
+        {
+            get { return ProcessingEngine.ProcessingTime; }
+        }
+
         public void Process(byte[] depthFilteredFrame32, float minDepth, float maxDepth)
         {
-            ProcessingEngine.Process(depthFilteredFrame32, minDepth, maxDepth);
-
-            int validScoringBlobs = 0;
-
-            stepBlobs.Clear();
-
-            for (int i = 0; i < scoringBlobs.Length; i++)
+            processingTimeWatch.Reset();
+            processingTimeWatch.Start();
+            try
             {
-                var i_blob = ProcessingEngine.MainBlobs[i];
+                ProcessingEngine.Process(depthFilteredFrame32, minDepth, maxDepth);
 
-                if (i_blob == null || i_blob.PixelCount <= 10 * 10)
-                    break;
-                else
+                int validScoringBlobs = 0;
+
+                stepBlobs.Clear();
+
+                for (int i = 0; i < scoringBlobs.Length; i++)
                 {
-                    validScoringBlobs++;
-                    //scoringBlobs[i].MBlob = i_blob;
+                    var i_blob = ProcessingEngine.MainBlobs[i];
 
-                    stepBlobs.Add(i_blob);
+                    if (i_blob == null || i_blob.PixelCount <= 10 * 10)
+                        break;
+                    else
+                    {
+                        validScoringBlobs++;
+                        //scoringBlobs[i].MBlob = i_blob;
+
+                        stepBlobs.Add(i_blob);
+                    }
                 }
+
+                BlobsTracker.Update(stepBlobs);
+
+                UpdateCursors();
             }
-
-            BlobsTracker.Update(stepBlobs);
-
-            UpdateCursors();
+            finally
+            {
+                processingTimeWatch.Stop();
+                processingTime = processingTimeWatch.Elapsed;
+            }
         }
 
         bool wasCrossed = false;

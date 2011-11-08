@@ -20,5 +20,7 @@ namespace JapanNUI.Interaction
         void UpdateSecondaryCursor(Vector3 position, CursorState state);
 
         void ContextDelegateMethod(Action action);
+
+        void UpdateProcessingTimes(TimeSpan totalProcessingTime, TimeSpan cgProcessingTime);
     }
 }

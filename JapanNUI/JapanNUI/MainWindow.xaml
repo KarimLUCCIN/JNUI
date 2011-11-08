@@ -8,6 +8,7 @@
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
             <RowDefinition Height="30" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Image Name="debugDepthImage" Stretch="Fill" />
         <Canvas Name="clientCanvas" Grid.Row="0">
@@ -47,6 +48,10 @@
         <StackPanel Orientation="Horizontal" Grid.Row="2">
             <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Current Movement:</TextBlock>
             <TextBlock VerticalAlignment="Center" Name="currentRecognizedMovement"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" Grid.Row="3">
+            <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Times:</TextBlock>
+            <TextBlock VerticalAlignment="Center" Name="timesBox"/>
         </StackPanel>
     </Grid>
 </Window>
