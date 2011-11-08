@@ -19,7 +19,7 @@ namespace JapanNUI.Input.Kinect
             CurrentPoint.PixelMoveTreshold = 10;
         }
 
-        public bool Update(Vector3 skeletonPosition)
+        public bool Update(Vector3 skeletonPosition, CursorState state)
         {
             if (BeginUpdate())
             {
@@ -29,7 +29,7 @@ namespace JapanNUI.Input.Kinect
 
                     var clientMousePos = input.ClientArea.RelativePointToAbsolutePoint(skeletonPosition.XY);
 
-                    CurrentPoint.UpdatePosition(new Vector3(clientMousePos - input.ClientArea.Origin, skeletonPosition.Z));
+                    CurrentPoint.UpdatePosition(new Vector3(clientMousePos - input.ClientArea.Origin, skeletonPosition.Z), state);
                 }
                 finally
                 {

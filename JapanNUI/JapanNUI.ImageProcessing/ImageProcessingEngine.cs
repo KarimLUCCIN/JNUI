@@ -13,6 +13,7 @@ using System.IO;
 using System.Windows.Media;
 using JapanNUI.ImageProcessing.SectionsBuilders;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
 
 namespace JapanNUI.ImageProcessing
 {
@@ -225,97 +226,109 @@ namespace JapanNUI.ImageProcessing
         public const int MAXIMUM_CONSIDERED_DEPTH = 2000;
         public const int MINIMUM_KINECT_LITERAL_DEPTH = 800;
 
+        TimeSpan processingTime = TimeSpan.Zero;
+        Stopwatch processingTimeWatch = new Stopwatch();
+
+        public TimeSpan ProcessingTime
+        {
+            get { return processingTime; }
+        }
+
         public void Process(byte[] kinectDepthDataBytes, float minDepth, float maxDepth)
         {
-            lock (sync)
+            processingTimeWatch.Reset();
+            processingTimeWatch.Start();
+            try
             {
-                var device = Host.Device;
-
-                /* reset device state */
-                device.BlendState = BlendState.Opaque;
-                device.DepthStencilState = DepthStencilState.None;
-                device.RasterizerState = RasterizerState.CullNone;
-
-                for (int i = 0; i < 8; i++)
-                    device.Textures[i] = null;
-
-                /* set source data */
-                kinectDepthSource.SetData<byte>(kinectDepthDataBytes);
-
-                /* full screen pass */
-                bordersDetectShader.halfPixel = new Vector2(0.5f / ((float)Width), 0.5f / ((float)Height));
-
-                bordersDetectShader.depthMap = null;
-                bordersDetectShader.depthMap = kinectDepthSource;
-
-                /* Detect */
-                Host.RenderTargetManager.Push(kinectProcessedOutput);
+                lock (sync)
                 {
-                    device.Clear(Microsoft.Xna.Framework.Color.Black);
+                    var device = Host.Device;
 
-                    bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Detect"];
-                    bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+                    /* reset device state */
+                    device.BlendState = BlendState.Opaque;
+                    device.DepthStencilState = DepthStencilState.None;
+                    device.RasterizerState = RasterizerState.CullNone;
 
-                    Host.Renderer.QuadRenderer.RenderFullScreen();
-                }
-                Host.RenderTargetManager.Pop();
+                    for (int i = 0; i < 8; i++)
+                        device.Textures[i] = null;
 
-                /* Downsize */
-                bordersDetectShader.depthMap = kinectProcessedOutput;
-                bordersDetectShader.halfPixel = new Vector2(0.5f / ((float)Width), 0.5f / ((float)Height));
+                    /* set source data */
+                    kinectDepthSource.SetData<byte>(kinectDepthDataBytes);
 
-                minDepth = (minDepth - MINIMUM_KINECT_LITERAL_DEPTH) / MAXIMUM_CONSIDERED_DEPTH;
-                maxDepth = (maxDepth - MINIMUM_KINECT_LITERAL_DEPTH) / MAXIMUM_CONSIDERED_DEPTH;
+                    /* full screen pass */
+                    bordersDetectShader.halfPixel = new Vector2(0.5f / ((float)Width), 0.5f / ((float)Height));
 
-                bordersDetectShader.minimumDepthOffset = minDepth;
-                bordersDetectShader.maximumDepth = maxDepth;
+                    bordersDetectShader.depthMap = null;
+                    bordersDetectShader.depthMap = kinectDepthSource;
 
-                Host.RenderTargetManager.Push(grownRegions);
-                {
-                    device.Clear(Microsoft.Xna.Framework.Color.Black);
+                    /* Detect */
+                    Host.RenderTargetManager.Push(kinectProcessedOutput);
+                    {
+                        device.Clear(Microsoft.Xna.Framework.Color.Black);
 
-                    bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Down"];
-                    bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+                        bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Detect"];
+                        bordersDetectShader.CurrentTechnique.Passes[0].Apply();
 
-                    Host.Renderer.QuadRenderer.RenderFullScreen();
-                }
-                Host.RenderTargetManager.Pop();
+                        Host.Renderer.QuadRenderer.RenderFullScreen();
+                    }
+                    Host.RenderTargetManager.Pop();
 
-                //bordersGrownDebugPresenter.Update(grownRegions, PixelFormats.Bgr32, 4);
+                    /* Downsize */
+                    bordersDetectShader.depthMap = kinectProcessedOutput;
+                    bordersDetectShader.halfPixel = new Vector2(0.5f / ((float)Width), 0.5f / ((float)Height));
+
+                    minDepth = (minDepth - MINIMUM_KINECT_LITERAL_DEPTH) / MAXIMUM_CONSIDERED_DEPTH;
+                    maxDepth = (maxDepth - MINIMUM_KINECT_LITERAL_DEPTH) / MAXIMUM_CONSIDERED_DEPTH;
+
+                    bordersDetectShader.minimumDepthOffset = minDepth;
+                    bordersDetectShader.maximumDepth = maxDepth;
+
+                    Host.RenderTargetManager.Push(grownRegions);
+                    {
+                        device.Clear(Microsoft.Xna.Framework.Color.Black);
+
+                        bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Down"];
+                        bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                        Host.Renderer.QuadRenderer.RenderFullScreen();
+                    }
+                    Host.RenderTargetManager.Pop();
+
+                    //bordersGrownDebugPresenter.Update(grownRegions, PixelFormats.Bgr32, 4);
 
 
-                /* get result : regions */
-                kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
+                    /* get result : regions */
+                    kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
 
-                /* Process regions to get borders directions */
-                bordersDetectShader.depthMap = grownRegions;
-                bordersDetectShader.halfPixel = new Vector2(0.5f / (float)grownRegions.Width, 0.5f / (float)grownRegions.Height);
+                    /* Process regions to get borders directions */
+                    bordersDetectShader.depthMap = grownRegions;
+                    bordersDetectShader.halfPixel = new Vector2(0.5f / (float)grownRegions.Width, 0.5f / (float)grownRegions.Height);
 
-                Host.RenderTargetManager.Push(gradDirectionDetect1);
-                {
-                    device.Clear(Microsoft.Xna.Framework.Color.Black);
+                    Host.RenderTargetManager.Push(gradDirectionDetect1);
+                    {
+                        device.Clear(Microsoft.Xna.Framework.Color.Black);
 
-                    bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Grad"];
-                    bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+                        bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["Grad"];
+                        bordersDetectShader.CurrentTechnique.Passes[0].Apply();
 
-                    Host.Renderer.QuadRenderer.RenderFullScreen();
-                }
-                Host.RenderTargetManager.Pop();
+                        Host.Renderer.QuadRenderer.RenderFullScreen();
+                    }
+                    Host.RenderTargetManager.Pop();
 
-                gradDirectionDetect1.GetData(gradDirectionDetect1Data);
+                    gradDirectionDetect1.GetData(gradDirectionDetect1Data);
 
-                //if (bordersDebugPresenter != null)
-                //    //bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
-                //    bordersDebugPresenter.Update(gradDirectionDetect1Data, System.Windows.Media.PixelFormats.Bgr32, 4);
+                    //if (bordersDebugPresenter != null)
+                    //    //bordersDebugPresenter.Update(kinectDepthDataBytes, System.Windows.Media.PixelFormats.Gray32Float, 4);
+                    //    bordersDebugPresenter.Update(gradDirectionDetect1Data, System.Windows.Media.PixelFormats.Bgr32, 4);
 
-#warning FUCKING SLOW
-                //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
-                grownRegions.GetData(grownBordersData);
-                ProcessBlobs(grownBordersData, gradDirectionDetect1Data);
-                squaresPresenter.Update(grownRegions, PixelFormats.Bgra32, 4);
-                //grownBorders.GetData(grownBordersData);
+                    //#warning FUCKING SLOW
+                    //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
+                    grownRegions.GetData(grownBordersData);
+                    ProcessBlobs(grownBordersData, gradDirectionDetect1Data);
+                    squaresPresenter.Update(grownRegions, PixelFormats.Bgra32, 4);
+                    //grownBorders.GetData(grownBordersData);
 
-                //blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
+                    //blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
 
 #if(!ENABLE_ONLY_BORDER_DISTANCE_LABELS)
                 /* init shader */
@@ -372,7 +385,13 @@ namespace JapanNUI.ImageProcessing
                 Swap(ref kinectFlies1, ref kinectFlies2);
 #endif
 
-                firstPass = false;
+                    firstPass = false;
+                }
+            }
+            finally
+            {
+                processingTimeWatch.Stop();
+                processingTime = processingTimeWatch.Elapsed;
             }
         }
 

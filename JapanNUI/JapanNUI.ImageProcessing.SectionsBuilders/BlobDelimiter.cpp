@@ -166,6 +166,24 @@ namespace JapanNUI
 				return a * a;
 			}
 
+			int scanLineToPixel(int column, int startY, int endY, unsigned char* data, int lines, int columns, int stride)
+			{
+				/*
+					Scan la ligne et renvoi le premier Y trouvé différent de 0 à partir de startY et jusqu'à endY.
+					Renvoi -1 si aucun pixel non nul n'a été trouvé.
+
+					La recherche se fait de bas en haut.
+				*/
+
+				for(int i = startY;i>=endY;i--)
+				{
+					if(data[pixel(i, column)] != 0)
+						return i;
+				}
+
+				return -1;
+			}
+
 			void finalizeBlobs(unsigned char* data, Blob * blobs, int blobCount, int lines, int columns, int stride)
 			{
 				double globalWeights[] = {1,1,1,1};
@@ -260,6 +278,10 @@ namespace JapanNUI
 							abs(blobs[i].CrossRightBottomX - blobs[i].MaxX) < 10 &&
 							abs(max2(blobs[i].CrossLeftBottomY, blobs[i].CrossRightBottomY) - blobs[i].MaxY) < 10;
 
+						int s_borderleft_pixel = scanLineToPixel(blobs[i].MinX + 10, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
+						int s_borderright_pixel = s_borderleft_pixel < 0 ? -1 : scanLineToPixel(blobs[i].MaxX - 10, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
+						int s_center_pixel = s_borderright_pixel < 0 ? -1 : scanLineToPixel((int)blobs[i].AvgCenterX, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
+
 						double differenceInPixelInRightAndLeftPercentage = (((double)abs2((double)blobs[i].pointCountRight - (double)blobs[i].pointCountLeft)) / ((double)blobs[i].PixelCount));
 
 						bool isEnouphPointsInRightAndLeftStacks =
@@ -268,7 +290,11 @@ namespace JapanNUI
 						bool areCentersSpacedEnouphForSeparatedArms =
 							sqrt(p2(blobs[i].AvgCenterXleft - blobs[i].AvgCenterXright) + p2(blobs[i].AvgCenterYleft - blobs[i].AvgCenterYright)) > 10;
 
-						if(areCornersRepresentativeOfSeparatedArms || (areCentersSpacedEnouphForSeparatedArms && isEnouphPointsInRightAndLeftStacks))
+						int t1 = abs2(s_borderleft_pixel - s_borderright_pixel);
+						int t2 = abs2(s_center_pixel - min2(s_borderleft_pixel, s_borderright_pixel));
+						bool isXpattern = (t1 < 20) && (t2 > 40);
+
+						if(isXpattern)// && (areCornersRepresentativeOfSeparatedArms || (areCentersSpacedEnouphForSeparatedArms && isEnouphPointsInRightAndLeftStacks)))
 						{
 							/* Step 2 : l'angle principal doit être la verticale */
 							//if(maxDirection == BLOB_DIRECTION_VERTICAL)

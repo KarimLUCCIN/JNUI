@@ -18,13 +18,14 @@ using JapanNUI.Interaction.Maths;
 using JapanNUI.Input.Kinect;
 using JapanNUI.Interaction.Gestures;
 using JapanNUI.Interaction.Recognition;
+using System.ComponentModel;
 
 namespace JapanNUI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IInputListener
+    public partial class MainWindow : Window, IInputListener, INotifyPropertyChanged
     {
         public IntPtr WindowHandle { get; private set; }
 
@@ -144,19 +145,54 @@ namespace JapanNUI
             }
         }
 
-        public void UpdatePrimaryCursor(Vector3 position)
+        private bool isPrimaryCursorTracked = false;
+
+        public bool IsPrimaryCursorTracked
+        {
+            get { return isPrimaryCursorTracked; }
+            set
+            {
+                if (value != isPrimaryCursorTracked)
+                {
+                    isPrimaryCursorTracked = value;
+                    RaisePropertyChanged("IsPrimaryCursorTracked");
+                }
+            }
+        }
+
+        private bool isSecondaryCursorTracked = false;
+
+        public bool IsSecondaryCursorTracked
+        {
+            get { return isSecondaryCursorTracked; }
+            set
+            {
+                if (value != isSecondaryCursorTracked)
+                {
+                    isSecondaryCursorTracked = value;
+                    RaisePropertyChanged("IsSecondaryCursorTracked");
+                }
+            }
+        }
+
+
+        public void UpdatePrimaryCursor(Vector3 position, CursorState state)
         {
             Dispatcher.Invoke((Action)delegate
             {
+                IsPrimaryCursorTracked = state == CursorState.Tracked;
+
                 Canvas.SetLeft(defaultCursor, position.X);
                 Canvas.SetTop(defaultCursor, position.Y);
             });
         }
 
-        public void UpdateSecondaryCursor(Vector3 position)
+        public void UpdateSecondaryCursor(Vector3 position, CursorState state)
         {
             Dispatcher.Invoke((Action)delegate
             {
+                IsSecondaryCursorTracked = state == CursorState.Tracked;
+
                 Canvas.SetLeft(secondaryCursor, position.X);
                 Canvas.SetTop(secondaryCursor, position.Y);
             });
@@ -174,6 +210,41 @@ namespace JapanNUI
         {
             debugDepthImage.Source = BitmapSource.Create(
                 width, height, 96, 96, PixelFormats.Bgr32, null, convertedDepthFrame, stride);
+        }
+
+        #endregion
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void RaisePropertyChanged(string property)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+        }
+
+        #endregion
+
+        #region Processing Times
+
+        TimeSpan l_totalProcessingTime = TimeSpan.Zero;
+        TimeSpan l_cgProcessingTime = TimeSpan.Zero;
+
+        public void UpdateProcessingTimes(TimeSpan totalProcessingTime, TimeSpan cgProcessingTime)
+        {
+            Dispatcher.Invoke((Action)delegate
+            {
+                l_totalProcessingTime = TimeSpan.FromMilliseconds(0.8 * l_totalProcessingTime.TotalMilliseconds + 0.2 * totalProcessingTime.TotalMilliseconds);
+                l_cgProcessingTime = TimeSpan.FromMilliseconds(0.8 * l_cgProcessingTime.TotalMilliseconds + 0.2 * cgProcessingTime.TotalMilliseconds);
+
+                var percentage = l_totalProcessingTime.TotalMilliseconds / ((1 / 30.0) * 1000);
+
+                timesBox.Text = String.Format("Total: {0} ms, CG:{1} ms ({2} %)",
+                    l_totalProcessingTime.TotalMilliseconds.ToString("#.##"),
+                    l_cgProcessingTime.TotalMilliseconds.ToString("#.##"),
+                    (percentage * 100).ToString("#"));
+            });
         }
 
         #endregion
