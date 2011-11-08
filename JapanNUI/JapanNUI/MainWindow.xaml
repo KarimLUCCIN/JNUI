@@ -30,10 +30,10 @@
                 <Image.Style>
                     <Style TargetType="{x:Type Image}">
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding IsPrimaryCursorTracked}" Value="True">
+                            <DataTrigger Binding="{Binding IsSecondaryCursorTracked}" Value="True">
                                 <Setter Property="Source" Value="/JapanNUI;component/Images/left-tracked.png"/>
                             </DataTrigger>
-                            <DataTrigger Binding="{Binding IsPrimaryCursorTracked}" Value="False">
+                            <DataTrigger Binding="{Binding IsSecondaryCursorTracked}" Value="False">
                                 <Setter Property="Source" Value="/JapanNUI;component/Images/left-default.png"/>
                             </DataTrigger>
                         </Style.Triggers>
