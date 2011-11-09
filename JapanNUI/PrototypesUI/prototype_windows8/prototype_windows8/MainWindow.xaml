@@ -1,0 +1,235 @@
+﻿<Window
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:prototype_windows8" mc:Ignorable="d"
+	x:Class="prototype_windows8.MainWindow"
+	x:Name="Window"
+	Title="MainWindow" WindowStyle="None" Background="#FFB4C9D4" Width="1280" Height="720" ResizeMode="CanMinimize" WindowStartupLocation="CenterScreen">
+
+	<Window.Resources>
+		<Style x:Key="ButtonFocusVisual">
+			<Setter Property="Control.Template">
+				<Setter.Value>
+					<ControlTemplate>
+						<Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<LinearGradientBrush x:Key="ButtonNormalBackground" EndPoint="0,1" StartPoint="0,0">
+			<GradientStop Color="#F3F3F3" Offset="0"/>
+			<GradientStop Color="#EBEBEB" Offset="0.5"/>
+			<GradientStop Color="#DDDDDD" Offset="0.5"/>
+			<GradientStop Color="#CDCDCD" Offset="1"/>
+		</LinearGradientBrush>
+		<SolidColorBrush x:Key="ButtonNormalBorder" Color="#FF707070"/>
+		<Style x:Key="ButtonStyle1" TargetType="{x:Type Button}">
+			<Setter Property="FocusVisualStyle" Value="{StaticResource ButtonFocusVisual}"/>
+			<Setter Property="Background" Value="{StaticResource ButtonNormalBackground}"/>
+			<Setter Property="BorderBrush" Value="{StaticResource ButtonNormalBorder}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+			<Setter Property="HorizontalContentAlignment" Value="Center"/>
+			<Setter Property="VerticalContentAlignment" Value="Center"/>
+			<Setter Property="Padding" Value="1"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+						<Microsoft_Windows_Themes:ButtonChrome x:Name="Chrome" BorderBrush="{TemplateBinding BorderBrush}" Background="{TemplateBinding Background}" RenderMouseOver="{TemplateBinding IsMouseOver}" RenderPressed="{TemplateBinding IsPressed}" RenderDefaulted="{TemplateBinding IsDefaulted}" SnapsToDevicePixels="true">
+							<ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+						</Microsoft_Windows_Themes:ButtonChrome>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsKeyboardFocused" Value="true">
+								<Setter Property="RenderDefaulted" TargetName="Chrome" Value="true"/>
+							</Trigger>
+							<Trigger Property="ToggleButton.IsChecked" Value="true">
+								<Setter Property="RenderPressed" TargetName="Chrome" Value="true"/>
+							</Trigger>
+							<Trigger Property="IsEnabled" Value="false">
+								<Setter Property="Foreground" Value="#ADADAD"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<ControlTemplate x:Key="RoundButton" TargetType="{x:Type Button}">
+			<Grid x:Name="main_grid">
+				<Ellipse Fill="Black" Stroke="White" StrokeThickness="2"/>
+				<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			</Grid>
+		</ControlTemplate>
+		<LinearGradientBrush x:Key="TextBoxBorder" EndPoint="0,20" MappingMode="Absolute" StartPoint="0,0">
+			<GradientStop Color="#ABADB3" Offset="0.05"/>
+			<GradientStop Color="#E2E3EA" Offset="0.07"/>
+			<GradientStop Color="#E3E9EF" Offset="1"/>
+		</LinearGradientBrush>
+		<Style x:Key="TextBoxStyle1" BasedOn="{x:Null}" TargetType="{x:Type TextBox}">
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+			<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+			<Setter Property="BorderBrush" Value="{StaticResource TextBoxBorder}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Padding" Value="1"/>
+			<Setter Property="AllowDrop" Value="true"/>
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+			<Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+			<Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type TextBox}">
+						<Microsoft_Windows_Themes:ListBoxChrome x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" RenderMouseOver="{TemplateBinding IsMouseOver}" RenderFocused="{TemplateBinding IsKeyboardFocusWithin}" SnapsToDevicePixels="true">
+							<ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+						</Microsoft_Windows_Themes:ListBoxChrome>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="false">
+								<Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="onglet" TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+						<Grid>
+							<Rectangle x:Name="onglet" Fill="White" Stroke="Black"/>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsFocused" Value="True"/>
+							<Trigger Property="IsDefaulted" Value="True"/>
+							<Trigger Property="IsMouseOver" Value="True"/>
+							<Trigger Property="IsPressed" Value="True"/>
+							<Trigger Property="IsEnabled" Value="False"/>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="TextBoxStyle2" BasedOn="{x:Null}" TargetType="{x:Type TextBox}">
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+			<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+			<Setter Property="BorderBrush" Value="{StaticResource TextBoxBorder}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Padding" Value="1"/>
+			<Setter Property="AllowDrop" Value="true"/>
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+			<Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+			<Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type TextBox}">
+						<Microsoft_Windows_Themes:ListBoxChrome x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" RenderMouseOver="{TemplateBinding IsMouseOver}" RenderFocused="{TemplateBinding IsKeyboardFocusWithin}" SnapsToDevicePixels="true">
+							<ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="14.667"/>
+						</Microsoft_Windows_Themes:ListBoxChrome>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="false">
+								<Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+						<Grid>
+							<Rectangle x:Name="onglet" Fill="#FFF4F4F5" Stroke="Black"/>
+							<ContentPresenter HorizontalAlignment="Stretch" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch" Margin="0,40,0,0" Width="200" Height="40" OpacityMask="Black"/>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsFocused" Value="True"/>
+							<Trigger Property="IsDefaulted" Value="True"/>
+							<Trigger Property="IsMouseOver" Value="True"/>
+							<Trigger Property="IsPressed" Value="True"/>
+							<Trigger Property="IsEnabled" Value="False"/>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<Style x:Key="ButtonStyle2" TargetType="{x:Type Button}">
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type Button}">
+						<Grid>
+							<Rectangle Fill="#FFCACAEF" Stroke="Black"/>
+							<Rectangle Fill="#80000000" HorizontalAlignment="Stretch" Margin="0,40,0,0" Stroke="Black" Width="Auto" Height="40"/>
+							<ContentPresenter RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Bottom" Margin="0" Height="33.333"/>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsFocused" Value="True"/>
+							<Trigger Property="IsDefaulted" Value="True"/>
+							<Trigger Property="IsMouseOver" Value="True"/>
+							<Trigger Property="IsPressed" Value="True"/>
+							<Trigger Property="IsEnabled" Value="False"/>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+	</Window.Resources>
+
+	<Grid x:Name="LayoutRoot">
+		<Rectangle Fill="Black" Stroke="Black" Margin="0" VerticalAlignment="Top" Height="126"/>
+		<Rectangle Fill="Black" Height="64" Stroke="Black" VerticalAlignment="Bottom"/>
+		<TextBox x:Name="website" Margin="95,0,317,12" TextWrapping="Wrap" Text="http://www.google.fr" Background="Black" Foreground="#FFD2D2D2" SelectionBrush="#FFB4B4B4" FontSize="16" VerticalAlignment="Bottom" Height="40" Style="{DynamicResource TextBoxStyle1}" d:LayoutOverrides="HorizontalAlignment" KeyDown="Go_website"/>
+		<Button x:Name="back" Content="f" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="40" Margin="24,0,0,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" d:LayoutOverrides="VerticalAlignment" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" Click="Back_click">
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF3F3F3" Offset="0"/>
+					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+					<GradientStop Color="White" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
+		<Button x:Name="refresh" Content="P" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,242,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Refresh_click">
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF3F3F3" Offset="0"/>
+					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+					<GradientStop Color="White" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
+		<Button x:Name="favorite" Content="★" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,171.5,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" d:LayoutOverrides="VerticalAlignment">
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF3F3F3" Offset="0"/>
+					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+					<GradientStop Color="White" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
+		<Button x:Name="home" Content=")" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,95,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 2" d:LayoutOverrides="VerticalAlignment" Click="Home_click">
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF3F3F3" Offset="0"/>
+					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+					<GradientStop Color="White" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
+		<Button x:Name="forward" Content="g" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,24,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Forward_click">
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF3F3F3" Offset="0"/>
+					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+					<GradientStop Color="White" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
+		<WebBrowser x:Name="browser" Margin="0,126,0,64" LoadCompleted="Browser_loaded"/>
+		<Button x:Name="onglet" Content="Button" HorizontalAlignment="Left" Height="80" Margin="24,24,0,0" Style="{DynamicResource ButtonStyle2}" VerticalAlignment="Top" Width="200" Foreground="#CCFFFFFF" BorderBrush="{x:Null}" FontSize="16"/>
+	</Grid>
+</Window>
