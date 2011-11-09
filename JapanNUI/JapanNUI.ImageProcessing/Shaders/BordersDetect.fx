@@ -286,11 +286,11 @@ float4 PS_Grad(VSO input) : COLOR0
 	dDiagUpLeft = abs(dDiagUpLeft);
 	dDiagUpRight = abs(dDiagUpRight);
 
-	dDiagUpLeft *= (4 - dHorz);
-	dDiagUpRight *= (4 - dHorz);
+	dDiagUpLeft *= (4 - dHorz) / 4.0;
+	dDiagUpRight *= (4 - dHorz) / 4.0;
 	//dUp *= max(1 - dDiagUpLeft, 1 - dDiagUpRight);
 
-	return float4(dUp / 4.0, dHorz / 4.0, dDiagUpLeft / 4.0, dDiagUpRight / 4.0);
+	return float4((dUp / 4.0), (dHorz / 4.0), (dDiagUpLeft / 4.0), (dDiagUpRight / 4.0));
 
 	/*
 	float m = max(dUp, max(dHorz, max(dDiagUpLeft, dDiagUpRight)));

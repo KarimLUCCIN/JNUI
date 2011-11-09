@@ -219,7 +219,7 @@ namespace JapanNUI.Input.Kinect
                     }
                 }
 
-                if (score < 40)
+                if (score < 20)
                 {
                     handBlob.MBlob = closestBlob;
                     handBlob.empty = false;

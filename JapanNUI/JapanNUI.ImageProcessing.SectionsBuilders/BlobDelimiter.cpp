@@ -186,7 +186,7 @@ namespace JapanNUI
 
 			void finalizeBlobs(unsigned char* data, Blob * blobs, int blobCount, int lines, int columns, int stride)
 			{
-				double globalWeights[] = {1,1,1,1};
+				double globalWeights[] = {1.2,1,1,1};
 				double directionsAngles[] = {0, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
 				double directionsAnglesInv[] = {M_PI, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
 
@@ -278,8 +278,8 @@ namespace JapanNUI
 							abs(blobs[i].CrossRightBottomX - blobs[i].MaxX) < 10 &&
 							abs(max2(blobs[i].CrossLeftBottomY, blobs[i].CrossRightBottomY) - blobs[i].MaxY) < 10;
 
-						int s_borderleft_pixel = scanLineToPixel(blobs[i].MinX + 10, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
-						int s_borderright_pixel = s_borderleft_pixel < 0 ? -1 : scanLineToPixel(blobs[i].MaxX - 10, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
+						int s_borderleft_pixel = scanLineToPixel(blobs[i].MinX + 2, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
+						int s_borderright_pixel = s_borderleft_pixel < 0 ? -1 : scanLineToPixel(blobs[i].MaxX - 2, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
 						int s_center_pixel = s_borderright_pixel < 0 ? -1 : scanLineToPixel((int)blobs[i].AvgCenterX, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
 
 						double differenceInPixelInRightAndLeftPercentage = (((double)abs2((double)blobs[i].pointCountRight - (double)blobs[i].pointCountLeft)) / ((double)blobs[i].PixelCount));
