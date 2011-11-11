@@ -22,5 +22,7 @@ namespace JapanNUI.Interaction
         void ContextDelegateMethod(Action action);
 
         void UpdateProcessingTimes(TimeSpan totalProcessingTime, TimeSpan cgProcessingTime);
+
+        void UpdateAdditionnalCursors(IEnumerable<Vector2> list);
     }
 }

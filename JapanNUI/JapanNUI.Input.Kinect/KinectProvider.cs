@@ -241,6 +241,8 @@ namespace JapanNUI.Input.Kinect
 
                 Listener.Update(this);
                 Listener.UpdateProcessingTimes(KinectBlobsMatcher.ProcessingTime, KinectBlobsMatcher.ImageProcessingTime);
+
+                Listener.UpdateAdditionnalCursors(KinectBlobsMatcher.AdditionnalBlobsCursors);
                 
 #if(!DISABLE_DEPTH_VIEW)
                 Listener.DebugDisplayBgr32DepthImage(Image.Width, Image.Height, convertedDepthFrame, Image.Width * 4);

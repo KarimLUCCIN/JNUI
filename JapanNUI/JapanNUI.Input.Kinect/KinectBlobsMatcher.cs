@@ -107,6 +107,14 @@ namespace JapanNUI.Input.Kinect
             get { return ProcessingEngine.ProcessingTime; }
         }
 
+        private List<Vector2> additionnalBlobsCursors = new List<Vector2>();
+
+        public List<Vector2> AdditionnalBlobsCursors
+        {
+            get { return additionnalBlobsCursors; }
+        }
+
+
         public void Process(byte[] depthFilteredFrame32, float minDepth, float maxDepth)
         {
             processingTimeWatch.Reset();
@@ -192,6 +200,23 @@ namespace JapanNUI.Input.Kinect
 
                     RightHandBlob.MBlob = toTheLeft;
                     LeftHandBlob.MBlob = toTheRight;
+                }
+            }
+
+            additionnalBlobsCursors.Clear();
+
+            if (RightHandBlob.MBlob == null || LeftHandBlob.MBlob == null)
+            {
+                /*
+                 * This should help the user to see something at the screen
+                 * when the cursors are not currently tracked
+                 */
+                foreach (var blob in validBlobs)
+                {
+                    if (blob != RightHandBlob.MBlob && blob != LeftHandBlob.MBlob)
+                    {
+                        additionnalBlobsCursors.Add(new Vector2(blob.Current.EstimatedCursorX / DataWidth, blob.Current.EstimatedCursorY / DataHeight));
+                    }
                 }
             }
         }

@@ -248,5 +248,35 @@ namespace JapanNUI
         }
 
         #endregion
+
+        #region IInputListener Members
+        
+        public void UpdateAdditionnalCursors(IEnumerable<Vector2> addCursors)
+        {
+            /* Nombre maximum traité : 4 */
+            int currentCursor = 0;
+
+            foreach (var item in addCursors)
+            {
+                if (currentCursor >= 4)
+                    break;
+
+                Ellipse ellipse = cursorsOverlayCanvas.Children[currentCursor] as Ellipse;
+
+                ellipse.Visibility = System.Windows.Visibility.Visible;
+
+                Canvas.SetLeft(ellipse, item.X * ClientArea.Size.X + ellipse.Width / 2.0f);
+                Canvas.SetTop(ellipse, item.Y * ClientArea.Size.Y + ellipse.Height / 2.0f);                
+
+                currentCursor++;
+            }
+
+            for (int i = currentCursor; i < 4; i++)
+            {
+                cursorsOverlayCanvas.Children[i].Visibility = System.Windows.Visibility.Hidden;
+            }
+        }
+
+        #endregion
     }
 }
