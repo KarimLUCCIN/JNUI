@@ -126,7 +126,7 @@ namespace JapanNUI.Input.Kinect
 
         // Converts a 16-bit grayscale depth frame which includes player indexes into a 32-bit frame
         // that displays different players in different colors
-        byte[] convertDepthFrame(byte[] depthFrame16)
+        unsafe byte[] convertDepthFrame(byte[] depthFrame16)
         {
             int minDepth = int.MaxValue;
             int maxDepth = int.MinValue;
@@ -134,28 +134,42 @@ namespace JapanNUI.Input.Kinect
 
             byte[] fData = new byte[4];
 
-            for (int i16 = 0, i32 = 0; i16 < depthFrame16.Length && i32 < depthFrame32.Length; i16 += 2, i32 += 4)
+            var d16Length = depthFrame16.Length;
+            var d32Length = depthFrame32.Length;
+
+            fixed (byte* pdepthFilteredFrame32 = depthFilteredFrame32)
             {
-                int player = depthFrame16[i16] & 0x07;
-                int realDepth = (depthFrame16[i16 + 1] << 5) | (depthFrame16[i16] >> 3);
-
-                VectorUtils.BytesFromFloat(realDepth, fData);
-
-                depthFilteredFrame32[i32 + 0] = fData[0];// (byte)(realDepth & 0x000000FF);
-                depthFilteredFrame32[i32 + 1] = fData[1];// (byte)((realDepth & 0x0000FF00) >> 8);
-                depthFilteredFrame32[i32 + 2] = fData[2];// (byte)((realDepth & 0x0000FF00) >> 8);
-                depthFilteredFrame32[i32 + 3] = fData[3];// (byte)((realDepth & 0x0000FF00) >> 8);
-
-                if (realDepth > 0 && minDepth > realDepth)
+                for (int i16 = 0, i32 = 0; i16 < d16Length && i32 < d32Length; i16 += 2, i32 += 4)
                 {
-                    minDepthIndex = i32;
-                    minDepth = realDepth;
-                }
+                    int player = depthFrame16[i16] & 0x07;
+                    int realDepth = (depthFrame16[i16 + 1] << 5) | (depthFrame16[i16] >> 3);
 
-                maxDepth = Math.Max(maxDepth, realDepth);
+                    float fDepth = realDepth;
 
-#if(!DISABLE_DEPTH_VIEW)
-                // transform 13-bit depth information into an 8-bit intensity appropriate
+                    //VectorUtils.BytesFromFloat(realDepth, fData);
+
+                    //depthFilteredFrame32[i32 + 0] = fData[0];// (byte)(realDepth & 0x000000FF);
+                    //depthFilteredFrame32[i32 + 1] = fData[1];// (byte)((realDepth & 0x0000FF00) >> 8);
+                    //depthFilteredFrame32[i32 + 2] = fData[2];// (byte)((realDepth & 0x0000FF00) >> 8);
+                    //depthFilteredFrame32[i32 + 3] = fData[3];// (byte)((realDepth & 0x0000FF00) >> 8);
+
+                    //depthFilteredFrame32[i32 + 0] = *((byte*)(&fDepth) + 0);
+                    //depthFilteredFrame32[i32 + 1] = *((byte*)(&fDepth) + 1);
+                    //depthFilteredFrame32[i32 + 2] = *((byte*)(&fDepth) + 2);
+                    //depthFilteredFrame32[i32 + 3] = *((byte*)(&fDepth) + 3);
+
+                    *((float*)&pdepthFilteredFrame32[i32 + 0]) = fDepth;
+
+                    if (realDepth > 0 && minDepth > realDepth)
+                    {
+                        minDepthIndex = i32;
+                        minDepth = realDepth;
+                    }
+
+                    maxDepth = Math.Max(maxDepth, realDepth);
+
+    #if(!DISABLE_DEPTH_VIEW)
+                                                                                                                                                                                                        // transform 13-bit depth information into an 8-bit intensity appropriate
                 // for display (we disregard information in most significant bit)
                 byte intensity = (byte)(255 - (255 * realDepth / 0x0fff));
 
@@ -203,7 +217,8 @@ namespace JapanNUI.Input.Kinect
                         depthFrame32[i32 + BLUE_IDX] = (byte)(255 - intensity);
                         break;
                 }
-#endif
+    #endif
+                }
             }
 
             if (KinectBlobsMatcher != null)

@@ -25,8 +25,10 @@ namespace JapanNUI
 
 #define pixel(line, column) (line) * (columns * stride) + (column) * stride
 
-#define pixelAt(data, line, column) data[pixel((line), (column))] | data[pixel((line), (column))+1] << 8 | data[pixel((line), (column))+2] << 16
-#define pixelSet(data, line, column, value) data[pixel(line, column)] = (value); data[pixel(line,column)+1] = (value) >> 8; data[pixel(line, column)+2] = (value) >> 16
+//#define pixelAt(data, line, column) data[pixel((line), (column))] | data[pixel((line), (column))+1] << 8 | data[pixel((line), (column))+2] << 16
+#define pixelAt(data, line, column) *((int*)&data[pixel((line), (column))]) & 0x00FFFFFF
+//#define pixelSet(data, line, column, value) data[pixel(line, column)] = (value); data[pixel(line,column)+1] = (value) >> 8; data[pixel(line, column)+2] = (value) >> 16
+#define pixelSet(data, line, column, value) *((int*)&data[pixel((line), (column))]) = value
 
 			inline int getBlobAt(unsigned char* data, int line, int column, int columns, int stride)
 			{
