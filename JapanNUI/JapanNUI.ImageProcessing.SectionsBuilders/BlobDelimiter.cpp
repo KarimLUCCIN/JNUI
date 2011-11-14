@@ -190,7 +190,7 @@ namespace JapanNUI
 				double directionsAngles[] = {0, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
 				double directionsAnglesInv[] = {M_PI, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
 
-				for(int i = 0;i<blobCount;i++)
+				for(int i = 1;i<=blobCount;i++)
 				{
 					if(blobs[i].PixelCount > 0)
 					{
