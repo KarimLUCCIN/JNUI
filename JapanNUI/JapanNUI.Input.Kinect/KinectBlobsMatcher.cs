@@ -28,6 +28,13 @@ namespace JapanNUI.Input.Kinect
             /// Position du curseur associé, entre (-1,-1) et (1,1)
             /// </summary>
             public Vector2 CursorPosition { get; set; }
+
+            double lastAverageDepth = 0;
+
+            public double AverageDepth
+            {
+                get { return (MBlob == null || MBlob.Current == null) ? lastAverageDepth : (lastAverageDepth = MBlob.Current.AverageDepth); }
+            }
         }
 
         public BlobParametersRecord LeftHandBlob { get; private set; }

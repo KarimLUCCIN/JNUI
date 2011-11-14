@@ -236,8 +236,8 @@ namespace JapanNUI.Input.Kinect
                 PlanarImage Image = e.ImageFrame.Image;
                 byte[] convertedDepthFrame = convertDepthFrame(Image.Bits);
 
-                leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition, 0), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
-                rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition, 0), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
+                leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition, KinectBlobsMatcher.LeftHandBlob.AverageDepth), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
+                rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition, KinectBlobsMatcher.RightHandBlob.AverageDepth), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
 
                 Listener.Update(this);
                 Listener.UpdateProcessingTimes(KinectBlobsMatcher.ProcessingTime, KinectBlobsMatcher.ImageProcessingTime);

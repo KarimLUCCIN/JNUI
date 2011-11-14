@@ -59,5 +59,9 @@
             <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Times:</TextBlock>
             <TextBlock VerticalAlignment="Center" Name="timesBox"/>
         </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="3">
+            <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Depths:</TextBlock>
+            <TextBlock VerticalAlignment="Center" Name="depthsBox"/>
+        </StackPanel>
     </Grid>
 </Window>

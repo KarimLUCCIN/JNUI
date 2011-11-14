@@ -175,12 +175,31 @@ namespace JapanNUI
             }
         }
 
+        private double primaryCursorDepth;
 
+        public double PrimaryCursorDepth
+        {
+            get { return primaryCursorDepth; }
+            set { primaryCursorDepth = value; }
+        }
+
+        private double secondaryCursorDepth;
+
+        public double SecondaryCursorDepth
+        {
+            get { return secondaryCursorDepth; }
+            set { secondaryCursorDepth = value; }
+        }
+        
         public void UpdatePrimaryCursor(Vector3 position, CursorState state)
         {
             Dispatcher.Invoke((Action)delegate
             {
                 IsPrimaryCursorTracked = state == CursorState.Tracked;
+
+                primaryCursorDepth = position.Z;
+
+                UpdateDepthsLabel();
 
                 Canvas.SetLeft(defaultCursor, position.X);
                 Canvas.SetTop(defaultCursor, position.Y);
@@ -193,9 +212,18 @@ namespace JapanNUI
             {
                 IsSecondaryCursorTracked = state == CursorState.Tracked;
 
+                secondaryCursorDepth = position.Z;
+
+                UpdateDepthsLabel();
+
                 Canvas.SetLeft(secondaryCursor, position.X);
                 Canvas.SetTop(secondaryCursor, position.Y);
             });
+        }
+
+        private void UpdateDepthsLabel()
+        {
+            depthsBox.Text = String.Format("Left : {1}, Right : {0}", primaryCursorDepth.ToString("F"), secondaryCursorDepth.ToString("F"));
         }
 
         public void ContextDelegateMethod(Action action)

@@ -85,6 +85,8 @@ namespace JapanNUI.Interaction.Gestures
 
             var newVelocity = medPosition - Position;
 
+            medPosition.Z = newPosition.Z;
+
             Position = UpdateLatency * medPosition + (1 - UpdateLatency) * Position;
 
             var newAcceleration = newVelocity - Velocity;
