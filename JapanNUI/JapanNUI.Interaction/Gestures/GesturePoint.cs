@@ -38,6 +38,14 @@ namespace JapanNUI.Interaction.Gestures
 
         public Vector3 Acceleration { get; private set; }
 
+        private double updateLatency = 1;
+
+        public double UpdateLatency
+        {
+            get { return updateLatency; }
+            set { updateLatency = value; }
+        }
+        
         private int historySize = 1;
 
         public int HistorySize
@@ -77,7 +85,7 @@ namespace JapanNUI.Interaction.Gestures
 
             var newVelocity = medPosition - Position;
 
-            Position = medPosition;
+            Position = UpdateLatency * medPosition + (1 - UpdateLatency) * Position;
 
             var newAcceleration = newVelocity - Velocity;
 
