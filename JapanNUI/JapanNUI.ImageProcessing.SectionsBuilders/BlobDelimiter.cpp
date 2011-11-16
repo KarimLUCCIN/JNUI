@@ -10,6 +10,8 @@ using namespace std;
 
 #define MANAGED_DEBUG
 
+//#define MATCH_OUTPUT_DEBUG_INFO
+
 namespace JapanNUI
 {
 	namespace ImageProcessing
@@ -445,10 +447,16 @@ namespace JapanNUI
 								blobs[c_blob].accBorderType[BLOB_DIRECTION_INVDIAG] += d_id;
 							}
 
+#ifdef MATCH_OUTPUT_DEBUG_INFO
 							pixelSet(data, line, column, c_blob * 150);
+#endif
 						}
 						else
+						{
+#ifdef MATCH_OUTPUT_DEBUG_INFO
 							pixelSet(data, line, column, 0);
+#endif
+						}
 					}
 				}
 
@@ -576,7 +584,7 @@ namespace JapanNUI
 			{
 				int nonNull, maxBlobs;
 
-				memset(blobIdsCorrespondanceData, 0, lines * rows);
+				memset(blobIdsCorrespondanceData, 0, sizeof(int) * lines * rows);
 
 				processData(blobIdsCorrespondanceData, data, processingIntermediateOutput, lines, rows, stride, &nonNull, &maxBlobs);
 

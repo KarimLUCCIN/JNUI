@@ -1,5 +1,6 @@
 ﻿#define ENABLE_DEBUG_DISPLAY
 #define ENABLE_ONLY_BORDER_DISTANCE_LABELS
+//#define ENABLE_SQUARES_PRESENTER
 
 using System;
 using System.Collections.Generic;
@@ -159,7 +160,7 @@ namespace JapanNUI.ImageProcessing
 
             if(noiseData == null)
             {
-                noiseData= new MemoryStream();
+                noiseData = new MemoryStream();
                 noiseBmp.Save(noiseData, System.Drawing.Imaging.ImageFormat.Png);
             }
 
@@ -298,7 +299,7 @@ namespace JapanNUI.ImageProcessing
 
 
                     /* get result : regions */
-                    kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
+                    //kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
 
                     /* Process regions to get borders directions */
                     bordersDetectShader.depthMap = grownRegions;
@@ -325,7 +326,9 @@ namespace JapanNUI.ImageProcessing
                     //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
                     grownRegions.GetData(grownBordersData);
                     ProcessBlobs(grownBordersData, gradDirectionDetect1Data);
+#if(ENABLE_SQUARES_PRESENTER)
                     squaresPresenter.Update(grownRegions, PixelFormats.Bgra32, 4);
+#endif
                     //grownBorders.GetData(grownBordersData);
 
                     //blobsPresenter.Update(grownBordersData, PixelFormats.Bgr32, 4);
@@ -427,6 +430,7 @@ namespace JapanNUI.ImageProcessing
                 mainBlobs[i] = null;
             }
 
+#if(ENABLE_SQUARES_PRESENTER)
             var device = Host.Device;
             Host.RenderTargetManager.Push(grownRegions);
             {
@@ -527,6 +531,7 @@ namespace JapanNUI.ImageProcessing
                 device.RasterizerState = oldRasterizer;
             }
             Host.RenderTargetManager.Pop();
+#endif
 
             return blobCount;
         }
