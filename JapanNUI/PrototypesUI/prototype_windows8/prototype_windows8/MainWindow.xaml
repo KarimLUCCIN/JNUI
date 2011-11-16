@@ -55,8 +55,25 @@
 		</Style>
 		<ControlTemplate x:Key="RoundButton" TargetType="{x:Type Button}">
 			<Grid x:Name="main_grid">
-				<Ellipse Fill="Black" Stroke="White" StrokeThickness="2"/>
-				<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+				<VisualStateManager.VisualStateGroups>
+					<VisualStateGroup x:Name="CommonStates">
+						<VisualState x:Name="Normal"/>
+						<VisualState x:Name="MouseOver"/>
+						<VisualState x:Name="Pressed"/>
+						<VisualState x:Name="Disabled">
+							<Storyboard>
+								<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="contentPresenter">
+									<EasingDoubleKeyFrame KeyTime="0" Value="0.5"/>
+								</DoubleAnimationUsingKeyFrames>
+								<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse">
+									<EasingDoubleKeyFrame KeyTime="0" Value="0.5"/>
+								</DoubleAnimationUsingKeyFrames>
+							</Storyboard>
+						</VisualState>
+					</VisualStateGroup>
+				</VisualStateManager.VisualStateGroups>
+				<Ellipse x:Name="ellipse" Fill="Black" Stroke="White" StrokeThickness="2"/>
+				<ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 			</Grid>
 		</ControlTemplate>
 		<LinearGradientBrush x:Key="TextBoxBorder" EndPoint="0,20" MappingMode="Absolute" StartPoint="0,0">
@@ -157,13 +174,42 @@
 			<Setter Property="Template">
 				<Setter.Value>
 					<ControlTemplate TargetType="{x:Type Button}">
-						<Grid>
-							<Rectangle Fill="#FFCACAEF" Stroke="Black"/>
-							<Rectangle Fill="#80000000" HorizontalAlignment="Stretch" Margin="0,40,0,0" Stroke="Black" Width="Auto" Height="40"/>
-							<ContentPresenter RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Bottom" Margin="0" Height="33.333"/>
+						<Grid Margin="0,0,0,-17">
+							<VisualStateManager.VisualStateGroups>
+								<VisualStateGroup x:Name="CommonStates">
+									<VisualState x:Name="Normal"/>
+									<VisualState x:Name="MouseOver"/>
+									<VisualState x:Name="Pressed"/>
+									<VisualState x:Name="Disabled"/>
+								</VisualStateGroup>
+								<VisualStateGroup x:Name="FocusStates">
+									<VisualState x:Name="Unfocused"/>
+									<VisualState x:Name="Focused"/>
+								</VisualStateGroup>
+							</VisualStateManager.VisualStateGroups>
+							<Rectangle x:Name="rectangle" Fill="#FFCACAEF" Stroke="Black"/>
+							<Rectangle Fill="#80000000" HorizontalAlignment="Stretch" Margin="0,48.5,0,0" Stroke="{x:Null}" Width="Auto" Height="Auto"/>
+							<ContentPresenter RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Bottom" Margin="8,0,8,8" Height="33.333" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+							<Button x:Name="close" Content="X" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,8,52.5" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="CloseTab_click">
+								<Button.Background>
+									<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+										<GradientStop Color="#FFF3F3F3" Offset="0"/>
+										<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+										<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+										<GradientStop Color="White" Offset="1"/>
+									</LinearGradientBrush>
+								</Button.Background>
+							</Button>
 						</Grid>
 						<ControlTemplate.Triggers>
-							<Trigger Property="IsFocused" Value="True"/>
+							<Trigger Property="IsFocused" Value="True">
+								<Setter Property="Stroke" TargetName="rectangle">
+									<Setter.Value>
+										<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
+									</Setter.Value>
+								</Setter>
+								<Setter Property="StrokeThickness" TargetName="rectangle" Value="3"/>
+							</Trigger>
 							<Trigger Property="IsDefaulted" Value="True"/>
 							<Trigger Property="IsMouseOver" Value="True"/>
 							<Trigger Property="IsPressed" Value="True"/>
@@ -176,10 +222,9 @@
 	</Window.Resources>
 
 	<Grid x:Name="LayoutRoot">
-		<Rectangle Fill="Black" Stroke="Black" Margin="0" VerticalAlignment="Top" Height="126"/>
-		<Rectangle Fill="Black" Height="64" Stroke="Black" VerticalAlignment="Bottom"/>
+		<Rectangle x:Name="bottomRectangle" Fill="Black" Height="64" Stroke="Black" VerticalAlignment="Bottom"/>
 		<TextBox x:Name="website" Margin="95,0,317,12" TextWrapping="Wrap" Text="http://www.google.fr" Background="Black" Foreground="#FFD2D2D2" SelectionBrush="#FFB4B4B4" FontSize="16" VerticalAlignment="Bottom" Height="40" Style="{DynamicResource TextBoxStyle1}" d:LayoutOverrides="HorizontalAlignment" KeyDown="Go_website"/>
-		<Button x:Name="back" Content="f" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="40" Margin="24,0,0,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" d:LayoutOverrides="VerticalAlignment" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" Click="Back_click">
+		<Button x:Name="back" Content="f" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="40" Margin="24,0,0,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" d:LayoutOverrides="VerticalAlignment" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" Click="Back_click" IsEnabled="False" ToolTip="Back">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -189,7 +234,7 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button x:Name="refresh" Content="P" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,242,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Refresh_click">
+		<Button x:Name="refresh" Content="P" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,242,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Refresh_click" ToolTip="Refresh">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -199,7 +244,7 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button x:Name="favorite" Content="★" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,171.5,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" d:LayoutOverrides="VerticalAlignment">
+		<Button x:Name="favorite" Content="★" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,171.5,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" d:LayoutOverrides="VerticalAlignment" ToolTip="Bookmark">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -209,7 +254,7 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button x:Name="home" Content=")" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,95,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 2" d:LayoutOverrides="VerticalAlignment" Click="Home_click">
+		<Button x:Name="home" Content=")" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,95,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 2" d:LayoutOverrides="VerticalAlignment" Click="Home_click" ToolTip="Home">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -219,7 +264,7 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button x:Name="forward" Content="g" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,24,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Forward_click">
+		<Button x:Name="forward" Content="g" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,24,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Forward_click" IsEnabled="False" ToolTip="Forward">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -229,7 +274,25 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<WebBrowser x:Name="browser" Margin="0,126,0,64" LoadCompleted="Browser_loaded"/>
-		<Button x:Name="onglet" Content="Button" HorizontalAlignment="Left" Height="80" Margin="24,24,0,0" Style="{DynamicResource ButtonStyle2}" VerticalAlignment="Top" Width="200" Foreground="#CCFFFFFF" BorderBrush="{x:Null}" FontSize="16"/>
+		<TabControl x:Name="tabControl" Margin="0,104.333,0,64" SelectionChanged="TabControl_SelectionChanged">
+			<TabItem x:Name="tabItem" Header="" Margin="0">
+				<WebBrowser x:Name="browser" Margin="0,0,0,-1" LoadCompleted="Browser_loaded"/>
+			</TabItem>
+		</TabControl>
+		<Rectangle x:Name="upperRectangle" Fill="Black" Stroke="Black" Margin="0" VerticalAlignment="Top" Height="126"/>
+		<UniformGrid x:Name="uniformGrid" ScrollViewer.CanContentScroll="True" Height="117" ScrollViewer.HorizontalScrollBarVisibility="Visible" Margin="0,0,95,0" VerticalAlignment="Top" Rows="1" >
+			<Button x:Name="onglet" Style="{DynamicResource ButtonStyle2}" Foreground="#CCFFFFFF" BorderBrush="{x:Null}" FontSize="16" Width="200" VerticalAlignment="Top" Height="80" Click="Change_SelectionTab" Margin="24,18,0,0" HorizontalAlignment="Center" TabIndex="0" ToolTip="Close tab"/>
+		</UniformGrid>
+		<Button x:Name="plus" Content="+" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,24,638" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="Plus_click" ToolTip="Add tab">
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF3F3F3" Offset="0"/>
+					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+					<GradientStop Color="White" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
+		<Image x:Name="image1" Height="96.333" Width="184" Margin="62,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 	</Grid>
 </Window>
