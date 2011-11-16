@@ -31,7 +31,7 @@ namespace JapanNUI.Input.Mouse
 
                     var clientMousePos = Vector2.Clamp(mousePos, input.ClientArea.Origin, input.ClientArea.Origin + input.ClientArea.Size);
 
-                    CurrentPoint.UpdatePosition(new Vector3(clientMousePos - input.ClientArea.Origin, 0));
+                    CurrentPoint.UpdatePosition(new Vector3(clientMousePos - input.ClientArea.Origin, 0), CursorState.Tracked);
                 }
                 finally
                 {

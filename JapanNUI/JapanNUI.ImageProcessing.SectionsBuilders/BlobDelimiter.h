@@ -92,21 +92,48 @@ namespace JapanNUI
 
 				bool Crossed;
 
+				property double Width
+				{
+					double get ()
+					{
+						return MaxX - MinX;
+					}
+				}				
+
+				property double Height
+				{
+					double get ()
+					{
+						return MaxY - MinY;
+					}
+				}
+
 				ManagedBlob^ Clone()
 				{
 					ManagedBlob^ res = gcnew ManagedBlob();
 
 					res->AverageDepth = AverageDepth;
 					res->AverageDirection = AverageDirection;
+
 					res->AvgCenterX = AvgCenterX;
 					res->AvgCenterY = AvgCenterY;
+
 					res->EstimatedCursorX = EstimatedCursorX;
 					res->EstimatedCursorY = EstimatedCursorY;
+
 					res->InvertedEstimatedCursorX = InvertedEstimatedCursorX;
 					res->InvertedEstimatedCursorY = InvertedEstimatedCursorY;
+
 					res->AverageDepth = AverageDepth;
+
 					res->PrincipalDirection = PrincipalDirection;
 					res->PixelCount = PixelCount;
+
+					res->MinX = MinX;
+					res->MaxX = MaxX;
+					res->MinY = MinY;
+					res->MaxY = MaxY;
+
 					res->Crossed = Crossed;
 
 					return res;

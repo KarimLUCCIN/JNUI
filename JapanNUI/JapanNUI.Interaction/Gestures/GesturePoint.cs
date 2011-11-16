@@ -8,11 +8,14 @@ namespace JapanNUI.Interaction.Gestures
 {
     public class GesturePoint
     {
+        public CursorState State { get; private set; }
+
         public GesturePoint()
         {
             Position = Vector3.Zero;
             Velocity = Vector3.Zero;
             Acceleration = Vector3.Zero;
+            State = CursorState.Default;
         }
 
         private int pixelMoveTreshold = 0;
@@ -60,8 +63,10 @@ namespace JapanNUI.Interaction.Gestures
             medPosition = res * (1.0f / (float)positions.Count);
         }
         
-        public void UpdatePosition(Vector3 newPosition)
+        public void UpdatePosition(Vector3 newPosition, CursorState state)
         {
+            State = state;
+
             Vector3 medPosition;
             EnqueuePosition(ref newPosition, out medPosition);
 
@@ -98,6 +103,8 @@ namespace JapanNUI.Interaction.Gestures
                 Position = currentPoint.Position;
                 Velocity = currentPoint.Velocity;
                 Acceleration = currentPoint.Acceleration;
+
+                State = currentPoint.State;
             }
         }
     }

@@ -16,9 +16,11 @@ namespace JapanNUI.Interaction
 
         void DebugDisplayBgr32DepthImage(int width, int height, byte[] convertedDepthFrame, int stide);
 
-        void UpdatePrimaryCursor(Vector3 position);
-        void UpdateSecondaryCursor(Vector3 position);
+        void UpdatePrimaryCursor(Vector3 position, CursorState state);
+        void UpdateSecondaryCursor(Vector3 position, CursorState state);
 
         void ContextDelegateMethod(Action action);
+
+        void UpdateProcessingTimes(TimeSpan totalProcessingTime, TimeSpan cgProcessingTime);
     }
 }
