@@ -188,6 +188,7 @@
 								</VisualStateGroup>
 							</VisualStateManager.VisualStateGroups>
 							<Rectangle x:Name="rectangle" Fill="#FFCACAEF" Stroke="Black"/>
+							<Image x:Name="thumb" HorizontalAlignment="Stretch" Width="Auto"/>
 							<Rectangle Fill="#80000000" HorizontalAlignment="Stretch" Margin="0,48.5,0,0" Stroke="{x:Null}" Width="Auto" Height="Auto"/>
 							<ContentPresenter RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Bottom" Margin="8,0,8,8" Height="33.333" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
 							<Button x:Name="close" Content="X" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,8,52.5" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="CloseTab_click">
@@ -276,12 +277,12 @@
 		</Button>
 		<TabControl x:Name="tabControl" Margin="0,104.333,0,64" SelectionChanged="TabControl_SelectionChanged">
 			<TabItem x:Name="tabItem" Header="" Margin="0">
-				<WebBrowser x:Name="browser" Margin="0,0,0,-1" LoadCompleted="Browser_loaded"/>
+				<WebBrowser x:Name="browser" Margin="0,0,0,-1" LoadCompleted="Browser_loadCompleted"/>
 			</TabItem>
 		</TabControl>
 		<Rectangle x:Name="upperRectangle" Fill="Black" Stroke="Black" Margin="0" VerticalAlignment="Top" Height="126"/>
 		<UniformGrid x:Name="uniformGrid" ScrollViewer.CanContentScroll="True" Height="117" ScrollViewer.HorizontalScrollBarVisibility="Visible" Margin="0,0,95,0" VerticalAlignment="Top" Rows="1" >
-			<Button x:Name="onglet" Style="{DynamicResource ButtonStyle2}" Foreground="#CCFFFFFF" BorderBrush="{x:Null}" FontSize="16" Width="200" VerticalAlignment="Top" Height="80" Click="Change_SelectionTab" Margin="24,18,0,0" HorizontalAlignment="Center" TabIndex="0" ToolTip="Close tab"/>
+			<local:ongletControl x:Name="onglet" Margin="0" TabIndex="0" Height="100"/>
 		</UniformGrid>
 		<Button x:Name="plus" Content="+" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,24,638" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="Plus_click" ToolTip="Add tab">
 			<Button.Background>
@@ -293,6 +294,5 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Image x:Name="image1" Height="96.333" Width="184" Margin="62,8,0,0" HorizontalAlignment="Left" VerticalAlignment="Top"/>
 	</Grid>
 </Window>
