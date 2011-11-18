@@ -1,0 +1,28 @@
+﻿<Window x:Class="wpf_3d.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="640" Width="800"
+        xmlns:interop="clr-namespace:System.Windows.Interop;assembly=PresentationCore" Loaded="Window_Loaded" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen">
+    <Grid Width="800" Height="640">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="40" />
+        </Grid.RowDefinitions>
+        
+        <Grid x:Name="mainContent" Width="800" Height="600">
+            <WebBrowser x:Name="lolBrowser"/>
+        </Grid>
+
+        <Grid x:Name="d3dContent" Width="800" Height="600">
+            <Image Stretch="Fill" >
+                <Image.Source>
+                    <interop:D3DImage x:Name="d3dImage"/>
+                </Image.Source>
+            </Image>
+        </Grid>
+        
+        <StackPanel Grid.Row="1" Orientation="Horizontal">
+            <Button Content="Switch" Name="switchBtn" Width="100" Margin="4" Click="switchBtn_Click" />
+        </StackPanel>
+    </Grid>
+</Window>
