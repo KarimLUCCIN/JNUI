@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework;
 using Sora.GameEngine.GameComponents.SceneObjects;
 using Sora.GameEngine.GameComponents.Animations;
 using Sora.GameEngine.GameComponents.Scene;
+using Awesomium.Core;
 
 namespace wpf_3d
 {
@@ -40,7 +41,7 @@ namespace wpf_3d
             CameraManager.LoadAndSetActiveCamera(new FixedCamera(CurrentEngine) { NearPlane = 0.1f, FarPlane = 100f, Position = new Vector3(0, 0, -1), Target = new Vector3(0,0,0) });
 
             screenContent = new Node(LocalContent);
-            screenContent.Position = new Vector3(0, 0, (float)Math.Sin(MathHelper.PiOver4) + 0.022f);
+            screenContent.Position = new Vector3(0, 0, (float)Math.Sin(MathHelper.PiOver4) + 0.0225f);
 
             quadFront = new SceneObjectTexturedQuad(LocalContent);
             quadFront.Texture = screenCtrl;
@@ -151,6 +152,20 @@ namespace wpf_3d
             };
 
             CurrentEngine.AnimationManager.Start(anim);
+        }
+
+        internal void UpdateWebTexture(Awesomium.Core.RenderBuffer renderBuffer)
+        {
+            renderBuffer.RenderTexture2D(screenCtrl);
+        }
+    }
+
+    public static class AwesomiumXnaExtensions
+    {
+        public static Texture2D RenderTexture2D(this RenderBuffer Buffer, Texture2D Texture)
+        {
+            TextureFormatConverter.DirectBlit(Buffer, ref Texture);
+            return Texture;
         }
     }
 }

@@ -10,10 +10,11 @@
         </Grid.RowDefinitions>
         
         <Grid x:Name="mainContent" Width="800" Height="600">
-            <WebBrowser x:Name="lolBrowser"/>
+            <!--<WebBrowser x:Name="lolBrowser"/>-->
         </Grid>
 
-        <Grid x:Name="d3dContent" Width="800" Height="600">
+        <Grid x:Name="d3dContent" Width="800" Height="600" MouseDown="d3dContent_MouseDown" MouseMove="d3dContent_MouseMove" MouseUp="d3dContent_MouseUp" 
+              KeyDown="d3dContent_KeyDown" KeyUp="d3dContent_KeyUp" MouseWheel="d3dContent_MouseWheel" >
             <Image Stretch="Fill" >
                 <Image.Source>
                     <interop:D3DImage x:Name="d3dImage"/>
@@ -22,7 +23,7 @@
         </Grid>
         
         <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <Button Content="Switch" Name="switchBtn" Width="100" Margin="4" Click="switchBtn_Click" />
+            <TextBlock Text="Switch" Name="switchBtn" Width="100" Margin="4" MouseDown="switchBtn_Click" />
         </StackPanel>
     </Grid>
 </Window>
