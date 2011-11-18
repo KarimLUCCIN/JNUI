@@ -26,12 +26,12 @@ namespace wpf_3d
         SceneObjectTexturedQuad quadFront;
         SceneObjectTexturedQuad quadBack;
 
-        public D3DEffectsScreen(OffscreenEngineWpf engine)
+        public D3DEffectsScreen(OffscreenEngineInteropBitmap engine)
             : base(engine)
         {
             bmpData = new Bitmap(engine.CompositionRT.Width, engine.CompositionRT.Height);
             bmpByteData = new int[bmpData.Width * bmpData.Height];
-            screenCtrl = new Texture2D(engine.Device, bmpData.Width, bmpData.Height);
+            screenCtrl = new Texture2D(engine.Device, bmpData.Width, bmpData.Height, false, SurfaceFormat.Color);
         }
 
         protected override void LoadScreenContent()

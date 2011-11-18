@@ -22,7 +22,7 @@ namespace wpf_3d
     /// </summary>
     public partial class MainWindow : Window
     {
-        public OffscreenEngineWpf soraEngine;
+        public OffscreenEngineInteropBitmap soraEngine;
         public D3DEffectsScreen d3dEffectsScreen;
 
         bool is3DRendering = false;
@@ -50,7 +50,8 @@ namespace wpf_3d
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            soraEngine = OffscreenEngineBuilder.Create((int)d3dContent.Width, (int)d3dContent.Height, d3dImage);
+            soraEngine = OffscreenEngineBuilder.CreateFromInteropBitmap((int)d3dContent.Width, (int)d3dContent.Height);
+            d3dImageContainer.Source = soraEngine.AttachedImage;
 
             soraEngine.Renderer.EnableGlow = false;
             soraEngine.Renderer.EnableHDR = false;
@@ -82,7 +83,7 @@ namespace wpf_3d
 
             if (is3DRendering)
             {
-                if (drawAccumulator.TotalSeconds > 1 / 40.0 && d3dImage.IsFrontBufferAvailable)
+                if (drawAccumulator.TotalSeconds > 1 / 40.0)
                 {
                     if (recentlySwitched || webView.IsDirty)
                         d3dEffectsScreen.UpdateWebTexture(webView.Render());
@@ -98,8 +99,18 @@ namespace wpf_3d
                         soraEngine.EngineUpdate(drawAccumulator);
 
                         drawAccumulator = TimeSpan.Zero;
+                        
+                        var oldSwap = soraEngine.Renderer.SwapRandBChannels;
+                        soraEngine.Renderer.SwapRandBChannels = true;
+                        try
+                        {
 
-                        soraEngine.RenderToImage();
+                            soraEngine.RenderToImage();
+                        }
+                        finally
+                        {
+                            soraEngine.Renderer.SwapRandBChannels = oldSwap;
+                        }
                     }
                 }
             }
@@ -200,7 +211,7 @@ namespace wpf_3d
             base.OnSourceInitialized(e);
 
             HwndSource source = PresentationSource.FromVisual(this) as HwndSource;
-            source.CompositionTarget.RenderMode = RenderMode.SoftwareOnly;
+
             source.AddHook(WndProc);
         }
 
