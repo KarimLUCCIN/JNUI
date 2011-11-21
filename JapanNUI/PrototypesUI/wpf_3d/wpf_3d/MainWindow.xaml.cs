@@ -15,6 +15,7 @@ using Sora.GameEngine.Offscreen;
 using Awesomium.Core;
 using System.Windows.Interop;
 using Microsoft.Xna.Framework.Graphics;
+using Sora.GameEngine.GameComponents.GameSystem.Rendering;
 
 namespace wpf_3d
 {
@@ -44,7 +45,15 @@ namespace wpf_3d
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var d3dImage = new D3DImage(96, 96);
+            OffscreenEngineBuilder.MultiSampleCount = 4;
+            RenderTargetManager.DisableMultiSampling = false;
+
             soraEngine = OffscreenEngineBuilder.CreateFromD3DImage(800, 600, d3dImage);
+
+            OffscreenEngineBuilder.MultiSampleCount = 0;
+            RenderTargetManager.DisableMultiSampling = true;
+
+            soraEngine.Renderer.EnableDebugKeyboardCommands = false;
 
             soraEngine.Renderer.EnableGlow = false;
             soraEngine.Renderer.EnableHDR = false;
@@ -114,6 +123,7 @@ namespace wpf_3d
 
                     drawAccumulator = TimeSpan.Zero;
 
+                    soraEngine.Renderer.RendererMode = RendererMode.ColorOnly;
                     soraEngine.RenderToImage();
                 }
             }
