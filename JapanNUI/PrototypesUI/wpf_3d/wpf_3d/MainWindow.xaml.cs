@@ -32,7 +32,7 @@ namespace wpf_3d
         public MainWindow()
         {
             InitializeComponent();
-
+                        
             Closed += new EventHandler(MainWindow_Closed);
         }
 
@@ -69,9 +69,9 @@ namespace wpf_3d
             webBrowserInst.InitializeRenderScreen(d3dEffectsScreen);
 
             webBrowserInst.NewTab("http://www.google.com");
-            webBrowserInst.NewTab("http://www.youtube.com");
+            //webBrowserInst.NewTab("http://www.youtube.com");
             webBrowserInst.NewTab("http://www.wikipedia.com");
-            webBrowserInst.NewTab("http://www.youtube.com/watch?v=jn4VUKPObvI&feature=bf_next&list=PL5C078C39C0029210&lf=mh_lolz");
+            webBrowserInst.NewTab("http://9gag.com");
         }
 
         TimeSpan lastRendering = TimeSpan.Zero;
@@ -94,24 +94,34 @@ namespace wpf_3d
             var inputManger = soraEngine.InputManager;
             inputManger.UpdateKeyboardState();
 
-            var unitDisp = 0.01f;
+            //var unitDisp = 0.01f;
 
-            if (inputManger.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Down))
+            //if (inputManger.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Down))
+            //{
+            //    soraEngine.CameraManager.ActiveCamera.Position += Microsoft.Xna.Framework.Vector3.Forward * unitDisp;
+            //} 
+            //else if (inputManger.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Up))
+            //{
+            //    soraEngine.CameraManager.ActiveCamera.Position += Microsoft.Xna.Framework.Vector3.Backward * unitDisp;
+            //}
+            
+            
+            if (inputManger.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.Left))
             {
-                soraEngine.CameraManager.ActiveCamera.Position += Microsoft.Xna.Framework.Vector3.Forward * unitDisp;
-            } 
-            else if (inputManger.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Up))
-            {
-                soraEngine.CameraManager.ActiveCamera.Position += Microsoft.Xna.Framework.Vector3.Backward * unitDisp;
+                webBrowserInst.TabPrev();
             }
-            else if (inputManger.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Left))
+            else if (inputManger.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.Right))
             {
-                soraEngine.CameraManager.ActiveCamera.Position += Microsoft.Xna.Framework.Vector3.Left * unitDisp;
+                webBrowserInst.TabNext();
             }
-            else if (inputManger.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Right))
-            {
-                soraEngine.CameraManager.ActiveCamera.Position += Microsoft.Xna.Framework.Vector3.Right * unitDisp;
-            }
+            //else if (inputManger.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.A))
+            //{
+            //    webBrowserInst.NewTab("http://9gag.com");
+            //}
+            //else if (inputManger.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.B))
+            //{
+            //    webBrowserInst.Close(webBrowserInst.ActivePage);
+            //}
 
             if (drawAccumulator.TotalSeconds > 1 / 40.0)
             {

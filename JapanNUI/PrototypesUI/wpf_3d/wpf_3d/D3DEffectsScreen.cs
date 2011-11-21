@@ -59,7 +59,6 @@ namespace wpf_3d
             CameraManager.LoadAndSetActiveCamera(new FixedCamera(CurrentEngine) { NearPlane = 0.1f, FarPlane = 100f, Position = new Vector3(0, 0, -1), Target = new Vector3(0,0,0) });
 
             screenContent = new Node(LocalContent);
-            screenContent.Position = new Vector3(0, 0, (float)Math.Sin(MathHelper.PiOver4) + 0.0225f);
 
             CurrentEngine.SceneManager.Root.Add(screenContent);
         }
@@ -142,22 +141,6 @@ namespace wpf_3d
                     throw new InvalidOperationException("...");
                 }
             }
-        }
-
-
-        public void StartAnim()
-        {
-            var anim = new AnimationFloat(CurrentEngine, TimeSpan.FromSeconds(2),
-                new KeyValuePair<float, float>(0, 0),
-                new KeyValuePair<float, float>(1, MathHelper.TwoPi));
-
-            anim.Animated += delegate
-            {
-                Console.WriteLine(anim.Current);
-                screenContent.Rotation = new Sora.GameEngine.MathUtils.RotationVector(anim.Current, 0, 0);
-            };
-
-            CurrentEngine.AnimationManager.Start(anim);
         }
 
         internal void UpdateWebTexture(Awesomium.Core.RenderBuffer renderBuffer)

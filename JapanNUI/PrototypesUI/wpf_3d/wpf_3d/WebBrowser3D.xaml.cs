@@ -13,6 +13,9 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Awesomium.Core;
 using Sora.GameEngine.GameComponents.Scene;
+using Sora.GameEngine.GameComponents.Animations;
+using Microsoft.Xna.Framework;
+using Sora.GameEngine.GameComponents.Cameras;
 
 namespace wpf_3d
 {
@@ -48,6 +51,8 @@ namespace wpf_3d
                 {
                     activePage.Active = false;
                     value.Active = true;
+
+                    activePage = value;
                 }
             }
         }
@@ -84,17 +89,81 @@ namespace wpf_3d
 
             internalTabs.Add(new_page);
             ActivePage = new_page;
+            activePage = new_page;
 
             TabsNode.Add(new_page.D3DNode);
-            ReOrderTabsNode();
 
-            activePage = new_page;
+            ReOrderTabsNode();
 
             RaiseTabCountChanged();
 
             return new_page;
         }
 
+        public void TabNext()
+        {
+            var index = internalTabs.IndexOf(activePage);
+
+            if (index >= 0)
+            {
+                if (index == internalTabs.Count - 1)
+                {
+                    CurrentCamTabAngle = (float)(CurrentCamTabAngle - Math.PI * 2);
+                }
+
+                ActivePage = internalTabs[(index + 1) % internalTabs.Count];
+                MoveCameraTo(CurrentCamRadius, (float)ActivePage.CurrentAngle);
+            }
+        }
+
+        public void TabPrev()
+        {
+            var index = internalTabs.IndexOf(activePage);
+
+            if (index >= 0)
+            {
+                if (index == 0)
+                {
+                    CurrentCamTabAngle = (float)(Math.PI * 2 - CurrentCamTabAngle);
+                }
+
+                ActivePage = internalTabs[(((index - 1) % internalTabs.Count) + internalTabs.Count) % internalTabs.Count];
+                MoveCameraTo(CurrentCamRadius, (float)ActivePage.CurrentAngle);
+            }
+        }
+
+        private float currentCamRadius = 0;
+
+        public float CurrentCamRadius
+        {
+            get { return currentCamRadius; }
+            set { currentCamRadius = value; }
+        }
+
+        private float currentCamTabAngle = 0;
+
+        public float CurrentCamTabAngle
+        {
+            get { return currentCamTabAngle; }
+            set { currentCamTabAngle = value; }
+        }
+
+        private float radiusOffsetNormal = 1.85f;
+
+        public float RadiusOffsetNormal
+        {
+            get { return radiusOffsetNormal; }
+            set { radiusOffsetNormal = value; }
+        }
+
+        private float radiusOffsetMovement = 2.6f;
+
+        public float RadiusOffsetMovement
+        {
+            get { return radiusOffsetMovement; }
+            set { radiusOffsetMovement = value; }
+        }
+                        
         private void ReOrderTabsNode()
         {
             int count = TabCount;
@@ -105,16 +174,57 @@ namespace wpf_3d
                 double radius = count * 0.8f;
                 double angle = 0;
 
-                for (int i = 0; i < count; i++)
+                var activeTabAngle = 0.0;
+
+                for (int i = 0; i < count ; i++)
                 {
+                    internalTabs[i].CurrentAngle = angle;
+
                     var node = TabsNode[i];
+
                     node.Position = new Microsoft.Xna.Framework.Vector3((float)(Math.Cos(angle) * radius), 0, (float)(Math.Sin(angle) * radius));
+                    node.Rotation = new Sora.GameEngine.MathUtils.RotationVector((float)(-angle - MathHelper.PiOver2), 0, 0);
+
+                    if (activePage == internalTabs[i])
+                        activeTabAngle = angle;
 
                     angle += step;
                 }
 
-                D3DScreen.CurrentEngine.CameraManager.ActiveCamera.Position = new Microsoft.Xna.Framework.Vector3(0, 0, (float)(-radius - 1.8f));
+                MoveCameraTo((float)radius, (float)activeTabAngle);
             }
+        }
+
+        private void MoveCameraTo(float activeRadius, float activeTabAngle)
+        {
+            var cam = D3DScreen.CurrentEngine.CameraManager.ActiveCamera;
+
+            var v2Anim = new AnimationVector3(D3DScreen.CurrentEngine,
+                TimeSpan.FromSeconds(0.8),
+                new KeyValuePair<float, Vector3>(0, new Vector3() { X = CurrentCamRadius, Y = radiusOffsetNormal, Z = CurrentCamTabAngle }),
+                new KeyValuePair<float, Vector3>(0.4f, new Vector3() { X = CurrentCamRadius, Y = radiusOffsetMovement, Z = CurrentCamTabAngle * 0.6f + activeTabAngle * 0.4f }),
+                new KeyValuePair<float, Vector3>(0.6f, new Vector3() { X = activeRadius, Y = radiusOffsetMovement, Z = CurrentCamTabAngle * 0.4f + activeTabAngle * 0.6f }),
+                new KeyValuePair<float, Vector3>(1, new Vector3() { X = activeRadius, Y = radiusOffsetNormal, Z = activeTabAngle }));
+
+            ExecuteCameraAnimation(cam, v2Anim);
+
+            D3DScreen.CurrentEngine.AnimationManager.Start(v2Anim);
+        }
+
+        private void ExecuteCameraAnimation(BaseCamera cam, AnimationVector3 v2Anim)
+        {
+            v2Anim.Animated += delegate
+            {
+                var angle = v2Anim.Current.Z;
+                var radius = v2Anim.Current.X;
+
+                CurrentCamRadius = radius;
+                CurrentCamTabAngle = angle;
+
+                radius += v2Anim.Current.Y;
+
+                cam.Position = new Microsoft.Xna.Framework.Vector3((float)(Math.Cos(angle) * radius), 0, (float)(Math.Sin(angle) * radius));
+            };
         }
 
         public void Close(WebView3DContainer page)
@@ -173,7 +283,21 @@ namespace wpf_3d
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
             if (activePage != null)
-                activePage.Handle_MouseMove(e.GetPosition(this));
+                activePage.Handle_MouseMove(OffsetMousePosition(e.GetPosition(this)));
+        }
+
+        private System.Windows.Point OffsetMousePosition(System.Windows.Point point)
+        {
+            /* Il y a une marge sur les bords */
+            var margin = 26;
+
+            var ratioX = (double)ActualWidth / (double)(ActualWidth - margin * 2);
+            var ratioY = (double)ActualHeight / (double)(ActualHeight - margin * 2);
+
+            point.X = ratioX * Math.Max(0, Math.Min(point.X - margin, ActualWidth - margin * 2));
+            point.Y = ratioY * Math.Max(0, Math.Min(point.Y - margin, ActualHeight - margin * 2));
+
+            return point;
         }
 
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e)

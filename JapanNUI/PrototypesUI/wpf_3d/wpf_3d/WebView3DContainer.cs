@@ -107,13 +107,13 @@ namespace wpf_3d
             quadFront.Texture = AssociatedTexture;
             quadFront.CompositionTex = D3DEngine.Renderer.CompositionTexManager.TexColorOnly;
 
-            //quadBack = new SceneObjectTexturedQuad(resourcesContext);
-            //quadBack.Texture = AssociatedTexture;
-            //quadBack.CompositionTex = D3DEngine.Renderer.CompositionTexManager.TexColorOnly;
-            //quadBack.Rotation = new Sora.GameEngine.MathUtils.RotationVector((float)Math.PI, 0, 0);
+            quadBack = new SceneObjectTexturedQuad(resourcesContext);
+            quadBack.Texture = AssociatedTexture;
+            quadBack.CompositionTex = D3DEngine.Renderer.CompositionTexManager.TexColorOnly;
+            quadBack.Rotation = new Sora.GameEngine.MathUtils.RotationVector((float)(Math.PI), 0, 0);
 
             D3DNode.Add(quadFront);
-            //D3DNode.Add(quadBack);
+            D3DNode.Add(quadBack);
         }
 
         private void CreateWebView(int width, int height)
@@ -158,7 +158,9 @@ namespace wpf_3d
                 {
                     try
                     {
-                        if (disposedTexture || webView.IsDirty || invalidated)
+                        bool dirty = webView.IsDirty;
+
+                        if (disposedTexture || Active || dirty || invalidated)
                         {
                             webView.Render().RenderTexture2D(AssociatedTexture);
                             invalidated = false;
@@ -285,5 +287,7 @@ namespace wpf_3d
             if (!webView.IsCrashed)
                 webView.InjectMouseWheel(p);
         }
+
+        public double CurrentAngle { get; set; }
     }
 }
