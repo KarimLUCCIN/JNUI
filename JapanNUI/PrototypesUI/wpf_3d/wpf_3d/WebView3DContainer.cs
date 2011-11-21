@@ -97,9 +97,7 @@ namespace wpf_3d
             Height = height;
             D3DEngine = Container.D3DScreen.CurrentEngine;
 
-            webView = WebCore.CreateWebView(width, height);
-            webView.LoadCompleted += new EventHandler(webView_LoadCompleted);
-            webView.OpenExternalLink += new OpenExternalLinkEventHandler(webView_OpenExternalLink);
+            CreateWebView(width, height);
 
             var resourcesContext = Container.D3DScreen.LocalContent;
 
@@ -116,6 +114,21 @@ namespace wpf_3d
 
             D3DNode.Add(quadFront);
             //D3DNode.Add(quadBack);
+        }
+
+        private void CreateWebView(int width, int height)
+        {
+            webView = WebCore.CreateWebView(width, height);
+            webView.LoadCompleted += new EventHandler(webView_LoadCompleted);
+            webView.OpenExternalLink += new OpenExternalLinkEventHandler(webView_OpenExternalLink);
+            webView.BeginNavigation += new BeginNavigationEventHandler(webView_BeginNavigation);
+        }
+
+        public string CurrentUrl { get; private set; }
+
+        void webView_BeginNavigation(object sender, BeginNavigationEventArgs e)
+        {
+            CurrentUrl = e.Url;
         }
 
         void webView_OpenExternalLink(object sender, OpenExternalLinkEventArgs e)
@@ -139,17 +152,43 @@ namespace wpf_3d
 
             if (IsTextureInvalidated || Active)
             {
-                if (disposedTexture || webView.IsDirty || invalidated)
+                bool wasCrashed = webView.IsCrashed;
+
+                if (!wasCrashed)
                 {
-                    webView.Render().RenderTexture2D(AssociatedTexture);
-                    invalidated = false;
+                    try
+                    {
+                        if (disposedTexture || webView.IsDirty || invalidated)
+                        {
+                            webView.Render().RenderTexture2D(AssociatedTexture);
+                            invalidated = false;
+                        }
+                    }
+                    catch
+                    {
+                        wasCrashed = true;
+                    }
+                }
+
+                if (wasCrashed)
+                {
+                    /* Something happenned ... respawn */
+                    CreateWebView(Width, Height);
+
+                    var url = CurrentUrl;
+                    CurrentUrl = String.Empty;
+
+                    if (!String.IsNullOrEmpty(url))
+                    {
+                        webView.LoadURL(url);
+                    }
                 }
             }
         }
 
         public void Handle_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (Active)
+            if (Active && !webView.IsCrashed)
             {
                 switch (e.ChangedButton)
                 {
@@ -170,7 +209,7 @@ namespace wpf_3d
 
         public void Handle_MouseMove(Point position)
         {
-            if (Active)
+            if (Active && !webView.IsCrashed)
             {
                 webView.InjectMouseMove((int)position.X, (int)position.Y);
             }
@@ -178,25 +217,28 @@ namespace wpf_3d
 
         public void Handle_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            switch (e.ChangedButton)
+            if (!webView.IsCrashed)
             {
-                case System.Windows.Input.MouseButton.Left:
-                    webView.InjectMouseUp(Awesomium.Core.MouseButton.Left);
-                    break;
-                case System.Windows.Input.MouseButton.Middle:
-                    webView.InjectMouseUp(Awesomium.Core.MouseButton.Middle);
-                    break;
-                case System.Windows.Input.MouseButton.Right:
-                    webView.InjectMouseUp(Awesomium.Core.MouseButton.Right);
-                    break;
-                default:
-                    break;
+                switch (e.ChangedButton)
+                {
+                    case System.Windows.Input.MouseButton.Left:
+                        webView.InjectMouseUp(Awesomium.Core.MouseButton.Left);
+                        break;
+                    case System.Windows.Input.MouseButton.Middle:
+                        webView.InjectMouseUp(Awesomium.Core.MouseButton.Middle);
+                        break;
+                    case System.Windows.Input.MouseButton.Right:
+                        webView.InjectMouseUp(Awesomium.Core.MouseButton.Right);
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 
         public IntPtr Handle_WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (Active)
+            if (Active && !webView.IsCrashed)
             {
                 switch ((WindowsMessage)msg)
                 {
@@ -220,7 +262,8 @@ namespace wpf_3d
 
         public void Navigate(string url)
         {
-            webView.LoadURL(url);
+            if (!webView.IsCrashed)
+                webView.LoadURL(url);
         }
 
         public void Close()
@@ -230,15 +273,17 @@ namespace wpf_3d
 
         internal void CloseInternal()
         {
-            webView.Close();
+            if (!webView.IsCrashed)
+                webView.Close();
 
-            if(associatedTexture != null && !associatedTexture.IsDisposed)
+            if (associatedTexture != null && !associatedTexture.IsDisposed)
                 associatedTexture.Dispose();
         }
 
         public void Handle_MouseWheel(int p)
         {
-            webView.InjectMouseWheel(p);
+            if (!webView.IsCrashed)
+                webView.InjectMouseWheel(p);
         }
     }
 }
