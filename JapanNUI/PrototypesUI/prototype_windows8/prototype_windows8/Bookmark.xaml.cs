@@ -9,6 +9,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Xml;
+using System.Reflection;
+using System.IO;
 
 namespace prototype_windows8
 {
@@ -17,17 +20,35 @@ namespace prototype_windows8
 	/// </summary>
 	public partial class Bookmark : Window
 	{
-		public Bookmark()
+		private WebBrowser wb;
+		private XmlDocument xmlDoc;
+		private String xmlPath;
+		
+		public Bookmark(WebBrowser webBrowser)
 		{
 			this.InitializeComponent();
 			
-			/*System.Xml.XmlDocument loadDoc = new System.Xml.XmlDocument();
-			loadDoc.Load(@"c:\Favorites.xml");
+			wb = webBrowser;
+			xmlPath = Directory.GetParent(Environment.CurrentDirectory).Parent.FullName+"\\bookmark.xml";
 			
-			foreach (System.Xml.XmlNode favNode in loadDoc.SelectNodes("/Favorites/Item"))
+			xmlDoc = new XmlDocument();
+			xmlDoc.Load(xmlPath);
+			
+			XmlNodeList bookmarkList = xmlDoc.GetElementsByTagName("Bookmark");
+ 
+			foreach (XmlNode node in bookmarkList)
 			{
-    			listView1.Items.Add(favNode.Attributes["url"].InnerText);
-			}*/
+				XmlElement bookmarkElement = (XmlElement) node;
+ 
+				string title = bookmarkElement.GetElementsByTagName("Title")[0].InnerText;
+				string url = bookmarkElement.GetElementsByTagName("Url")[0].InnerText;
+				
+				ListBoxItem item = new ListBoxItem();
+				item.Content = title;
+				item.ToolTip = url;
+				item.Selected += new RoutedEventHandler(Select_bookmark);
+				listBox1.Items.Add(item);
+			}
 		}
 
 		private void addButton_click(object sender, System.Windows.RoutedEventArgs e)
@@ -36,34 +57,35 @@ namespace prototype_windows8
 			item.Content = titleTxt.Text;
 			item.ToolTip = urlTxt.Text;
 			listBox1.Items.Add(item);
+			
+			
+			XmlElement bookmarkElement = xmlDoc.CreateElement("Bookmark");
+			
+			XmlElement titleElement = xmlDoc.CreateElement("Title");
+			titleElement.InnerText = titleTxt.Text;
+			bookmarkElement.AppendChild(titleElement);
+			
+			XmlElement urlElement = xmlDoc.CreateElement("Url");
+			urlElement.InnerText = urlTxt.Text;
+			bookmarkElement.AppendChild(urlElement);
+			
+			xmlDoc["Bookmarks"].AppendChild(bookmarkElement);
+			
+			xmlDoc.Save(xmlPath);
+			
+			this.Close();
 		}
 
-		private void removeButton_click(object sender, System.Windows.RoutedEventArgs e)
+		private void cancelButton_click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			try
-			{
-    			listBox1.Items.RemoveAt(listBox1.SelectedIndex);
-			}
-			catch
-			{
-    			MessageBox.Show("You need to select an item");
-			}
+			this.Close();
 		}
 
-		private void saving_bookmark(object sender, System.ComponentModel.CancelEventArgs e)
+		private void Select_bookmark(object sender, System.Windows.RoutedEventArgs e)
 		{
-			/*System.Xml.XmlTextWriter writer = new System.Xml.XmlTextWriter(@"c:\Favorites.xml", null);
-
-			writer.WriteStartElement("Favorites");
-			for (int i = 0; i < listView1.Items.Count; i++)
-			{
-				ListViewItem l = listView1.Items[i] as ListViewItem;
-    			writer.WriteStartElement("Item");
-    			writer.WriteAttributeString("url", l.Content.ToString());
-    			writer.WriteEndElement();
-			}
-			writer.WriteEndElement();
-			writer.Close();*/
+			ListBoxItem item = e.Source as ListBoxItem;
+			wb.Navigate(new Uri(item.ToolTip.ToString()));
+			this.Close();
 		}
 	}
 }

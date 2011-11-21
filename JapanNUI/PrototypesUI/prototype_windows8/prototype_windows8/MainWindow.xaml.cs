@@ -183,7 +183,7 @@ namespace prototype_windows8
 		private void Bookmark_click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			mshtml.HTMLDocument doc = (mshtml.HTMLDocument)  currentWb.Document;
-			Bookmark fav = new Bookmark();
+			Bookmark fav = new Bookmark(currentWb);
 			fav.urlTxt.Text = currentWb.Source.AbsoluteUri;
 			fav.titleTxt.Text = doc.title;
 			fav.ShowDialog();

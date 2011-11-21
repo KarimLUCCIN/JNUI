@@ -97,7 +97,7 @@
 							</VisualStateManager.VisualStateGroups>
 							<Rectangle Fill="#80000000" HorizontalAlignment="Stretch" Margin="0" Stroke="{x:Null}" Width="Auto" Height="41.333" VerticalAlignment="Bottom"/>
 							<ContentPresenter RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Bottom" Margin="4,0,4,4" Height="33.333" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
-							<Button x:Name="close" Content="X" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,0,60" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="CloseTab_click">
+							<Button x:Name="close" Content="O" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,4,60" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="CloseTab_click" FontFamily="Wingdings 2">
 								<Button.Background>
 									<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 										<GradientStop Color="#FFF3F3F3" Offset="0"/>
