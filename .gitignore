@@ -1,7 +1,5 @@
 
 *.suo
-*.dll
-*.pdb
 *.metagen
 *.ilk
 *.sdf
@@ -11,3 +9,4 @@ obj
 /JapanNUI/JapanNUI.ImageProcessing.SectionsBuilders/Debug
 /Libs
 /JapanNUI/JapanNUI.ImageProcessing.SectionsBuilders/Release/JapanNUI.ImageProcessing.SectionsBuilders.write.1.tlog
+/JapanNUI/Debug
