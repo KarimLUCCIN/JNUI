@@ -12,6 +12,8 @@ using Sora.GameEngine.GameComponents.SceneObjects;
 using Sora.GameEngine.GameComponents.Animations;
 using Sora.GameEngine.GameComponents.Scene;
 using Awesomium.Core;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace wpf_3d
 {
@@ -23,12 +25,31 @@ namespace wpf_3d
 
         Node screenContent;
 
+        public Node ScreenContent
+        {
+            get { return screenContent; }
+        }
+
         SceneObjectTexturedQuad quadFront;
         SceneObjectTexturedQuad quadBack;
+
+        public int CompositionWidth
+        {
+            get { return bmpData.Width; }
+        }
+
+        public int CompositionHeight
+        {
+            get { return bmpData.Height; }
+        }
+
+        public ImageSource D3DImageSource { get; private set; }
 
         public D3DEffectsScreen(OffscreenEngineInteropBitmap engine)
             : base(engine)
         {
+            D3DImageSource = engine.AttachedImage;
+
             bmpData = new Bitmap(engine.CompositionRT.Width, engine.CompositionRT.Height);
             bmpByteData = new int[bmpData.Width * bmpData.Height];
             screenCtrl = new Texture2D(engine.Device, bmpData.Width, bmpData.Height, false, SurfaceFormat.Color);

@@ -2,26 +2,8 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="640" Width="800"
-        Loaded="Window_Loaded" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen">
+        Loaded="Window_Loaded" ResizeMode="NoResize" WindowStyle="None" WindowStartupLocation="CenterScreen" xmlns:wpf3d="clr-namespace:wpf_3d">
     <Grid Width="800" Height="640">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="40" />
-        </Grid.RowDefinitions>
-        
-        <Grid x:Name="mainContent" Width="800" Height="600">
-            <!--<WebBrowser x:Name="lolBrowser"/>-->
-        </Grid>
-
-        <Grid x:Name="d3dContent" Width="800" Height="600" MouseDown="d3dContent_MouseDown" MouseMove="d3dContent_MouseMove" MouseUp="d3dContent_MouseUp" 
-              KeyDown="d3dContent_KeyDown" KeyUp="d3dContent_KeyUp" MouseWheel="d3dContent_MouseWheel" >
-            <Image Stretch="Fill" x:Name="d3dImageContainer" >
-                
-            </Image>
-        </Grid>
-        
-        <StackPanel Grid.Row="1" Orientation="Horizontal">
-            <TextBlock Text="Switch" Name="switchBtn" Width="100" Margin="4" MouseDown="switchBtn_Click" />
-        </StackPanel>
+        <wpf3d:WebBrowser3D x:Name="webBrowserInst"/>
     </Grid>
 </Window>
