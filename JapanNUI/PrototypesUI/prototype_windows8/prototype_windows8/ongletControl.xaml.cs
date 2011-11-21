@@ -89,5 +89,24 @@ namespace prototype_windows8
 		{
 			tab.SelectedIndex = this.TabIndex;
 		}
+
+		private void DoubleClickClose(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			if(tab.Items.Count > 1) 
+			{
+				UniformGrid grid = this.Parent as UniformGrid;
+				TabItem delete = tab.SelectedItem as TabItem;
+				
+				if(tab.SelectedIndex == 0)
+					tab.SelectedIndex = 1;
+				else
+					tab.SelectedIndex = tab.SelectedIndex - 1;
+				
+				tab.Items.Remove(delete);
+				grid.Children.Remove(this);
+				
+				CorrectButtonIndex(grid);
+			}
+		}
 	}
 }

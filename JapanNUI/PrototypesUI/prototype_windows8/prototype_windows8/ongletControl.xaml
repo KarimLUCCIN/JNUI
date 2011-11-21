@@ -123,6 +123,6 @@
 
 	<Grid x:Name="LayoutRoot">
 		<Image x:Name="thumb" Width="{Binding Width, ElementName=UserControl}" Height="{Binding Height, ElementName=UserControl}" MouseDown="Change_SelectionTab"/>
-		<Button x:Name="onglet" Style="{DynamicResource ButtonStyle2}" Foreground="#CCFFFFFF" BorderBrush="{x:Null}" FontSize="16" Height="100" Click="Change_SelectionTab" TabIndex="0" ToolTip="Close tab" VerticalAlignment="Top" Content=""/>
+		<Button x:Name="onglet" Style="{DynamicResource ButtonStyle2}" Foreground="#CCFFFFFF" BorderBrush="{x:Null}" FontSize="16" Height="100" Click="Change_SelectionTab" TabIndex="0" ToolTip="Close tab" VerticalAlignment="Top" Content="" MouseDoubleClick="DoubleClickClose"/>
 	</Grid>
 </UserControl>

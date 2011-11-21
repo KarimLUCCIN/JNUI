@@ -245,7 +245,7 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button x:Name="favorite" Content="★" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,171.5,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" d:LayoutOverrides="VerticalAlignment" ToolTip="Bookmark">
+		<Button x:Name="favorite" Content="★" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,171.5,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" d:LayoutOverrides="VerticalAlignment" ToolTip="Bookmark" Click="Bookmark_click">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
