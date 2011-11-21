@@ -119,7 +119,7 @@ namespace wpf_3d
                     soraEngine.Renderer.SwapRandBChannels = true;
                     try
                     {
-                        soraEngine.Device.DepthStencilState = DepthStencilState.Default;
+                        //soraEngine.Renderer.EnableDebugView = true;
                         soraEngine.RenderToImage();
                     }
                     finally

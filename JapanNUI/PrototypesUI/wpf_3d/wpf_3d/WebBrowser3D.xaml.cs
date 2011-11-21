@@ -102,7 +102,7 @@ namespace wpf_3d
             {
                 var step = 2 * Math.PI / (double)count;
 
-                double radius = count * 0.4f;
+                double radius = count * 0.8f;
                 double angle = 0;
 
                 for (int i = 0; i < count; i++)

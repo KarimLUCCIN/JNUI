@@ -30,9 +30,6 @@ namespace wpf_3d
             get { return screenContent; }
         }
 
-        SceneObjectTexturedQuad quadFront;
-        SceneObjectTexturedQuad quadBack;
-
         public int CompositionWidth
         {
             get { return bmpData.Width; }
@@ -63,18 +60,6 @@ namespace wpf_3d
 
             screenContent = new Node(LocalContent);
             screenContent.Position = new Vector3(0, 0, (float)Math.Sin(MathHelper.PiOver4) + 0.0225f);
-
-            quadFront = new SceneObjectTexturedQuad(LocalContent);
-            quadFront.Texture = screenCtrl;
-            quadFront.CompositionTex = CurrentEngine.Renderer.CompositionTexManager.TexColorOnly;
-
-            quadBack = new SceneObjectTexturedQuad(LocalContent);
-            quadBack.Texture = screenCtrl;
-            quadBack.CompositionTex = CurrentEngine.Renderer.CompositionTexManager.TexColorOnly;
-            quadBack.Rotation = new Sora.GameEngine.MathUtils.RotationVector(MathHelper.Pi, 0, 0);
-
-            screenContent.Add(quadFront);
-            screenContent.Add(quadBack);
 
             CurrentEngine.SceneManager.Root.Add(screenContent);
         }
