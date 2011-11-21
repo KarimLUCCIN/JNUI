@@ -23,10 +23,8 @@ namespace wpf_3d
     /// </summary>
     public partial class MainWindow : Window
     {
-        public OffscreenEngineInteropBitmap soraEngine;
+        public OffscreenEngine soraEngine;
         public D3DEffectsScreen d3dEffectsScreen;
-
-        bool is3DRendering = false;
 
         public WebView webView;
 
@@ -45,7 +43,8 @@ namespace wpf_3d
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            soraEngine = OffscreenEngineBuilder.CreateFromInteropBitmap(800, 600);
+            var d3dImage = new D3DImage(96, 96);
+            soraEngine = OffscreenEngineBuilder.CreateFromD3DImage(800, 600, d3dImage);
 
             soraEngine.Renderer.EnableGlow = false;
             soraEngine.Renderer.EnableHDR = false;
@@ -115,17 +114,7 @@ namespace wpf_3d
 
                     drawAccumulator = TimeSpan.Zero;
 
-                    var oldSwap = soraEngine.Renderer.SwapRandBChannels;
-                    soraEngine.Renderer.SwapRandBChannels = true;
-                    try
-                    {
-                        //soraEngine.Renderer.EnableDebugView = true;
-                        soraEngine.RenderToImage();
-                    }
-                    finally
-                    {
-                        soraEngine.Renderer.SwapRandBChannels = oldSwap;
-                    }
+                    soraEngine.RenderToImage();
                 }
             }
         }

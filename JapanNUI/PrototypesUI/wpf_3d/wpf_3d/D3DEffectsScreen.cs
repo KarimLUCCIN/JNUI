@@ -42,12 +42,12 @@ namespace wpf_3d
 
         public ImageSource D3DImageSource { get; private set; }
 
-        public D3DEffectsScreen(OffscreenEngineInteropBitmap engine)
+        public D3DEffectsScreen(OffscreenEngine engine)
             : base(engine)
         {
             D3DImageSource = engine.AttachedImage;
 
-            bmpData = new Bitmap(engine.CompositionRT.Width, engine.CompositionRT.Height);
+            bmpData = new Bitmap((int)engine.AttachedImage.Width, (int)engine.AttachedImage.Height);
             bmpByteData = new int[bmpData.Width * bmpData.Height];
             screenCtrl = new Texture2D(engine.Device, bmpData.Width, bmpData.Height, false, SurfaceFormat.Color);
         }
