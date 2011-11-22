@@ -39,7 +39,7 @@ namespace KinectBrowser.D3D.Browser
 
         public Node D3DNode { get; private set; }
 
-        public bool IsTextureDisposed
+        internal bool IsTextureDisposed
         {
             get
             {
@@ -49,7 +49,7 @@ namespace KinectBrowser.D3D.Browser
 
         bool invalidated = false;
 
-        public bool IsTextureInvalidated
+        internal bool IsTextureInvalidated
         {
             get
             {
@@ -77,6 +77,7 @@ namespace KinectBrowser.D3D.Browser
         }
 
         bool active = false;
+
         public bool Active
         {
             get { return active; }
@@ -128,16 +129,25 @@ namespace KinectBrowser.D3D.Browser
         private void CreateWebView(int width, int height)
         {
             webView = WebCore.CreateWebView(width, height);
+            
             webView.LoadCompleted += new EventHandler(webView_LoadCompleted);
             webView.OpenExternalLink += new OpenExternalLinkEventHandler(webView_OpenExternalLink);
             webView.BeginNavigation += new BeginNavigationEventHandler(webView_BeginNavigation);
+            webView.TitleReceived += new TitleReceivedEventHandler(webView_TitleReceived);            
         }
 
-        public string CurrentUrl { get; private set; }
+        void webView_TitleReceived(object sender, ReceiveTitleEventArgs e)
+        {
+            if (Active && Container.ActivePage == this)
+                Container.RaiseActivePageTitleChanged();
+        }
 
         void webView_BeginNavigation(object sender, BeginNavigationEventArgs e)
         {
             CurrentUrl = e.Url;
+
+            if (Active && Container.ActivePage == this)
+                Container.RaiseActivePageTitleBeginNavigation();
         }
 
         void webView_OpenExternalLink(object sender, OpenExternalLinkEventArgs e)
@@ -148,14 +158,17 @@ namespace KinectBrowser.D3D.Browser
         void webView_LoadCompleted(object sender, EventArgs e)
         {
             Invalidate();
+
+            if (Active && Container.ActivePage == this)
+                Container.RaiseActivePageLoadCompleted();
         }
 
-        public void Invalidate()
+        internal void Invalidate()
         {
             invalidated = true;
         }
 
-        public void RenderUpdate()
+        internal void RenderUpdate()
         {
             bool disposedTexture = IsTextureDisposed;
 
@@ -247,7 +260,7 @@ namespace KinectBrowser.D3D.Browser
             }
         }
 
-        public IntPtr Handle_WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+        internal IntPtr Handle_WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (Active && !webView.IsCrashed)
             {
@@ -271,10 +284,79 @@ namespace KinectBrowser.D3D.Browser
             return IntPtr.Zero;
         }
 
+        internal double CurrentAngle { get; set; }
+
+        #region Page Navigation
+
+        public string CurrentUrl { get; private set; }
+
+        public string Title
+        {
+            get
+            {
+                return webView.IsCrashed ? String.Empty : webView.Title;
+            }
+        }
+
         public void Navigate(string url)
         {
             if (!webView.IsCrashed)
-                webView.LoadURL(url);
+            {
+                if (webView.LoadURL(url))
+                    CurrentUrl = url;
+            }
+        }
+
+        public void NavigateToFile(string path)
+        {
+            if (!webView.IsCrashed)
+            {
+                if (webView.LoadFile(path))
+                    CurrentUrl = String.Empty;
+            }
+        }
+
+        public void NavigateToHTML(string html)
+        {
+            if (!webView.IsCrashed)
+            {
+                if (webView.LoadHTML(html))
+                    CurrentUrl = String.Empty;
+            }
+        }
+
+        public bool CanGoBack
+        {
+            get
+            {
+                if (webView.IsCrashed)
+                    return false;
+                else
+                    return webView.HistoryBackCount > 0;
+            }
+        }
+
+        public bool CanGoForward
+        {
+            get
+            {
+                if (webView.IsCrashed)
+                    return false;
+                else
+                    return webView.HistoryForwardCount > 0;
+            }
+        }
+
+        public void GoBack()
+        {
+            if (CanGoBack)
+                webView.GoBack();
+        }
+
+        public void GoForward()
+        {
+            if (CanGoForward)
+                webView.GoForward();
         }
 
         public void Close()
@@ -297,6 +379,6 @@ namespace KinectBrowser.D3D.Browser
                 webView.InjectMouseWheel(p);
         }
 
-        internal double CurrentAngle { get; set; }
+        #endregion
     }
 }
