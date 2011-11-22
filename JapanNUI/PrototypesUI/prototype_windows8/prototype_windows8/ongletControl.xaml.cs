@@ -60,6 +60,7 @@ namespace prototype_windows8
 		{
 			if(tab.Items.Count > 1) 
 			{
+				tab.SelectedIndex = this.TabIndex;
 				UniformGrid grid = this.Parent as UniformGrid;
 				TabItem delete = tab.SelectedItem as TabItem;
 				
@@ -94,6 +95,7 @@ namespace prototype_windows8
 		{
 			if(tab.Items.Count > 1) 
 			{
+				tab.SelectedIndex = this.TabIndex;
 				UniformGrid grid = this.Parent as UniformGrid;
 				TabItem delete = tab.SelectedItem as TabItem;
 				

@@ -43,21 +43,20 @@ namespace prototype_windows8
 				string title = bookmarkElement.GetElementsByTagName("Title")[0].InnerText;
 				string url = bookmarkElement.GetElementsByTagName("Url")[0].InnerText;
 				
-				ListBoxItem item = new ListBoxItem();
+				ListViewItem item = new ListViewItem();
 				item.Content = title;
 				item.ToolTip = url;
 				item.Selected += new RoutedEventHandler(Select_bookmark);
-				listBox1.Items.Add(item);
+				listView1.Items.Add(item);
 			}
 		}
 
 		private void addButton_click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			ListBoxItem item = new ListBoxItem();
+			ListViewItem item = new ListViewItem();
 			item.Content = titleTxt.Text;
 			item.ToolTip = urlTxt.Text;
-			listBox1.Items.Add(item);
-			
+			listView1.Items.Add(item);
 			
 			XmlElement bookmarkElement = xmlDoc.CreateElement("Bookmark");
 			
@@ -83,7 +82,7 @@ namespace prototype_windows8
 
 		private void Select_bookmark(object sender, System.Windows.RoutedEventArgs e)
 		{
-			ListBoxItem item = e.Source as ListBoxItem;
+			ListViewItem item = e.Source as ListViewItem;
 			wb.Navigate(new Uri(item.ToolTip.ToString()));
 			this.Close();
 		}
