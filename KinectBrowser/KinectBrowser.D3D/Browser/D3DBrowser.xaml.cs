@@ -326,16 +326,22 @@ namespace KinectBrowser.D3D.Browser
                 activePage.Handle_MouseMove(OffsetMousePosition(e.GetPosition(this)));
         }
 
+        /* Il y a une marge sur les bords */
+        internal int InternalBrowserMargin
+        {
+            get { return 26; }
+        }
+
         private System.Windows.Point OffsetMousePosition(System.Windows.Point point)
         {
-            /* Il y a une marge sur les bords */
-            var margin = 26;
+            var marginX = InternalBrowserMargin; // +activePage.InternalMarginX;
+            var marginY = InternalBrowserMargin; // +activePage.InternalMarginY;
 
-            var ratioX = (double)ActualWidth / (double)(ActualWidth - margin * 2);
-            var ratioY = (double)ActualHeight / (double)(ActualHeight - margin * 2);
+            var ratioX = (double)ActualWidth / (double)(ActualWidth - InternalBrowserMargin * 2 - activePage.InternalMarginX * 2);
+            var ratioY = (double)ActualHeight / (double)(ActualHeight - InternalBrowserMargin * 2 - activePage.InternalMarginY * 2);
 
-            point.X = ratioX * Math.Max(0, Math.Min(point.X - margin, ActualWidth - margin * 2));
-            point.Y = ratioY * Math.Max(0, Math.Min(point.Y - margin, ActualHeight - margin * 2));
+            point.X = ratioX * Math.Max(0, Math.Min(point.X - marginX, ActualWidth - marginX * 2));
+            point.Y = ratioY * Math.Max(0, Math.Min(point.Y - marginY, ActualHeight - marginY * 2));
 
             return point;
         }
