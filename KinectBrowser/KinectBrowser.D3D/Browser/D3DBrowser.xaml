@@ -1,0 +1,12 @@
+﻿<UserControl x:Class="KinectBrowser.D3D.Browser.D3DBrowser"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" Focusable="True" IsTabStop="True"
+             d:DesignHeight="300" d:DesignWidth="300" xmlns:local="clr-namespace:KinectBrowser.D3D.Browser">
+    <Grid MouseDown="Grid_MouseDown" MouseMove="Grid_MouseMove" MouseUp="Grid_MouseUp" Background="#FF000000" MouseWheel="Grid_MouseWheel">
+        <Image x:Name="d3dImageContent" IsHitTestVisible="False"/>
+        <local:D3DBrowserFocusTrap x:Name="d3DBrowserFocusTrap" IsTabStop="True" Focusable="True" Background="#01000000"/>
+    </Grid>
+</UserControl>
