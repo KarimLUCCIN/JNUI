@@ -32,6 +32,8 @@ namespace KinectBrowser
             SoraEngine = new SoraEngineHost((int)ActualWidth, (int)ActualHeight);
             SoraEngine.Initialize();
 
+            d3dContent.Source = SoraEngine.InteropImage;
+
             CompositionTarget.Rendering += new EventHandler(CompositionTarget_Rendering);
         }
 

@@ -24,6 +24,8 @@ namespace KinectBrowser.D3D
         public int RenderingWidth { get; private set; }
         public int RenderingHeight { get; private set; }
 
+        public SoraEngineScreen RenderingScreen { get; private set; }
+
         /// <summary>
         /// Initialize une nouvelle instance du moteur de rendu avec les dimensions spécifiées
         /// </summary>
@@ -64,6 +66,8 @@ namespace KinectBrowser.D3D
             CurrentEngine.Renderer.EnableMotionBlur = false;
             CurrentEngine.Renderer.EnableShadow = false;
             CurrentEngine.Renderer.EnableToonShading = false;
+
+            CurrentEngine.ScreenManager.AddScreen(RenderingScreen = new SoraEngineScreen(this));
         }
 
         Stopwatch renderingWatch = new Stopwatch();
@@ -96,11 +100,13 @@ namespace KinectBrowser.D3D
 
                 soraEngine.EngineUpdate(drawAccumulator);
 
-                drawAccumulator = TimeSpan.Zero;
-
                 soraEngine.Renderer.RendererMode = RendererMode.ColorOnly;
-                soraEngine.RenderToImage();
+                soraEngine.RenderToImage(drawAccumulator);
+
+                drawAccumulator = TimeSpan.Zero;
             }
+
+            renderingWatch.Restart();
         }
     }
 }
