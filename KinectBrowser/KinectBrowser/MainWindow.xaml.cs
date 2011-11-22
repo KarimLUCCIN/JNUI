@@ -32,14 +32,16 @@ namespace KinectBrowser
             SoraEngine = new SoraEngineHost((int)ActualWidth, (int)ActualHeight);
             SoraEngine.Initialize();
 
-            d3dContent.Source = SoraEngine.InteropImage;
+            browser.Attach(SoraEngine);
 
-            CompositionTarget.Rendering += new EventHandler(CompositionTarget_Rendering);
+            browser.NewTab("http://www.google.com");
+            browser.NewTab("http://www.wikipedia.com");
+            browser.NewTab("http://www.9gag.com");
         }
 
-        void CompositionTarget_Rendering(object sender, EventArgs e)
+        private void button1_Click(object sender, RoutedEventArgs e)
         {
-            SoraEngine.Render();
+            browser.TabNext();
         }
     }
 }
