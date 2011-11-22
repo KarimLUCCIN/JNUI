@@ -22,9 +22,11 @@ namespace KinectBrowser
     {
         public SoraEngineHost SoraEngine { get; private set; }
 
+		private string homepage;
         public MainWindow()
         {
             InitializeComponent();
+            homepage = "http://www.google.fr";
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -33,7 +35,7 @@ namespace KinectBrowser
             SoraEngine.Initialize();
 
             browser.Attach(SoraEngine);
-
+			
             browser.NewTab("http://www.google.com");
             browser.NewTab("http://www.wikipedia.com");
             browser.NewTab("http://www.9gag.com");
@@ -48,5 +50,61 @@ namespace KinectBrowser
         {
             browser.Focus();
         }
+		
+		private void Back_click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			try
+			{
+				//currentWb.GoBack();
+			}
+			catch
+			{
+				MessageBox.Show("Pas de page précédente", "Erreur");	
+			}
+		}
+
+		private void Refresh_click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			//currentWb.Refresh();
+		}
+
+		private void Home_click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			browser.ActivePage.Navigate(homepage);
+		}
+
+		private void Forward_click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			try
+			{
+				//currentWb.GoForward();
+			}
+			catch
+			{
+				MessageBox.Show("Pas de page suivante", "Erreur");	
+			}
+		}
+
+		private void Go_website(object sender, System.Windows.Input.KeyEventArgs e)
+		{
+			if (e.Key.Equals(Key.Return)){
+				try
+				{
+					browser.ActivePage.Navigate(websiteText.Text);
+				}
+				catch
+				{
+					MessageBox.Show("Mauvaise URL", "Erreur");
+				}
+			}
+		}
+		
+		private void Bookmark_click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			Bookmark fav = new Bookmark(browser.ActivePage);
+			fav.urlTxt.Text = browser.ActivePage.CurrentUrl;
+			fav.titleTxt.Text = browser.ActivePage.Title;
+			fav.ShowDialog();
+		}
     }
 }
