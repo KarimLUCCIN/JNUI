@@ -31,7 +31,7 @@ namespace KinectBrowser
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            SoraEngine = new SoraEngineHost((int)ActualWidth, (int)ActualHeight);
+            SoraEngine = new SoraEngineHost((int)browser.ActualWidth, (int)browser.ActualHeight);
             SoraEngine.Initialize();
 
             browser.Attach(SoraEngine);
@@ -55,7 +55,7 @@ namespace KinectBrowser
 		{
 			try
 			{
-				//currentWb.GoBack();
+                browser.GoBack();
 			}
 			catch
 			{
@@ -65,19 +65,22 @@ namespace KinectBrowser
 
 		private void Refresh_click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			//currentWb.Refresh();
+            browser.Reload();
 		}
 
 		private void Home_click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			browser.ActivePage.Navigate(homepage);
+            if (browser.ActivePage != null)
+                browser.ActivePage.Navigate(homepage);
+            else
+                browser.NewTab(homepage);
 		}
 
 		private void Forward_click(object sender, System.Windows.RoutedEventArgs e)
 		{
 			try
 			{
-				//currentWb.GoForward();
+                browser.GoForward();
 			}
 			catch
 			{

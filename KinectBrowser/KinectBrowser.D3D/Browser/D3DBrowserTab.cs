@@ -390,6 +390,12 @@ namespace KinectBrowser.D3D.Browser
                 webView.InjectMouseWheel(p);
         }
 
+        public void Reload()
+        {
+            if (!webView.IsCrashed)
+                webView.Reload();
+        }
+
         #endregion
     }
 }
