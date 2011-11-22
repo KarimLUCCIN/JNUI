@@ -138,15 +138,6 @@
     <Content Include="Awesomium.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Awesomium.Mono.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Awesomium.Windows.Controls.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Awesomium.Windows.Forms.dll">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="en-US.dll" />
     <Content Include="icudt42.dll" />
   </ItemGroup>
