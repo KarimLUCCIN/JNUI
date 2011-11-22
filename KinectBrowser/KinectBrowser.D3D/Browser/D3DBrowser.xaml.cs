@@ -119,16 +119,10 @@ namespace KinectBrowser.D3D.Browser
                     value.Active = true;
 
                     activePage = value;
+
+                    RaiseActivePageChanged();
                 }
             }
-        }
-
-        public event EventHandler TabCountChanged;
-
-        private void RaiseTabCountChanged()
-        {
-            if (TabCountChanged != null)
-                TabCountChanged(this, EventArgs.Empty);
         }
 
         public D3DBrowserTab NewTab(string url)
@@ -357,5 +351,72 @@ namespace KinectBrowser.D3D.Browser
             if (IsActive && activePage != null)
                 activePage.Handle_MouseWheel(e.Delta);
         }
+
+        #region Events
+        public event EventHandler TabCountChanged;
+
+        private void RaiseTabCountChanged()
+        {
+            if (TabCountChanged != null)
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    TabCountChanged(this, EventArgs.Empty);
+                });
+            }
+        }
+
+        public event EventHandler ActivePageChanged;
+
+        private void RaiseActivePageChanged()
+        {
+            if (ActivePageChanged != null)
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    ActivePageChanged(this, EventArgs.Empty);
+                });
+            }
+        }
+
+        public event EventHandler ActivePageTitleChanged;
+
+        internal void RaiseActivePageTitleChanged()
+        {
+            if (ActivePageTitleChanged != null)
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    ActivePageTitleChanged(this, EventArgs.Empty);
+                });
+            }
+        }
+
+        public event EventHandler ActivePageTitleBeginNavigation;
+
+        internal void RaiseActivePageTitleBeginNavigation()
+        {
+            if (ActivePageTitleBeginNavigation != null)
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    ActivePageTitleBeginNavigation(this, EventArgs.Empty);
+                });
+            }
+        }
+
+        public event EventHandler ActivePageLoadCompleted;
+
+        internal void RaiseActivePageLoadCompleted()
+        {
+            if (ActivePageLoadCompleted != null)
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    ActivePageLoadCompleted(this, EventArgs.Empty);
+                });
+            }
+        }
+        #endregion
     }
 }
