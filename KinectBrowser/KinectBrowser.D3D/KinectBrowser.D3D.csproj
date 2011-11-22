@@ -80,6 +80,9 @@
     <Content Include="Awesomium.Core.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Awesomium.Core.XML">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Awesomium.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

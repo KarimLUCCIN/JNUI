@@ -43,5 +43,10 @@ namespace KinectBrowser
         {
             browser.TabNext();
         }
+
+        private void button2_Click(object sender, RoutedEventArgs e)
+        {
+            browser.Focus();
+        }
     }
 }
