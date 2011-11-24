@@ -109,12 +109,15 @@ namespace KinectBrowser
 			}
 		}
 
-		private void GoTo_website(object sender, System.Windows.Input.KeyEventArgs e)
+		private void GoTo_keyboard(object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			if (e.Key.Equals(Key.Return)){
 				try
 				{
-					browser.ActivePage.Navigate(websiteText.Text);
+					if (browser.ActivePage != null)
+               			browser.ActivePage.Navigate(websiteText.Text);
+            		else
+                		browser.NewTab(homepage);
 				}
 				catch
 				{
@@ -125,15 +128,23 @@ namespace KinectBrowser
 		
 		private void Bookmark_click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			Bookmark fav = new Bookmark(browser.ActivePage);
-			fav.urlTxt.Text = browser.ActivePage.CurrentUrl;
-			fav.titleTxt.Text = browser.ActivePage.Title;
-			fav.ShowDialog();
+			if (browser.ActivePage != null) 
+			{
+				Bookmark fav = new Bookmark(browser.ActivePage);
+				fav.urlTxt.Text = browser.ActivePage.CurrentUrl;
+				fav.titleTxt.Text = browser.ActivePage.Title;
+				fav.ShowDialog();
+			}
+			else
+                browser.NewTab(homepage);
 		}
 
 		private void GoTo_click(object sender, System.Windows.RoutedEventArgs e)
 		{
-			browser.ActivePage.Navigate(websiteText.Text);
+			if (browser.ActivePage != null)
+               	browser.ActivePage.Navigate(websiteText.Text);
+            else
+                browser.NewTab(homepage);
 		}
     }
 }

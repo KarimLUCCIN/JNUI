@@ -248,7 +248,7 @@
             </Grid.ColumnDefinitions>
 
             <Border Margin="4" Grid.Column="1" BorderBrush="#FFFFFDFD" BorderThickness="2">
-                <TextBox x:Name="websiteText" TextWrapping="Wrap" Text="http://www.google.fr" Margin="2" BorderThickness="0" Background="Black" Foreground="#FFD2D2D2" SelectionBrush="#FFB4B4B4" FontSize="16" Style="{DynamicResource TextBoxStyle1}" d:LayoutOverrides="HorizontalAlignment"/>
+                <TextBox x:Name="websiteText" TextWrapping="Wrap" Text="http://www.google.fr" Margin="2" BorderThickness="0" Background="Black" Foreground="#FFD2D2D2" SelectionBrush="#FFB4B4B4" FontSize="16" Style="{DynamicResource TextBoxStyle1}" d:LayoutOverrides="HorizontalAlignment" KeyDown="GoTo_keyboard"/>
             </Border>
 
             <Button Margin="4" Grid.Column="0" x:Name="back" Content="f" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" d:LayoutOverrides="VerticalAlignment" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" Click="Back_click" IsEnabled="{Binding ElementName=browser, Path=CanGoBack}" ToolTip="Back" Background="{StaticResource ButtonDefaultBackground}"/>
