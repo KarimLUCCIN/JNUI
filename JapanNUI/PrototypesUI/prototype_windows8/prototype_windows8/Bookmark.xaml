@@ -239,7 +239,7 @@
 				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
 			</TextBox.SelectionBrush>
 		</TextBox>
-		<Button x:Name="cancelButton" Content="O" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,8,8" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="cancelButton_click" d:LayoutOverrides="VerticalAlignment" FontFamily="Wingdings 2">
+		<Button x:Name="cancelButton" Content="O" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,8,8" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="cancelButton_click" d:LayoutOverrides="VerticalAlignment" FontFamily="Wingdings 2" ToolTip="Cancel">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -249,7 +249,7 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button x:Name="addButton" Content="P" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="40" Margin="8,0,0,8" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="addButton_click" d:LayoutOverrides="VerticalAlignment" FontFamily="Wingdings 2">
+		<Button x:Name="addButton" Content="P" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="40" Margin="8,0,0,8" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="addButton_click" d:LayoutOverrides="VerticalAlignment" FontFamily="Wingdings 2" ToolTip="Add bookmark">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
