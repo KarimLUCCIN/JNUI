@@ -68,6 +68,8 @@ namespace KinectBrowser.D3D
             CurrentEngine.Renderer.EnableToonShading = false;
 
             CurrentEngine.ScreenManager.AddScreen(RenderingScreen = new SoraEngineScreen(this));
+
+            CurrentEngine.RenderingOptions.TextureQuality = Sora.GameEngine.GameComponents.GameSystem.Rendering.Options.TextureQuality.High;
         }
 
         Stopwatch renderingWatch = new Stopwatch();
