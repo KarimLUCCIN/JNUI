@@ -14,7 +14,23 @@ namespace KinectBrowser.Interaction
 
         private static object sync = new object();
 
-        public static InteractionsCore Core { get; private set; }
+        public static object Sync
+        {
+            get { return sync; }
+        }
+
+        static InteractionsCore core = null;
+
+        public static InteractionsCore Core
+        {
+            get
+            {
+                if (core == null)
+                    throw new InvalidOperationException("Initialize doit être appelé avant tout accès la InteractionsCore.Core");
+
+                return core;
+            }
+        }
 
         public static void Initialize()
         {
@@ -25,10 +41,10 @@ namespace KinectBrowser.Interaction
         {
             lock (sync)
             {
-                if (Core != null)
+                if (core != null)
                     throw new InvalidOperationException("Core a déjà été initialisé");
                 else
-                    Core = new InteractionsCore(updateDuration);
+                    core = new InteractionsCore(updateDuration);
             }
         }
 

@@ -33,6 +33,9 @@
     <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -42,8 +45,28 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasePositionProvider.cs" />
+    <Compile Include="CursorState.cs" />
+    <Compile Include="Gestures\GestureManager.cs" />
+    <Compile Include="Gestures\GesturePoint.cs" />
+    <Compile Include="Gestures\GestureSequence.cs" />
+    <Compile Include="Gestures\GestureSequenceKey.cs" />
+    <Compile Include="Gestures\GestureSequenceManager.cs" />
+    <Compile Include="Gestures\SimpleGesture.cs" />
+    <Compile Include="Gestures\SimpleGestureClosenessEvaluator.cs" />
+    <Compile Include="Gestures\WeightedSimpleGesture.cs" />
+    <Compile Include="Gestures\WeightedSimpleGestureKey.cs" />
+    <Compile Include="IInputClient.cs" />
+    <Compile Include="IInputProvider.cs" />
     <Compile Include="InteractionsCore.cs" />
+    <Compile Include="InteractionsManager.cs" />
+    <Compile Include="IPositionProvider.cs" />
+    <Compile Include="Maths\Numbers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Recognition\RecognitionSequence.cs" />
+    <Compile Include="Recognition\RecognitionSequenceMachine.cs" />
+    <Compile Include="Recognition\RecognitionState.cs" />
+    <Compile Include="RecognizedGesture.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
