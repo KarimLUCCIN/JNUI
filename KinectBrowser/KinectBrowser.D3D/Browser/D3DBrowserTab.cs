@@ -11,6 +11,7 @@ using KinectBrowser.D3D.DirectX;
 using System.Windows.Input;
 using System.Windows;
 using KinectBrowser.D3D.Win32;
+using System.IO;
 
 namespace KinectBrowser.D3D.Browser
 {
@@ -311,10 +312,21 @@ namespace KinectBrowser.D3D.Browser
 
         public void Navigate(string url)
         {
-            if (!webView.IsCrashed)
+            if (!String.IsNullOrEmpty(url))
             {
-                if (webView.LoadURL(url))
-                    CurrentUrl = url;
+                if (!webView.IsCrashed)
+                {
+                    if (File.Exists(url))
+                    {
+                        if (webView.LoadFile(url))
+                            CurrentUrl = url;
+                    }
+                    else
+                    {
+                        if (webView.LoadURL(url))
+                            CurrentUrl = url;
+                    }
+                }
             }
         }
 

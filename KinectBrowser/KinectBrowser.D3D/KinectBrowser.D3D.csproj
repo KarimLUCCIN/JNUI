@@ -72,6 +72,15 @@
     <Compile Include="Browser\D3DBrowserTab.cs" />
     <Compile Include="DirectX\TextureFormatConverter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shaders\BackgroundFill_Effect.cs" />
+    <Compile Include="Shaders\BackgroundFill_Shader.cs">
+      <DependentUpon>BackgroundFill_Shader.fx</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\BackgroundFill_Shader.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>BackgroundFill_Shader.fx</DependentUpon>
+    </Compile>
     <Compile Include="SoraEngineHost.cs" />
     <Compile Include="SoraEngineScreen.cs" />
     <Compile Include="Win32\WindowsMessage.cs" />
@@ -98,7 +107,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Shaders\BackgroundFill_Shader.fx">
+      <Generator>EffectCustomTool</Generator>
+      <LastGenOutput>BackgroundFill_Shader.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
   <ItemGroup>
     <Page Include="Browser\D3DBrowser.xaml">
       <SubType>Designer</SubType>

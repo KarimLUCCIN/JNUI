@@ -18,6 +18,7 @@ using Microsoft.Xna.Framework;
 using Sora.GameEngine.GameComponents.Cameras;
 using Awesomium.Core;
 using System.ComponentModel;
+using KinectBrowser.D3D.Shaders;
 
 namespace KinectBrowser.D3D.Browser
 {
@@ -74,6 +75,11 @@ namespace KinectBrowser.D3D.Browser
             TabsNode = new Node(D3DScreen.LocalContent);
 
             D3DScreen.ScreenContent.Add(TabsNode);
+
+            var bEffect = new BackgroundFill_Effect(D3DScreen.LocalContent);
+            bEffect.LoadContent();
+
+            D3DScreen.CurrentEngine.Renderer.CustomClearEffect = bEffect;
         }
 
         void CompositionTarget_Rendering(object sender, EventArgs e)

@@ -26,7 +26,15 @@ namespace KinectBrowser.D3D
         public SoraEngineScreen(SoraEngineHost host)
             : base(host.CurrentEngine)
         {
+        }
 
+        public override void Draw(GameTime gameTime)
+        {
+            var device = CurrentEngine.Device;
+
+            device.Clear(Color.Pink);
+
+            base.Draw(gameTime);
         }
 
         protected override void LoadScreenContent()
