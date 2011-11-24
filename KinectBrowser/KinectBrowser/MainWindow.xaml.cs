@@ -85,7 +85,7 @@ namespace KinectBrowser
 			}
 		}
 
-		private void Go_website(object sender, System.Windows.Input.KeyEventArgs e)
+		private void GoTo_website(object sender, System.Windows.Input.KeyEventArgs e)
 		{
 			if (e.Key.Equals(Key.Return)){
 				try
@@ -105,6 +105,11 @@ namespace KinectBrowser
 			fav.urlTxt.Text = browser.ActivePage.CurrentUrl;
 			fav.titleTxt.Text = browser.ActivePage.Title;
 			fav.ShowDialog();
+		}
+
+		private void GoTo_click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			browser.ActivePage.Navigate(websiteText.Text);
 		}
     }
 }

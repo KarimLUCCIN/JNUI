@@ -226,7 +226,7 @@
         <Button Content="Button" Height="23" HorizontalAlignment="Left" Margin="12,12,0,0" x:Name="button1" VerticalAlignment="Top" Width="75" Click="button1_Click" Style="{DynamicResource ButtonStyle1}" />
         <Button Content="Button" Height="23" HorizontalAlignment="Left" Margin="117,12,0,0" x:Name="button2" VerticalAlignment="Top" Width="75" Click="button2_Click" Style="{DynamicResource ButtonStyle1}" />
         <Rectangle x:Name="bottomRectangle" Fill="Black" Height="64" VerticalAlignment="Bottom" Stroke="Black"/>
-		<TextBox x:Name="websiteText" Margin="95,0,317,12" TextWrapping="Wrap" Text="http://www.google.fr" Background="Black" Foreground="#FFD2D2D2" SelectionBrush="#FFB4B4B4" FontSize="16" VerticalAlignment="Bottom" Height="40" Style="{DynamicResource TextBoxStyle1}" d:LayoutOverrides="HorizontalAlignment" KeyDown="Go_website"/>
+		<TextBox x:Name="websiteText" Margin="95,0,368,12" TextWrapping="Wrap" Text="http://www.google.fr" Background="Black" Foreground="#FFD2D2D2" SelectionBrush="#FFB4B4B4" FontSize="16" VerticalAlignment="Bottom" Height="40" Style="{DynamicResource TextBoxStyle1}" d:LayoutOverrides="HorizontalAlignment" KeyDown="GoTo_website"/>
 		<Button x:Name="back" Content="f" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="40" Margin="24,0,0,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" d:LayoutOverrides="VerticalAlignment" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" Click="Back_click" IsEnabled="False" ToolTip="Back">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
@@ -237,7 +237,7 @@
 				</LinearGradientBrush>
 			</Button.Background>
 		</Button>
-		<Button x:Name="refresh" Content="P" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,242,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Refresh_click" ToolTip="Refresh">
+		<Button x:Name="refresh" Content="P" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,247.333,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Refresh_click" ToolTip="Refresh">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -268,6 +268,16 @@
 			</Button.Background>
 		</Button>
 		<Button x:Name="forward" Content="g" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,24,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Forward_click" IsEnabled="False" ToolTip="Forward">
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF3F3F3" Offset="0"/>
+					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
+					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
+					<GradientStop Color="White" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+		</Button>
+		<Button x:Name="goTo" Content="4" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,328,12" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Webdings" Click="GoTo_click" ToolTip="Forward" d:LayoutOverrides="VerticalAlignment">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
