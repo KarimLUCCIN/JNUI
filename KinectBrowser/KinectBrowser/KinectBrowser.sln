@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectBrowser", "KinectBrow
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectBrowser.D3D", "..\KinectBrowser.D3D\KinectBrowser.D3D.csproj", "{2CB95101-2F10-4F06-A0BD-0AF3DE5EF384}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KinectBrowser.Interaction", "..\KinectBrowser.Interaction\KinectBrowser.Interaction.csproj", "{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,17 @@ Global
 		{2CB95101-2F10-4F06-A0BD-0AF3DE5EF384}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{2CB95101-2F10-4F06-A0BD-0AF3DE5EF384}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{2CB95101-2F10-4F06-A0BD-0AF3DE5EF384}.Release|x86.ActiveCfg = Release|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Debug|x86.Build.0 = Debug|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

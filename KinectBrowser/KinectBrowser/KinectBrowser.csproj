@@ -126,6 +126,10 @@
       <Project>{2CB95101-2F10-4F06-A0BD-0AF3DE5EF384}</Project>
       <Name>KinectBrowser.D3D</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KinectBrowser.Interaction\KinectBrowser.Interaction.csproj">
+      <Project>{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}</Project>
+      <Name>KinectBrowser.Interaction</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

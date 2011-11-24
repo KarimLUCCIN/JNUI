@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using KinectBrowser.D3D;
+using KinectBrowser.Interaction;
 
 namespace KinectBrowser
 {
@@ -31,6 +32,8 @@ namespace KinectBrowser
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            InteractionsCore.Initialize();
+
             SoraEngine = new SoraEngineHost((int)browser.ActualWidth, (int)browser.ActualHeight);
             SoraEngine.Initialize();
             SoraEngine.CurrentEngine.AfterRender += new EventHandler(CurrentEngine_AfterRender);
