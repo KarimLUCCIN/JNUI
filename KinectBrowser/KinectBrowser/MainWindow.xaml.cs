@@ -33,12 +33,30 @@ namespace KinectBrowser
         {
             SoraEngine = new SoraEngineHost((int)browser.ActualWidth, (int)browser.ActualHeight);
             SoraEngine.Initialize();
+            SoraEngine.CurrentEngine.AfterRender += new EventHandler(CurrentEngine_AfterRender);
 
             browser.Attach(SoraEngine);
 			
             browser.NewTab("http://www.google.com");
             browser.NewTab("http://www.wikipedia.com");
             browser.NewTab("http://www.9gag.com");
+        }
+
+        int lastRenderingDurationMs = -1;
+
+        void CurrentEngine_AfterRender(object sender, EventArgs e)
+        {
+            var currentRenderingDurationMs = (int)SoraEngine.LastRenderingDuration.TotalMilliseconds;
+
+            if (currentRenderingDurationMs != lastRenderingDurationMs)
+            {
+                lastRenderingDurationMs = currentRenderingDurationMs;
+
+                Dispatcher.Invoke((Action)delegate
+                {
+                    statisticsLabel.Text = String.Format("Rendering time: {0}ms", (int)SoraEngine.LastRenderingDuration.TotalMilliseconds);
+                });
+            }
         }
 
         private void button1_Click(object sender, RoutedEventArgs e)

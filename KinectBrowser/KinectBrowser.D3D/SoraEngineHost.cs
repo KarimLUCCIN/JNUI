@@ -76,11 +76,21 @@ namespace KinectBrowser.D3D
         TimeSpan renderingInterval = TimeSpan.FromSeconds(1 / 40.0);
         TimeSpan drawAccumulator = TimeSpan.Zero;
 
+        TimeSpan renderingDuration = TimeSpan.Zero;
+        Stopwatch renderingDurationWatch = new Stopwatch();
+
+        public TimeSpan LastRenderingDuration
+        {
+            get { return renderingDuration; }
+        }
+
         /// <summary>
         /// Effectue un rendu et met à jour InteropImage
         /// </summary>
         public void Render()
         {
+            renderingDurationWatch.Restart();
+
             TimeSpan elapsed;
 
             if (!renderingWatch.IsRunning)
@@ -109,6 +119,9 @@ namespace KinectBrowser.D3D
             }
 
             renderingWatch.Restart();
+
+            renderingDurationWatch.Stop();
+            renderingDuration = TimeSpan.FromMilliseconds(renderingDuration.TotalMilliseconds * 0.7 + renderingDurationWatch.ElapsedMilliseconds * 0.3);
         }
     }
 }
