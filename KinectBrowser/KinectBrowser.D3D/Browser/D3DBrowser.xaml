@@ -6,7 +6,7 @@
              mc:Ignorable="d" Focusable="True" IsTabStop="True"
              d:DesignHeight="300" d:DesignWidth="300" xmlns:local="clr-namespace:KinectBrowser.D3D.Browser">
     <Grid MouseDown="Grid_MouseDown" MouseMove="Grid_MouseMove" MouseUp="Grid_MouseUp" Background="#FF000000" MouseWheel="Grid_MouseWheel">
-        <Image x:Name="d3dImageContent" IsHitTestVisible="False"/>
+        <Image x:Name="d3dImageContent" IsHitTestVisible="False" SnapsToDevicePixels="True" UseLayoutRounding="True" />
         <local:D3DBrowserFocusTrap x:Name="d3DBrowserFocusTrap" IsTabStop="True" Focusable="True" Background="#01000000"/>
     </Grid>
 </UserControl>

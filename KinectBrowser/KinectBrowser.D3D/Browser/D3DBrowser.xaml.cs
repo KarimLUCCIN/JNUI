@@ -17,13 +17,14 @@ using Sora.GameEngine.GameComponents.Animations;
 using Microsoft.Xna.Framework;
 using Sora.GameEngine.GameComponents.Cameras;
 using Awesomium.Core;
+using System.ComponentModel;
 
 namespace KinectBrowser.D3D.Browser
 {
     /// <summary>
     /// Interaction logic for D3DBrowser.xaml
     /// </summary>
-    public partial class D3DBrowser : UserControl
+    public partial class D3DBrowser : UserControl, INotifyPropertyChanged
     {
         bool isActive = true;
 
@@ -38,8 +39,8 @@ namespace KinectBrowser.D3D.Browser
 
         public SoraEngineHost Host { get; private set; }
 
-        
-        public SoraEngineScreen D3DScreen 
+
+        public SoraEngineScreen D3DScreen
         {
             get { return Host.RenderingScreen; }
         }
@@ -206,7 +207,7 @@ namespace KinectBrowser.D3D.Browser
             get { return radiusOffsetMovement; }
             set { radiusOffsetMovement = value; }
         }
-                        
+
         private void ReOrderTabsNode()
         {
             int count = TabCount;
@@ -219,7 +220,7 @@ namespace KinectBrowser.D3D.Browser
 
                 var activeTabAngle = 0.0;
 
-                for (int i = 0; i < count ; i++)
+                for (int i = 0; i < count; i++)
                 {
                     internalTabs[i].CurrentAngle = angle;
 
@@ -311,72 +312,86 @@ namespace KinectBrowser.D3D.Browser
 
         private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (IsActive && activePage != null)
+            if (isActive && !d3DBrowserFocusTrap.IsFocused)
+                d3DBrowserFocusTrap.Focus();
+
+            if (activePage != null)
                 activePage.Handle_MouseDown(sender, e);
-            else
-            {
-                if (isActive && !d3DBrowserFocusTrap.IsFocused)
-                    d3DBrowserFocusTrap.Focus();
-            }
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
-            if (IsActive && activePage != null)
+            if (activePage != null)
                 activePage.Handle_MouseMove(OffsetMousePosition(e.GetPosition(this)));
+        }
+
+        /* Il y a une marge sur les bords */
+        internal int InternalBrowserMargin
+        {
+            get { return 26; }
         }
 
         private System.Windows.Point OffsetMousePosition(System.Windows.Point point)
         {
-            /* Il y a une marge sur les bords */
-            var margin = 26;
+            var marginX = InternalBrowserMargin; // +activePage.InternalMarginX;
+            var marginY = InternalBrowserMargin + 6; // +activePage.InternalMarginY;
 
-            var ratioX = (double)ActualWidth / (double)(ActualWidth - margin * 2);
-            var ratioY = (double)ActualHeight / (double)(ActualHeight - margin * 2);
+            var ratioX = (double)ActualWidth / (double)(ActualWidth - InternalBrowserMargin * 2 - activePage.InternalMarginX * 2);
+            var ratioY = (double)ActualHeight / (double)(ActualHeight - InternalBrowserMargin * 2 - activePage.InternalMarginY * 2);
 
-            point.X = ratioX * Math.Max(0, Math.Min(point.X - margin, ActualWidth - margin * 2));
-            point.Y = ratioY * Math.Max(0, Math.Min(point.Y - margin, ActualHeight - margin * 2));
+            point.X = ratioX * Math.Max(0, Math.Min(point.X - marginX, ActualWidth - marginX * 2));
+            point.Y = ratioY * Math.Max(0, Math.Min(point.Y - marginY, ActualHeight - marginY * 2));
 
             return point;
         }
 
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (IsActive && activePage != null)
+            if (activePage != null)
                 activePage.Handle_MouseUp(sender, e);
         }
 
         private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (IsActive && activePage != null)
+            if (activePage != null)
                 activePage.Handle_MouseWheel(e.Delta);
         }
 
         #region Events
         public event EventHandler TabCountChanged;
 
+        private void RefreshCapabilities()
+        {
+            RaisePropertyChanged("CanGoBack");
+            RaisePropertyChanged("CanGoForward");
+        }
+
         private void RaiseTabCountChanged()
         {
-            if (TabCountChanged != null)
-            {
-                Dispatcher.Invoke((Action)delegate
-                {
-                    TabCountChanged(this, EventArgs.Empty);
-                });
-            }
+            Dispatcher.Invoke((Action)delegate
+                  {
+                      if (TabCountChanged != null)
+                      {
+                          TabCountChanged(this, EventArgs.Empty);
+                      }
+
+                      RefreshCapabilities();
+                  });
         }
 
         public event EventHandler ActivePageChanged;
 
         private void RaiseActivePageChanged()
         {
-            if (ActivePageChanged != null)
+            Dispatcher.Invoke((Action)delegate
             {
-                Dispatcher.Invoke((Action)delegate
+                if (ActivePageChanged != null)
                 {
                     ActivePageChanged(this, EventArgs.Empty);
-                });
-            }
+                }
+
+                RefreshCapabilities();
+            });
         }
 
         public event EventHandler ActivePageTitleChanged;
@@ -409,14 +424,74 @@ namespace KinectBrowser.D3D.Browser
 
         internal void RaiseActivePageLoadCompleted()
         {
-            if (ActivePageLoadCompleted != null)
+            Dispatcher.Invoke((Action)delegate
             {
-                Dispatcher.Invoke((Action)delegate
+                if (ActivePageLoadCompleted != null)
                 {
                     ActivePageLoadCompleted(this, EventArgs.Empty);
-                });
+                }
+
+                RefreshCapabilities();
+            });
+        }
+        #endregion
+
+        public bool CanGoBack
+        {
+            get
+            {
+                return activePage != null && activePage.CanGoBack;
             }
         }
+
+        public bool CanGoForward
+        {
+            get
+            {
+                return activePage != null && activePage.CanGoForward;
+            }
+        }
+
+        public void GoBack()
+        {
+            if (activePage != null)
+            {
+                activePage.GoBack();
+
+                RefreshCapabilities();
+            }
+        }
+
+        public void Reload()
+        {
+            if (activePage != null)
+            {
+                activePage.Reload();
+
+                RefreshCapabilities();
+            }
+        }
+
+        public void GoForward()
+        {
+            if (activePage != null)
+            {
+                activePage.GoForward();
+
+                RefreshCapabilities();
+            }
+        }
+
+        #region INotifyPropertyChanged Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void RaisePropertyChanged(string property)
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+        }
+
         #endregion
     }
 }

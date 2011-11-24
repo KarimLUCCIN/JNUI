@@ -24,7 +24,7 @@ namespace KinectBrowser.D3D.Browser
             {
                 if (IsTextureDisposed)
                 {
-                    associatedTexture = new Texture2D(D3DEngine.Device, Width, Height);
+                    associatedTexture = new Texture2D(D3DEngine.Device, textureWidth, textureHeight);
 
                     if (quadFront != null)
                         quadFront.Texture = associatedTexture;
@@ -97,6 +97,12 @@ namespace KinectBrowser.D3D.Browser
 
         public D3DBrowser Container { get; private set; }
 
+        int textureWidth, textureHeight;
+
+        internal int InternalMarginX { get { return - Container.InternalBrowserMargin; } }
+
+        internal int InternalMarginY { get { return - Container.InternalBrowserMargin; } }
+
         public D3DBrowserTab(D3DBrowser container, int width, int height)
         {
             if (container == null)
@@ -107,7 +113,12 @@ namespace KinectBrowser.D3D.Browser
             Width = width;
             Height = height;
 
-            CreateWebView(width, height);
+            var margin = InternalMarginX * 2;
+
+            textureWidth = width + margin;
+            textureHeight = height + margin;
+
+            CreateWebView(textureWidth, textureHeight);
 
             var resourcesContext = D3DScreen.LocalContent;
 
@@ -377,6 +388,12 @@ namespace KinectBrowser.D3D.Browser
         {
             if (!webView.IsCrashed)
                 webView.InjectMouseWheel(p);
+        }
+
+        public void Reload()
+        {
+            if (!webView.IsCrashed)
+                webView.Reload();
         }
 
         #endregion
