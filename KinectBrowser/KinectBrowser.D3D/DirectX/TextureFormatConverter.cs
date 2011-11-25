@@ -162,10 +162,10 @@ namespace KinectBrowser.D3D.DirectX
 
     public struct RECT
     {
-        int x1;
-        int y1;
-        int x2;
-        int y2;
+        public int x1;
+        public int y1;
+        public int x2;
+        public int y2;
     }
 
     [ComImport, Guid("85C31227-3DE5-4f00-9B3A-F11AC38C18B5"), InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]

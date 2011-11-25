@@ -68,7 +68,7 @@ namespace KinectBrowser
 			
             browser.NewTab("http://www.google.com");
             browser.NewTab("http://www.wikipedia.com");
-            browser.NewTab("http://www.9gag.com");
+            browser.NewTab("http://www.youtube.com");
 
             InteractionsCore.Core.Loop += new EventHandler(Core_Loop);
         }

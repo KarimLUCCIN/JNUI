@@ -21,15 +21,8 @@ namespace KinectBrowser.ImageProcessing
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        private Texture2D noise;
-
         private RenderTarget2D kinectProcessedOutput, grownRegions;
         private Texture2D kinectDepthSource;
-
-        /* to allow ping pong between the two */
-        private RenderTarget2D kinectFlies1, kinectFlies2, fliesPlot;
-        private const int fliesBaseCount = 150;
-        private const int fliesCount = fliesBaseCount * fliesBaseCount;
 
         /* to detect contour direction on the detected blobs */
         private RenderTarget2D gradDirectionDetect1, gradDirectionDetect2;
@@ -105,12 +98,6 @@ namespace KinectBrowser.ImageProcessing
 
         private void DisposeTextures()
         {
-            if (kinectFlies1 != null)
-                kinectFlies1.Dispose();
-
-            if (kinectFlies2 != null)
-                kinectFlies2.Dispose();
-
             if (kinectDepthSource != null)
                 kinectDepthSource.Dispose();
 
@@ -126,14 +113,8 @@ namespace KinectBrowser.ImageProcessing
             if (grownRegions != null)
                 grownRegions.Dispose();
 
-            if (fliesPlot != null)
-                fliesPlot.Dispose();
-
             if (bordersDetectShader != null)
                 bordersDetectShader.Dispose();
-
-            if (noise != null)
-                noise.Dispose();
         }
 
         private void Swap(ref RenderTarget2D a, ref RenderTarget2D b)

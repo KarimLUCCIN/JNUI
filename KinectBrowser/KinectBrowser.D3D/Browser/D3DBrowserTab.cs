@@ -310,7 +310,7 @@ namespace KinectBrowser.D3D.Browser
             }
         }
 
-        public void Navigate(string url)
+        public bool Navigate(string url)
         {
             if (!String.IsNullOrEmpty(url))
             {
@@ -319,15 +319,29 @@ namespace KinectBrowser.D3D.Browser
                     if (File.Exists(url))
                     {
                         if (webView.LoadFile(url))
+                        {
                             CurrentUrl = url;
+                            return true;
+                        }
+                        else
+                            return false;
                     }
                     else
                     {
                         if (webView.LoadURL(url))
+                        {
                             CurrentUrl = url;
+                            return true;
+                        }
+                        else
+                            return false;
                     }
                 }
+                else
+                    return false;
             }
+            else
+                return false;
         }
 
         public void NavigateToFile(string path)
