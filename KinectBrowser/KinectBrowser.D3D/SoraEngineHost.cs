@@ -6,6 +6,9 @@ using Sora.GameEngine.Offscreen;
 using System.Windows.Interop;
 using Sora.GameEngine.GameComponents.GameSystem.Rendering;
 using System.Diagnostics;
+using Microsoft.Xna.Framework.Graphics;
+using System.IO;
+using System.Reflection;
 
 namespace KinectBrowser.D3D
 {
@@ -122,6 +125,22 @@ namespace KinectBrowser.D3D
 
             renderingDurationWatch.Stop();
             renderingDuration = TimeSpan.FromMilliseconds(renderingDuration.TotalMilliseconds * 0.7 + renderingDurationWatch.ElapsedMilliseconds * 0.3);
+        }
+
+        /// <summary>
+        /// Formats supportés : .jpg, .gif, .png
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public Texture2D LoadLocalImage(string name)
+        {
+            var basePath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var fullPath = Path.Combine(basePath, "Images", name);
+
+            using (var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read))
+            {
+                return Texture2D.FromStream(CurrentEngine.Device, stream);
+            }
         }
     }
 }

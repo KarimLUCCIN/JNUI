@@ -21,7 +21,9 @@ namespace KinectBrowser.D3D
 
         public FixedCamera DefaultCamera { get; private set; }
 
-        public SoraEngineHost Host{get;private set;}
+        public SoraEngineHost Host { get; private set; }
+
+        public Node CursorContent { get; private set; }
 
         public SoraEngineScreen(SoraEngineHost host)
             : base(host.CurrentEngine)

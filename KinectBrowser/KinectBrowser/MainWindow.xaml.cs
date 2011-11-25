@@ -13,15 +13,23 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using KinectBrowser.D3D;
 using KinectBrowser.Interaction;
+using KinectBrowser.Input.Mouse;
+using System.Windows.Interop;
 
 namespace KinectBrowser
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IInputClient
     {
         public SoraEngineHost SoraEngine { get; private set; }
+
+        public InteractionsManager InteractionsManager { get; private set; }
+
+        public IntPtr WindowHandle { get; private set; }
+
+        public WindowInteropHelper WindowInterop { get; private set; }
 
 		private string homepage;
         public MainWindow()
@@ -32,11 +40,22 @@ namespace KinectBrowser
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            SizeChanged += new SizeChangedEventHandler(MainWindow_SizeChanged);
+            LocationChanged += new EventHandler(MainWindow_LocationChanged);
+
+            UpdateClientArea();
+
+            WindowInterop = new WindowInteropHelper(this);
+            WindowHandle = WindowInterop.Handle;
+
             InteractionsCore.Initialize();
 
             SoraEngine = new SoraEngineHost((int)browser.ActualWidth, (int)browser.ActualHeight);
             SoraEngine.Initialize();
             SoraEngine.CurrentEngine.AfterRender += new EventHandler(CurrentEngine_AfterRender);
+
+            InteractionsManager = new Interaction.InteractionsManager(this);
+            InteractionsManager.Initialize(new IInputProvider[] { new MouseProvider(this) });
 
             browser.Attach(SoraEngine);
 			
@@ -146,5 +165,34 @@ namespace KinectBrowser
             else
                 browser.NewTab(homepage);
 		}
+
+        #region IInputClient Members
+
+        void MainWindow_LocationChanged(object sender, EventArgs e)
+        {
+            UpdateClientArea();
+        }
+
+        void MainWindow_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateClientArea();
+        }
+
+        private void UpdateClientArea()
+        {
+            var origin = rootGrid.PointToScreen(new Point(0, 0));
+            var far = rootGrid.PointToScreen(new Point(rootGrid.ActualWidth, rootGrid.ActualHeight));
+
+            ClientArea = new Microsoft.Xna.Framework.Rectangle((int)origin.X, (int)origin.Y, (int)(far.X - origin.X), (int)(far.Y - origin.Y));
+        }
+
+        public Microsoft.Xna.Framework.Rectangle ScreenArea
+        {
+            get { return WindowUtils.GetScreenArea(this); }
+        }
+
+        public Microsoft.Xna.Framework.Rectangle ClientArea { get; private set; }
+
+        #endregion
     }
 }
