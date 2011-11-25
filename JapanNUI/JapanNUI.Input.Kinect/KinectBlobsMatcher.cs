@@ -28,6 +28,13 @@ namespace JapanNUI.Input.Kinect
             /// Position du curseur associé, entre (-1,-1) et (1,1)
             /// </summary>
             public Vector2 CursorPosition { get; set; }
+
+            double lastAverageDepth = 0;
+
+            public double AverageDepth
+            {
+                get { return (MBlob == null || MBlob.Current == null) ? lastAverageDepth : (lastAverageDepth = MBlob.Current.AverageDepth); }
+            }
         }
 
         public BlobParametersRecord LeftHandBlob { get; private set; }
@@ -106,6 +113,14 @@ namespace JapanNUI.Input.Kinect
         {
             get { return ProcessingEngine.ProcessingTime; }
         }
+
+        private List<Vector2> additionnalBlobsCursors = new List<Vector2>();
+
+        public List<Vector2> AdditionnalBlobsCursors
+        {
+            get { return additionnalBlobsCursors; }
+        }
+
 
         public void Process(byte[] depthFilteredFrame32, float minDepth, float maxDepth)
         {
@@ -194,6 +209,23 @@ namespace JapanNUI.Input.Kinect
                     LeftHandBlob.MBlob = toTheRight;
                 }
             }
+
+            additionnalBlobsCursors.Clear();
+
+            if (RightHandBlob.MBlob == null || LeftHandBlob.MBlob == null)
+            {
+                /*
+                 * This should help the user to see something at the screen
+                 * when the cursors are not currently tracked
+                 */
+                foreach (var blob in validBlobs)
+                {
+                    if (blob != RightHandBlob.MBlob && blob != LeftHandBlob.MBlob)
+                    {
+                        additionnalBlobsCursors.Add(new Vector2(blob.Current.EstimatedCursorX / DataWidth, blob.Current.EstimatedCursorY / DataHeight));
+                    }
+                }
+            }
         }
 
         private void CheckHandBlob(List<BlobsTracker.TrackedBlob> blobs, BlobParametersRecord handBlob, BlobsTracker.TrackedBlob excludedBlob, ref Vector2 idealHandPosition)
@@ -219,7 +251,7 @@ namespace JapanNUI.Input.Kinect
                     }
                 }
 
-                if (score < 40)
+                if (score < 20)
                 {
                     handBlob.MBlob = closestBlob;
                     handBlob.empty = false;

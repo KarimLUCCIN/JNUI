@@ -41,6 +41,12 @@
                 </Image.Style>
             </Image>
         </Canvas>
+        <Canvas Name="cursorsOverlayCanvas" Grid.Row="0">
+            <Ellipse Width="32" Height="32" Fill="Gray" Opacity="0.4"/>
+            <Ellipse Width="32" Height="32" Fill="Gray" Opacity="0.4"/>
+            <Ellipse Width="32" Height="32" Fill="Gray" Opacity="0.4"/>
+            <Ellipse Width="32" Height="32" Fill="Gray" Opacity="0.4"/>
+        </Canvas>
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Current Gesture:</TextBlock>
             <TextBlock VerticalAlignment="Center" Name="currentGesture"/>
@@ -52,6 +58,10 @@
         <StackPanel Orientation="Horizontal" Grid.Row="3">
             <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Times:</TextBlock>
             <TextBlock VerticalAlignment="Center" Name="timesBox"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="3">
+            <TextBlock VerticalAlignment="Center" Margin="0,0,5,0">Depths:</TextBlock>
+            <TextBlock VerticalAlignment="Center" Name="depthsBox"/>
         </StackPanel>
     </Grid>
 </Window>

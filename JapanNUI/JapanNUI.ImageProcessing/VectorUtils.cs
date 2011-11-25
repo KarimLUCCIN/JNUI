@@ -40,17 +40,25 @@ namespace JapanNUI.ImageProcessing
             }
         }
 
-        public static void BytesFromFloat(float f, byte[] outData, int offset = 0)
+        public static unsafe void BytesFromFloat(float f, byte[] outData, int offset = 0)
         {
-            //lock (sync)
+            fixed (byte* p = outData)
             {
-                fBytes.floatValue[0] = f;
-
-                for (int i = offset; i < offset + 4; i++)
-                {
-                    outData[i] = fBytes.bValue[i - offset];
-                }
+                *(p+0) = *(((byte*)&f)+0);
+                *(p+1) = *(((byte*)&f)+1);
+                *(p+2) = *(((byte*)&f)+2);
+                *(p+3) = *(((byte*)&f)+3);
             }
+
+            ////lock (sync)
+            //{
+            //    fBytes.floatValue[0] = f;
+
+            //    for (int i = offset; i < offset + 4; i++)
+            //    {
+            //        outData[i] = fBytes.bValue[i - offset];
+            //    }
+            //}
         }
     }
 }

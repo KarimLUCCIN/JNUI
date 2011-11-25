@@ -175,12 +175,31 @@ namespace JapanNUI
             }
         }
 
+        private double primaryCursorDepth;
 
+        public double PrimaryCursorDepth
+        {
+            get { return primaryCursorDepth; }
+            set { primaryCursorDepth = value; }
+        }
+
+        private double secondaryCursorDepth;
+
+        public double SecondaryCursorDepth
+        {
+            get { return secondaryCursorDepth; }
+            set { secondaryCursorDepth = value; }
+        }
+        
         public void UpdatePrimaryCursor(Vector3 position, CursorState state)
         {
             Dispatcher.Invoke((Action)delegate
             {
                 IsPrimaryCursorTracked = state == CursorState.Tracked;
+
+                primaryCursorDepth = position.Z;
+
+                UpdateDepthsLabel();
 
                 Canvas.SetLeft(defaultCursor, position.X);
                 Canvas.SetTop(defaultCursor, position.Y);
@@ -193,9 +212,18 @@ namespace JapanNUI
             {
                 IsSecondaryCursorTracked = state == CursorState.Tracked;
 
+                secondaryCursorDepth = position.Z;
+
+                UpdateDepthsLabel();
+
                 Canvas.SetLeft(secondaryCursor, position.X);
                 Canvas.SetTop(secondaryCursor, position.Y);
             });
+        }
+
+        private void UpdateDepthsLabel()
+        {
+            depthsBox.Text = String.Format("Left : {1}, Right : {0}", primaryCursorDepth.ToString("F"), secondaryCursorDepth.ToString("F"));
         }
 
         public void ContextDelegateMethod(Action action)
@@ -245,6 +273,36 @@ namespace JapanNUI
                     l_cgProcessingTime.TotalMilliseconds.ToString("#.##"),
                     (percentage * 100).ToString("#"));
             });
+        }
+
+        #endregion
+
+        #region IInputListener Members
+        
+        public void UpdateAdditionnalCursors(IEnumerable<Vector2> addCursors)
+        {
+            /* Nombre maximum traité : 4 */
+            int currentCursor = 0;
+
+            foreach (var item in addCursors)
+            {
+                if (currentCursor >= 4)
+                    break;
+
+                Ellipse ellipse = cursorsOverlayCanvas.Children[currentCursor] as Ellipse;
+
+                ellipse.Visibility = System.Windows.Visibility.Visible;
+
+                Canvas.SetLeft(ellipse, item.X * ClientArea.Size.X + ellipse.Width / 2.0f);
+                Canvas.SetTop(ellipse, item.Y * ClientArea.Size.Y + ellipse.Height / 2.0f);                
+
+                currentCursor++;
+            }
+
+            for (int i = currentCursor; i < 4; i++)
+            {
+                cursorsOverlayCanvas.Children[i].Visibility = System.Windows.Visibility.Hidden;
+            }
         }
 
         #endregion

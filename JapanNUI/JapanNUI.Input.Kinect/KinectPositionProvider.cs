@@ -15,8 +15,10 @@ namespace JapanNUI.Input.Kinect
             :base(id)
         {
             KinectProvider = kinectProvider;
+            
             CurrentPoint.HistorySize = 10;
             CurrentPoint.PixelMoveTreshold = 10;
+            CurrentPoint.UpdateLatency = 0.25;
         }
 
         public bool Update(Vector3 skeletonPosition, CursorState state)
