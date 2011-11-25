@@ -29,6 +29,11 @@ namespace KinectBrowser.D3D
 
         public SoraEngineScreen RenderingScreen { get; private set; }
 
+        public GraphicsDevice Device
+        {
+            get { return CurrentEngine.Device; }
+        }
+
         /// <summary>
         /// Initialize une nouvelle instance du moteur de rendu avec les dimensions spécifiées
         /// </summary>
