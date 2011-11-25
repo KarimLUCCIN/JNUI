@@ -62,6 +62,23 @@ namespace KinectBrowser
             browser.NewTab("http://www.google.com");
             browser.NewTab("http://www.wikipedia.com");
             browser.NewTab("http://www.9gag.com");
+
+            InteractionsCore.Core.Loop += new EventHandler(Core_Loop);
+        }
+
+        void Core_Loop(object sender, EventArgs e)
+        {
+            Dispatcher.Invoke((Action)delegate
+            {
+                var provider = InteractionsManager.CurrentProvider;
+                if (provider != null)
+                {
+                    var p0 = provider.Positions[0].CurrentPoint;
+
+                    Canvas.SetLeft(mainCursor, p0.Position.X);
+                    Canvas.SetTop(mainCursor, p0.Position.Y);
+                }
+            });
         }
 
         int lastRenderingDurationMs = -1;

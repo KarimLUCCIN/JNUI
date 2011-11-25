@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Sora.GameEngine.Offscreen;
 using Sora.GameEngine.GameComponents.Cameras;
 using Microsoft.Xna.Framework;
+using Sora.GameEngine.GameComponents.SceneObjects;
 
 namespace KinectBrowser.D3D
 {
@@ -23,20 +24,23 @@ namespace KinectBrowser.D3D
 
         public SoraEngineHost Host { get; private set; }
 
-        public Node CursorContent { get; private set; }
+        /// <summary>
+        /// Position du curseur, entre -1 et 1 sur les deux coordonnées
+        /// </summary>
+        public Vector2 CursorPosition { get; set; }
 
+        private float cursorDepth = 0.2f;
+
+        public float CursorDepth
+        {
+            get { return cursorDepth; }
+            set { cursorDepth = value; }
+        }
+        
         public SoraEngineScreen(SoraEngineHost host)
             : base(host.CurrentEngine)
         {
-        }
-
-        public override void Draw(GameTime gameTime)
-        {
-            var device = CurrentEngine.Device;
-
-            device.Clear(Color.Pink);
-
-            base.Draw(gameTime);
+            Host = host;
         }
 
         protected override void LoadScreenContent()

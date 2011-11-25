@@ -4,7 +4,7 @@
         Title="MainWindow" Height="640" Width="840" WindowStartupLocation="CenterScreen" WindowStyle="None"
         Background="Black"
         xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:KinectBrowser" mc:Ignorable="d"
-		xmlns:interop="clr-namespace:System.Windows.Interop;assembly=PresentationCore" Loaded="Window_Loaded" ResizeMode="NoResize" xmlns:d3d="clr-namespace:KinectBrowser.D3D.Browser;assembly=KinectBrowser.D3D">
+		xmlns:interop="clr-namespace:System.Windows.Interop;assembly=PresentationCore" Loaded="Window_Loaded" ResizeMode="NoResize" xmlns:d3d="clr-namespace:KinectBrowser.D3D.Browser;assembly=KinectBrowser.D3D" Cursor="None">
 		    
 	<Window.Resources>
 		<Style x:Key="ButtonFocusVisual">
@@ -259,5 +259,8 @@
             <Button Margin="4" Grid.Column="6" x:Name="forward" Content="g" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" FontFamily="Wingdings 3" d:LayoutOverrides="VerticalAlignment" Click="Forward_click" IsEnabled="{Binding ElementName=browser, Path=CanGoForward}" ToolTip="Forward" Background="{StaticResource ButtonDefaultBackground}"/>
         </Grid>
 
+        <Canvas x:Name="contentOverlayCanvas">
+            <Image x:Name="mainCursor" Source="/KinectBrowser;component/Images/right-default.png" Width="48" Height="48" IsHitTestVisible="False" Margin="-24,-24,0,0" />
+        </Canvas>
     </Grid>
 </Window>

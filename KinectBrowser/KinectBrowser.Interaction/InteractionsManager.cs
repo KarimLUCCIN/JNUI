@@ -119,6 +119,8 @@ namespace KinectBrowser.Interaction
                 return;
             }
 
+            provider.Update();
+
             var positions = provider.Positions;
 
             GestureSequenceManager.Update(positions, Client.ClientArea);
