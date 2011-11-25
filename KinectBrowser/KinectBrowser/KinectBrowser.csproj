@@ -137,6 +137,10 @@
       <Project>{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}</Project>
       <Name>KinectBrowser.Interaction</Name>
     </ProjectReference>
+    <ProjectReference Include="KinectBrowser.Input.Kinect\KinectBrowser.Input.Kinect.csproj">
+      <Project>{2B091594-F35C-46A3-A336-1BF176AEDFF5}</Project>
+      <Name>KinectBrowser.Input.Kinect</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\right-default.png" />

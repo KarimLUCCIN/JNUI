@@ -64,5 +64,14 @@ namespace KinectBrowser.Input.Mouse
         }
 
         #endregion
+
+        #region IInputProvider Members
+        
+        public TimeSpan ProcessingTime
+        {
+            get { return TimeSpan.Zero; }
+        }
+
+        #endregion
     }
 }

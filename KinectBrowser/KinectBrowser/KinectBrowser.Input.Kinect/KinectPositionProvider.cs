@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using KinectBrowser.Interaction;
 using KinectBrowser.Interaction.Maths;
+using Microsoft.Xna.Framework;
 
 namespace KinectBrowser.Input.Kinect
 {
@@ -12,11 +13,26 @@ namespace KinectBrowser.Input.Kinect
         public KinectProvider KinectProvider { get; private set; }
 
         public KinectPositionProvider(string id, KinectProvider kinectProvider)
-            :base(id)
+            : base(id)
         {
             KinectProvider = kinectProvider;
+
             CurrentPoint.HistorySize = 10;
             CurrentPoint.PixelMoveTreshold = 10;
+            CurrentPoint.UpdateLatency = 0.25f;
+        }
+
+        private static Vector2 XY(ref Vector3 v)
+        {
+            return new Vector2(v.X, v.Y);
+        }
+
+        private static Vector2 RelativePointToAbsolutePoint(Vector2 point, Rectangle rectangle)
+        {
+            var size = new Vector2(rectangle.Width, rectangle.Height);
+            var origin = new Vector2(rectangle.X, rectangle.Y);
+
+            return new Vector2((point.X * size.X) + origin.X, (point.Y * size.Y) + origin.Y);
         }
 
         public bool Update(Vector3 skeletonPosition, CursorState state)
@@ -27,9 +43,10 @@ namespace KinectBrowser.Input.Kinect
                 {
                     var input = KinectProvider.Client;
 
-                    var clientMousePos = input.ClientArea.RelativePointToAbsolutePoint(skeletonPosition.XY);
+                    var clientMousePos = RelativePointToAbsolutePoint(XY(ref skeletonPosition), input.ClientArea);
 
-                    CurrentPoint.UpdatePosition(new Vector3(clientMousePos - input.ClientArea.Origin, skeletonPosition.Z), state);
+                    var origin = new Vector2(input.ClientArea.X, input.ClientArea.Y);
+                    CurrentPoint.UpdatePosition(new Vector3(clientMousePos - origin, skeletonPosition.Z), state);
                 }
                 finally
                 {

@@ -37,6 +37,17 @@ namespace KinectBrowser.ImageProcessing
             public ManagedBlob blob;
 
             public double score;
+
+            public bool used = false;
+        }
+
+        internal class TrackedBlobEvaluator
+        {
+            public TrackedBlob blob;
+
+            public TrackedBlobIntermediate closest;
+
+            public double score;
         }
 
         public List<TrackedBlob> TrackedBlobs { get; private set; }
@@ -63,11 +74,14 @@ namespace KinectBrowser.ImageProcessing
             get { return maxBlobsDistance; }
             set { maxBlobsDistance = value; }
         }
-                
+
+        List<TrackedBlobEvaluator> waitingBlobs = new List<TrackedBlobEvaluator>();
+        List<TrackedBlobIntermediate> newBlobs = new List<TrackedBlobIntermediate>();
+
         public void Update(IEnumerable<ManagedBlob> blobs)
         {
             /* Préparation */
-            for (int i = 0; i < TrackedBlobs.Count;i++ )
+            for (int i = 0; i < TrackedBlobs.Count; i++)
             {
                 var tracked = TrackedBlobs[i];
 
@@ -88,7 +102,7 @@ namespace KinectBrowser.ImageProcessing
 
             foreach (var blob in blobs)
             {
-                intermediatesData.Add(new TrackedBlobIntermediate() { blob = blob });
+                intermediatesData.Add(new TrackedBlobIntermediate() { blob = blob, used = false });
             }
 
             /* Calculer les scores pour les blobs actuellement traqués */
@@ -110,7 +124,7 @@ namespace KinectBrowser.ImageProcessing
 
             foreach (var i_blob in intermediatesData)
             {
-                if(i_blob.score == double.MaxValue)
+                if (i_blob.score == double.MaxValue)
                     break;
 
                 TrackedBlob closest = null;
@@ -166,8 +180,12 @@ namespace KinectBrowser.ImageProcessing
                     closest.attached = true;
                     closest.waitingCycles = 0;
                     closest.InvertedCursor = closestIsInverted;
+
+                    i_blob.used = true;
                 }
             }
+
+            waitingBlobs.Clear();
 
             /* Attribute Lost value */
             foreach (var blob in TrackedBlobs)
@@ -180,6 +198,52 @@ namespace KinectBrowser.ImageProcessing
                     {
                         blob.Status = Status.Waiting;
                         blob.waitingCycles++;
+
+                        waitingBlobs.Add(new TrackedBlobEvaluator() { blob = blob });
+                    }
+                }
+            }
+
+            /* On tente d'attribuer les blobs en état d'attende aux blobs les plus proches */
+            if (waitingBlobs.Count > 0)
+            {
+                newBlobs.Clear();
+
+                foreach (var i_blob in intermediatesData)
+                {
+                    if (!i_blob.used)
+                    {
+                        newBlobs.Add(i_blob);
+                    }
+                }
+
+                if (newBlobs.Count > 0)
+                {
+                    while (waitingBlobs.Count > 0 && newBlobs.Count > 0)
+                    {
+                        ComputeAssociationScores();
+
+                        var first = waitingBlobs[0];
+
+                        if (first.score < 40)
+                        {
+                            /* pour ne pas le rajouter comme nouveau blob */
+                            first.closest.score = 0;
+
+                            first.blob.Current = first.closest.blob.Clone();
+                            first.blob.Status = Status.Tracking;
+                            first.blob.attached = true;
+                            first.blob.waitingCycles = 0;
+                            //first.blob.InvertedCursor = closestIsInverted;
+
+                            waitingBlobs.RemoveAt(0);
+                            newBlobs.Remove(first.closest);
+                        }
+                        else
+                        {
+                            /* too far, no matches */
+                            break;
+                        }
                     }
                 }
             }
@@ -192,6 +256,32 @@ namespace KinectBrowser.ImageProcessing
                     TrackedBlobs.Add(new TrackedBlob() { Current = i_blob.blob, attached = true, Status = Status.Tracking });
                 }
             }
+        }
+
+        private void ComputeAssociationScores()
+        {
+            foreach (var waitingBlob in waitingBlobs)
+            {
+                var minimumBlob = newBlobs[0];
+                var minimumBlobScore = Distance(waitingBlob.blob.Current.AvgCenterX, waitingBlob.blob.Current.AvgCenterY, minimumBlob.blob.AvgCenterX, minimumBlob.blob.AvgCenterY);
+
+                for (int i = 1; i < newBlobs.Count; i++)
+                {
+                    var nBlob = newBlobs[i];
+                    var nDistance = Distance(waitingBlob.blob.Current.AvgCenterX, waitingBlob.blob.Current.AvgCenterY, nBlob.blob.AvgCenterX, nBlob.blob.AvgCenterY);
+
+                    if (nDistance < minimumBlobScore)
+                    {
+                        minimumBlobScore = nDistance;
+                        minimumBlob = nBlob;
+                    }
+                }
+
+                waitingBlob.closest = minimumBlob;
+                waitingBlob.score = minimumBlobScore;
+            }
+
+            waitingBlobs.Sort((a, b) => a.score.CompareTo(b.score));
         }
 
         private void SortIntermediateData()

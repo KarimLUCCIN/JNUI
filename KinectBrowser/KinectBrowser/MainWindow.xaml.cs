@@ -15,6 +15,7 @@ using KinectBrowser.D3D;
 using KinectBrowser.Interaction;
 using KinectBrowser.Input.Mouse;
 using System.Windows.Interop;
+using KinectBrowser.Input.Kinect;
 
 namespace KinectBrowser
 {
@@ -54,8 +55,14 @@ namespace KinectBrowser
             SoraEngine.Initialize();
             SoraEngine.CurrentEngine.AfterRender += new EventHandler(CurrentEngine_AfterRender);
 
+            var providers = new List<IInputProvider>();
+            providers.Add(new MouseProvider(this));
+
+            if (KinectProvider.HasKinects)
+                providers.Add(new KinectProvider(SoraEngine, this));
+
             InteractionsManager = new Interaction.InteractionsManager(this);
-            InteractionsManager.Initialize(new IInputProvider[] { new MouseProvider(this) });
+            InteractionsManager.Initialize(providers.ToArray());
 
             browser.Attach(SoraEngine);
 			
@@ -82,18 +89,26 @@ namespace KinectBrowser
         }
 
         int lastRenderingDurationMs = -1;
+        int lastProcessingTime = -1;
 
         void CurrentEngine_AfterRender(object sender, EventArgs e)
         {
+            var p_time = (InteractionsManager != null && InteractionsManager.CurrentProvider != null)
+                ? (int)InteractionsManager.CurrentProvider.ProcessingTime.TotalMilliseconds
+                : (int)0;
+
             var currentRenderingDurationMs = (int)SoraEngine.LastRenderingDuration.TotalMilliseconds;
 
-            if (currentRenderingDurationMs != lastRenderingDurationMs)
+            if (currentRenderingDurationMs != lastRenderingDurationMs || lastProcessingTime != p_time)
             {
                 lastRenderingDurationMs = currentRenderingDurationMs;
+                lastProcessingTime = (int)(lastProcessingTime * 0.2f + 0.7f * p_time);
 
                 Dispatcher.Invoke((Action)delegate
                 {
-                    statisticsLabel.Text = String.Format("Rendering time: {0}ms", (int)SoraEngine.LastRenderingDuration.TotalMilliseconds);
+                    statisticsLabel.Text = String.Format("Rendering time: {0}ms\nProcessing Time: {1}ms", 
+                        (int)SoraEngine.LastRenderingDuration.TotalMilliseconds,
+                        lastProcessingTime);
                 });
             }
         }

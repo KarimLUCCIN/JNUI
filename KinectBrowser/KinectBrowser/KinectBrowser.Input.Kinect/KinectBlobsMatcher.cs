@@ -6,6 +6,7 @@ using KinectBrowser.ImageProcessing;
 using KinectBrowser.ImageProcessing.SectionsBuilders;
 using KinectBrowser.Interaction.Maths;
 using System.Diagnostics;
+using Microsoft.Xna.Framework;
 
 namespace KinectBrowser.Input.Kinect
 {
@@ -28,6 +29,13 @@ namespace KinectBrowser.Input.Kinect
             /// Position du curseur associé, entre (-1,-1) et (1,1)
             /// </summary>
             public Vector2 CursorPosition { get; set; }
+
+            double lastAverageDepth = 0;
+
+            public double AverageDepth
+            {
+                get { return (MBlob == null || MBlob.Current == null) ? lastAverageDepth : (lastAverageDepth = MBlob.Current.AverageDepth); }
+            }
         }
 
         public BlobParametersRecord LeftHandBlob { get; private set; }
@@ -52,14 +60,14 @@ namespace KinectBrowser.Input.Kinect
         }
 
         public BlobsTracker BlobsTracker { get; private set; }
-        
+
         /// <summary>
         /// 
         /// </summary>
         /// <param name="processingEngine"></param>
         /// <param name="dataWidth">Largeur de la fenêtre de données dans laquelle se trouve les blobs</param>
         /// <param name="dataHeight">Hauteur de la fenêtre de données dans laquelle se trouve les blobs</param>
-        public KinectBlobsMatcher(ImageProcessingEngine processingEngine, int dataWidth,int dataHeight)
+        public KinectBlobsMatcher(ImageProcessingEngine processingEngine, int dataWidth, int dataHeight)
         {
             if (processingEngine == null)
                 throw new ArgumentNullException("processingEngine");
@@ -106,6 +114,14 @@ namespace KinectBrowser.Input.Kinect
         {
             get { return ProcessingEngine.ProcessingTime; }
         }
+
+        private List<Vector2> additionnalBlobsCursors = new List<Vector2>();
+
+        public List<Vector2> AdditionnalBlobsCursors
+        {
+            get { return additionnalBlobsCursors; }
+        }
+
 
         public void Process(byte[] depthFilteredFrame32, float minDepth, float maxDepth)
         {
@@ -194,6 +210,23 @@ namespace KinectBrowser.Input.Kinect
                     LeftHandBlob.MBlob = toTheRight;
                 }
             }
+
+            additionnalBlobsCursors.Clear();
+
+            if (RightHandBlob.MBlob == null || LeftHandBlob.MBlob == null)
+            {
+                /*
+                 * This should help the user to see something at the screen
+                 * when the cursors are not currently tracked
+                 */
+                foreach (var blob in validBlobs)
+                {
+                    if (blob != RightHandBlob.MBlob && blob != LeftHandBlob.MBlob)
+                    {
+                        additionnalBlobsCursors.Add(new Vector2((float)(blob.Current.EstimatedCursorX / DataWidth), (float)(blob.Current.EstimatedCursorY / DataHeight)));
+                    }
+                }
+            }
         }
 
         private void CheckHandBlob(List<BlobsTracker.TrackedBlob> blobs, BlobParametersRecord handBlob, BlobsTracker.TrackedBlob excludedBlob, ref Vector2 idealHandPosition)
@@ -209,7 +242,7 @@ namespace KinectBrowser.Input.Kinect
                 {
                     if (item != excludedBlob)
                     {
-                        var d = (new Vector2(item.Current.EstimatedCursorX, item.Current.EstimatedCursorY) - p_idealPosition).Length();
+                        var d = (new Vector2((float)item.Current.EstimatedCursorX, (float)item.Current.EstimatedCursorY) - p_idealPosition).Length();
 
                         if (d < score)
                         {
@@ -219,7 +252,7 @@ namespace KinectBrowser.Input.Kinect
                     }
                 }
 
-                if (score < 40)
+                if (score < 20)
                 {
                     handBlob.MBlob = closestBlob;
                     handBlob.empty = false;
@@ -234,8 +267,8 @@ namespace KinectBrowser.Input.Kinect
             if (handBlob.MBlob != null)
             {
                 var blobCursor = handBlob.MBlob.InvertedCursor
-                ? new Vector2(handBlob.MBlob.Current.InvertedEstimatedCursorX / DataWidth, handBlob.MBlob.Current.InvertedEstimatedCursorY / DataHeight)
-                : new Vector2(handBlob.MBlob.Current.EstimatedCursorX / DataWidth, handBlob.MBlob.Current.EstimatedCursorY / DataHeight);
+                ? new Vector2((float)(handBlob.MBlob.Current.InvertedEstimatedCursorX / DataWidth), (float)(handBlob.MBlob.Current.InvertedEstimatedCursorY / DataHeight))
+                : new Vector2((float)(handBlob.MBlob.Current.EstimatedCursorX / DataWidth), (float)(handBlob.MBlob.Current.EstimatedCursorY / DataHeight));
 
                 var newPos = handBlob.CursorPosition * updateLatency + (1 - updateLatency) * blobCursor;
 
@@ -261,17 +294,19 @@ namespace KinectBrowser.Input.Kinect
                 return 0;
 
             var oldCenter = considerInvertedCursor
-                ? new Vector2(oldBlob.InvertedEstimatedCursorX / DataWidth, oldBlob.InvertedEstimatedCursorY / DataHeight)
-                : new Vector2(oldBlob.EstimatedCursorX / DataWidth, oldBlob.EstimatedCursorY / DataHeight);
-            var newCenter = considerInvertedCursor 
-                ? new Vector2(newblob.InvertedEstimatedCursorX / DataWidth, newblob.InvertedEstimatedCursorY / DataHeight)
-                : new Vector2(newblob.EstimatedCursorX / DataWidth, newblob.EstimatedCursorY / DataHeight);
+                ? new Vector2((float)(oldBlob.InvertedEstimatedCursorX / DataWidth), (float)(oldBlob.InvertedEstimatedCursorY / DataHeight))
+                : new Vector2((float)(oldBlob.EstimatedCursorX / DataWidth), (float)(oldBlob.EstimatedCursorY / DataHeight));
+            var newCenter = considerInvertedCursor
+                ? new Vector2((float)(newblob.InvertedEstimatedCursorX / DataWidth), (float)(newblob.InvertedEstimatedCursorY / DataHeight))
+                : new Vector2((float)(newblob.EstimatedCursorX / DataWidth), (float)(newblob.EstimatedCursorY / DataHeight));
 
             var oldSize = (float)oldBlob.PixelCount / (DataWidth * DataHeight);
             var newSize = (float)newblob.PixelCount / (DataWidth * DataHeight);
 
-            var idealPositionScore = Vector2.Distance(ref newCenter, ref idealHandPosition);
-            var distanceScore = Math.Min(1, 0.1 / Math.Max(0.001, Vector2.Distance(ref oldCenter, ref newCenter)));
+            float idealPositionScore;
+            Vector2.Distance(ref newCenter, ref idealHandPosition, out idealPositionScore);
+
+            var distanceScore = Math.Min(1, 0.1 / Math.Max(0.001, Vector2.Distance(oldCenter, newCenter)));
             var sizeScore = Math.Min(1, Math.Abs(newSize - oldSize) * 5);
             var orientationScore = (Math.Abs(oldBlob.AverageDirection - newblob.AverageDirection)) / Math.PI;
 

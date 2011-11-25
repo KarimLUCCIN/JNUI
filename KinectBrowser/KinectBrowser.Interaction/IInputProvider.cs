@@ -17,5 +17,7 @@ namespace KinectBrowser.Interaction
         void Shutdown();
 
         void Update();
+
+        TimeSpan ProcessingTime { get; }
     }
 }

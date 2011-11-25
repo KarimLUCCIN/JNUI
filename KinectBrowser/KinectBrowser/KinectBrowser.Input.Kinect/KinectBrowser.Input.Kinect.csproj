@@ -21,6 +21,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +31,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Research.Kinect, Version=1.0.0.45, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
@@ -53,6 +57,10 @@
     <ProjectReference Include="..\..\KinectBrowser.D3D\KinectBrowser.D3D.csproj">
       <Project>{2CB95101-2F10-4F06-A0BD-0AF3DE5EF384}</Project>
       <Name>KinectBrowser.D3D</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\KinectBrowser.ImageProcessing.SectionsBuilders\KinectBrowser.ImageProcessing.SectionsBuilders.vcxproj">
+      <Project>{701BA011-5C78-489C-9A07-5BB67E62BB4B}</Project>
+      <Name>KinectBrowser.ImageProcessing.SectionsBuilders</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\KinectBrowser.Interaction\KinectBrowser.Interaction.csproj">
       <Project>{1F30A6E7-8D7D-4B38-86D5-7B7D04EC23C7}</Project>

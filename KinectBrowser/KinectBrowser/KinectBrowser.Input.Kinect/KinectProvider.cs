@@ -11,6 +11,7 @@ using KinectBrowser.Interaction.Maths;
 using KinectBrowser.ImageProcessing;
 using System.Runtime.InteropServices;
 using KinectBrowser.D3D;
+using Microsoft.Xna.Framework;
 
 namespace KinectBrowser.Input.Kinect
 {
@@ -37,6 +38,21 @@ namespace KinectBrowser.Input.Kinect
         private ImageProcessingEngine ImageProcessingEngine { get; set; }
         private KinectBlobsMatcher KinectBlobsMatcher { get; set; }
 
+        public static bool HasKinects
+        {
+            get
+            {
+                try
+                {
+                    return Runtime.Kinects.Count > 0;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+        }
+
         public KinectProvider(SoraEngineHost host, IInputClient client)
         {
             if (client == null)
@@ -48,7 +64,7 @@ namespace KinectBrowser.Input.Kinect
 
             try
             {
-                nui = new Runtime();
+                nui = Runtime.Kinects[0];
 
 #if(RETRHOW_RUNTIME_EXCEPTION)
                 try
@@ -127,36 +143,52 @@ namespace KinectBrowser.Input.Kinect
 
         // Converts a 16-bit grayscale depth frame which includes player indexes into a 32-bit frame
         // that displays different players in different colors
-        byte[] convertDepthFrame(byte[] depthFrame16)
+        unsafe byte[] convertDepthFrame(byte[] depthFrame16)
         {
             int minDepth = int.MaxValue;
             int maxDepth = int.MinValue;
             int minDepthIndex = 0;
 
-            byte[] fData = new byte[4];
+            //byte[] fData = new byte[4];
 
-            for (int i16 = 0, i32 = 0; i16 < depthFrame16.Length && i32 < depthFrame32.Length; i16 += 2, i32 += 4)
+            var d16Length = depthFrame16.Length;
+            var d32Length = depthFrame32.Length;
+
+            fixed (byte* pdepthFilteredFrame32 = depthFilteredFrame32)
             {
-                int player = depthFrame16[i16] & 0x07;
-                int realDepth = (depthFrame16[i16 + 1] << 5) | (depthFrame16[i16] >> 3);
-
-                VectorUtils.BytesFromFloat(realDepth, fData);
-
-                depthFilteredFrame32[i32 + 0] = fData[0];// (byte)(realDepth & 0x000000FF);
-                depthFilteredFrame32[i32 + 1] = fData[1];// (byte)((realDepth & 0x0000FF00) >> 8);
-                depthFilteredFrame32[i32 + 2] = fData[2];// (byte)((realDepth & 0x0000FF00) >> 8);
-                depthFilteredFrame32[i32 + 3] = fData[3];// (byte)((realDepth & 0x0000FF00) >> 8);
-
-                if (realDepth > 0 && minDepth > realDepth)
+                fixed (byte* pdepthFrame16 = depthFrame16)
                 {
-                    minDepthIndex = i32;
-                    minDepth = realDepth;
-                }
+                    for (int i16 = 0, i32 = 0; i16 < d16Length && i32 < d32Length; i16 += 2, i32 += 4)
+                    {
+                        //int player = pdepthFrame16[i16] & 0x07;
+                        int realDepth = (pdepthFrame16[i16 + 1] << 5) | (pdepthFrame16[i16] >> 3);
 
-                maxDepth = Math.Max(maxDepth, realDepth);
+                        float fDepth = realDepth;
+
+                        //VectorUtils.BytesFromFloat(realDepth, fData);
+
+                        //depthFilteredFrame32[i32 + 0] = fData[0];// (byte)(realDepth & 0x000000FF);
+                        //depthFilteredFrame32[i32 + 1] = fData[1];// (byte)((realDepth & 0x0000FF00) >> 8);
+                        //depthFilteredFrame32[i32 + 2] = fData[2];// (byte)((realDepth & 0x0000FF00) >> 8);
+                        //depthFilteredFrame32[i32 + 3] = fData[3];// (byte)((realDepth & 0x0000FF00) >> 8);
+
+                        //depthFilteredFrame32[i32 + 0] = *((byte*)(&fDepth) + 0);
+                        //depthFilteredFrame32[i32 + 1] = *((byte*)(&fDepth) + 1);
+                        //depthFilteredFrame32[i32 + 2] = *((byte*)(&fDepth) + 2);
+                        //depthFilteredFrame32[i32 + 3] = *((byte*)(&fDepth) + 3);
+
+                        *((float*)&pdepthFilteredFrame32[i32 + 0]) = fDepth;
+
+                        if (minDepth > realDepth && realDepth > 0)
+                        {
+                            minDepthIndex = i32;
+                            minDepth = realDepth;
+                        }
+
+                        maxDepth = maxDepth > realDepth ? maxDepth : realDepth;// Math.Max(maxDepth, realDepth);
 
 #if(!DISABLE_DEPTH_VIEW)
-                // transform 13-bit depth information into an 8-bit intensity appropriate
+                                                                                                                                                                                                        // transform 13-bit depth information into an 8-bit intensity appropriate
                 // for display (we disregard information in most significant bit)
                 byte intensity = (byte)(255 - (255 * realDepth / 0x0fff));
 
@@ -205,6 +237,8 @@ namespace KinectBrowser.Input.Kinect
                         break;
                 }
 #endif
+                    }
+                }
             }
 
             if (KinectBlobsMatcher != null)
@@ -237,12 +271,14 @@ namespace KinectBrowser.Input.Kinect
                 PlanarImage Image = e.ImageFrame.Image;
                 byte[] convertedDepthFrame = convertDepthFrame(Image.Bits);
 
-                leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition, 0), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
-                rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition, 0), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
+                leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition.X, KinectBlobsMatcher.LeftHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.LeftHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
+                rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition.X, KinectBlobsMatcher.RightHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
 
-                Client.Update(this);
-                Client.UpdateProcessingTimes(KinectBlobsMatcher.ProcessingTime, KinectBlobsMatcher.ImageProcessingTime);
-                
+                //Client.Update(this);
+                //Client.UpdateProcessingTimes(KinectBlobsMatcher.ProcessingTime, KinectBlobsMatcher.ImageProcessingTime);
+
+                //Client.UpdateAdditionnalCursors(KinectBlobsMatcher.AdditionnalBlobsCursors);
+
 #if(!DISABLE_DEPTH_VIEW)
                 Listener.DebugDisplayBgr32DepthImage(Image.Width, Image.Height, convertedDepthFrame, Image.Width * 4);
 #endif
@@ -286,7 +322,7 @@ namespace KinectBrowser.Input.Kinect
             nui.NuiCamera.GetColorPixelCoordinatesFromDepthPixel(ImageResolution.Resolution640x480, iv, (int)depthX, (int)depthY, (short)0, out colorX, out colorY);
 
             // map back to skeleton.Width & skeleton.Height
-            return new Vector2((colorX / 640.0), (colorY / 480.0));
+            return new Vector2((colorX / 640.0f), (colorY / 480.0f));
         }
 
         void nui_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
@@ -300,7 +336,7 @@ namespace KinectBrowser.Input.Kinect
 
             //Vector2 leftHandPoint = Vector2.Zero;
             //Vector2 rightHandPoint = Vector2.Zero;
-            
+
             //foreach (SkeletonData data in skeletonFrame.Skeletons)
             //{
             //    if (SkeletonTrackingState.Tracked == data.TrackingState)
@@ -316,7 +352,7 @@ namespace KinectBrowser.Input.Kinect
             //            hasLeft = true;
 
             //            leftHandPoint = getDisplayPosition(leftHand.Value);
-                        
+
             //            hasUpdate = leftHandProvider.Update(new Vector3(leftHandPoint, 0)) || hasUpdate;
 
             //            b = true;
@@ -345,7 +381,7 @@ namespace KinectBrowser.Input.Kinect
             //    /* only take account of the closest point */
             //    leftHandProvider.Update(new Vector3(closestPointCoordinates, 0));
             //}
-            
+
             //Listener.Update(this);
         }
 
@@ -372,6 +408,31 @@ namespace KinectBrowser.Input.Kinect
         public int Priority
         {
             get { return 0; }
+        }
+
+        #endregion
+
+        #region IInputProvider Members
+        
+        public void Update()
+        {
+
+        }
+
+        #endregion
+
+        #region IInputProvider Members
+
+
+        public TimeSpan ProcessingTime
+        {
+            get
+            {
+                if (ImageProcessingEngine != null)
+                    return ImageProcessingEngine.ProcessingTime;
+                else
+                    return TimeSpan.Zero;
+            }
         }
 
         #endregion

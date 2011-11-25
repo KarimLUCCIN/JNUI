@@ -26,7 +26,7 @@ namespace KinectBrowser.Interaction.Gestures
             get { return pixelMoveTreshold; }
             set { pixelMoveTreshold = value; }
         }
-        
+
         private Vector3 position = Vector3.Zero;
 
         public Vector3 Position
@@ -38,6 +38,14 @@ namespace KinectBrowser.Interaction.Gestures
         public Vector3 Velocity { get; private set; }
 
         public Vector3 Acceleration { get; private set; }
+
+        private float updateLatency = 1;
+
+        public float UpdateLatency
+        {
+            get { return updateLatency; }
+            set { updateLatency = value; }
+        }
 
         private int historySize = 1;
 
@@ -63,7 +71,7 @@ namespace KinectBrowser.Interaction.Gestures
 
             medPosition = res * (1.0f / (float)positions.Count);
         }
-        
+
         public void UpdatePosition(Vector3 newPosition, CursorState state)
         {
             State = state;
@@ -78,7 +86,9 @@ namespace KinectBrowser.Interaction.Gestures
 
             var newVelocity = medPosition - Position;
 
-            Position = medPosition;
+            medPosition.Z = newPosition.Z;
+
+            Position = UpdateLatency * medPosition + (1 - UpdateLatency) * Position;
 
             var newAcceleration = newVelocity - Velocity;
 

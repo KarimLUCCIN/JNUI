@@ -54,7 +54,7 @@ namespace KinectBrowser.ImageProcessing
         {
             get { return maxMainBlobsCount; }
         }
-        
+
         public ImageProcessingEngine(SoraEngineHost host, int width, int height, int maxMainBlobsCount)
         {
             if (maxMainBlobsCount <= 0)
@@ -73,12 +73,10 @@ namespace KinectBrowser.ImageProcessing
 
             Host = host;
 
-            Host.Device.DeviceLost += new EventHandler<EventArgs>(Device_DeviceLost);
+            Host.CurrentEngine.Device.DeviceLost += new EventHandler<EventArgs>(Device_DeviceLost);
 
             Device_DeviceLost(this, EventArgs.Empty);
         }
-
-        MemoryStream noiseData;
 
         byte[] grownBordersData;
         byte[] gradDirectionDetect1Data;
@@ -87,9 +85,9 @@ namespace KinectBrowser.ImageProcessing
         {
             DisposeTextures();
 
-            LineBatch.Init(Host.Device);
+            LineBatch.Init(Host.CurrentEngine.Device);
 
-            bordersDetectShader = new BordersDetect(Host.Device);
+            bordersDetectShader = new BordersDetect(Host.CurrentEngine.Device);
 
             kinectDepthSource = Host.CurrentEngine.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             kinectProcessedOutput = Host.CurrentEngine.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
@@ -171,7 +169,7 @@ namespace KinectBrowser.ImageProcessing
             {
                 lock (sync)
                 {
-                    var device = Host.Device;
+                    var device = Host.CurrentEngine.Device;
 
                     /* reset device state */
                     device.BlendState = BlendState.Opaque;
@@ -227,7 +225,7 @@ namespace KinectBrowser.ImageProcessing
 
 
                     /* get result : regions */
-                    kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
+                    //kinectProcessedOutput.GetData<byte>(kinectDepthDataBytes);
 
                     /* Process regions to get borders directions */
                     bordersDetectShader.depthMap = grownRegions;
@@ -301,7 +299,6 @@ namespace KinectBrowser.ImageProcessing
 
             return blobCount;
         }
-
         ~ImageProcessingEngine()
         {
             Dispose(true);

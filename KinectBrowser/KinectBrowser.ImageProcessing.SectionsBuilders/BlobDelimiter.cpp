@@ -10,6 +10,8 @@ using namespace std;
 
 #define MANAGED_DEBUG
 
+//#define MATCH_OUTPUT_DEBUG_INFO
+
 namespace KinectBrowser
 {
 	namespace ImageProcessing
@@ -25,8 +27,10 @@ namespace KinectBrowser
 
 #define pixel(line, column) (line) * (columns * stride) + (column) * stride
 
-#define pixelAt(data, line, column) data[pixel((line), (column))] | data[pixel((line), (column))+1] << 8 | data[pixel((line), (column))+2] << 16
-#define pixelSet(data, line, column, value) data[pixel(line, column)] = (value); data[pixel(line,column)+1] = (value) >> 8; data[pixel(line, column)+2] = (value) >> 16
+//#define pixelAt(data, line, column) data[pixel((line), (column))] | data[pixel((line), (column))+1] << 8 | data[pixel((line), (column))+2] << 16
+#define pixelAt(data, line, column) *((int*)&data[pixel((line), (column))]) & 0x00FFFFFF
+//#define pixelSet(data, line, column, value) data[pixel(line, column)] = (value); data[pixel(line,column)+1] = (value) >> 8; data[pixel(line, column)+2] = (value) >> 16
+#define pixelSet(data, line, column, value) *((int*)&data[pixel((line), (column))]) = value
 
 			inline int getBlobAt(unsigned char* data, int line, int column, int columns, int stride)
 			{
@@ -186,11 +190,11 @@ namespace KinectBrowser
 
 			void finalizeBlobs(unsigned char* data, Blob * blobs, int blobCount, int lines, int columns, int stride)
 			{
-				double globalWeights[] = {1,1,1,1};
+				double globalWeights[] = {1.2,1,1,1};
 				double directionsAngles[] = {0, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
 				double directionsAnglesInv[] = {M_PI, M_PI_2, M_PI_4, M_PI_2 + M_PI_4};
 
-				for(int i = 0;i<blobCount;i++)
+				for(int i = 1;i<=blobCount;i++)
 				{
 					if(blobs[i].PixelCount > 0)
 					{
@@ -278,8 +282,8 @@ namespace KinectBrowser
 							abs(blobs[i].CrossRightBottomX - blobs[i].MaxX) < 10 &&
 							abs(max2(blobs[i].CrossLeftBottomY, blobs[i].CrossRightBottomY) - blobs[i].MaxY) < 10;
 
-						int s_borderleft_pixel = scanLineToPixel(blobs[i].MinX + 10, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
-						int s_borderright_pixel = s_borderleft_pixel < 0 ? -1 : scanLineToPixel(blobs[i].MaxX - 10, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
+						int s_borderleft_pixel = scanLineToPixel(blobs[i].MinX + 2, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
+						int s_borderright_pixel = s_borderleft_pixel < 0 ? -1 : scanLineToPixel(blobs[i].MaxX - 2, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
 						int s_center_pixel = s_borderright_pixel < 0 ? -1 : scanLineToPixel((int)blobs[i].AvgCenterX, blobs[i].MaxY, (int)blobs[i].AvgCenterY, data, lines, columns, stride);
 
 						double differenceInPixelInRightAndLeftPercentage = (((double)abs2((double)blobs[i].pointCountRight - (double)blobs[i].pointCountLeft)) / ((double)blobs[i].PixelCount));
@@ -443,10 +447,16 @@ namespace KinectBrowser
 								blobs[c_blob].accBorderType[BLOB_DIRECTION_INVDIAG] += d_id;
 							}
 
+#ifdef MATCH_OUTPUT_DEBUG_INFO
 							pixelSet(data, line, column, c_blob * 150);
+#endif
 						}
 						else
+						{
+#ifdef MATCH_OUTPUT_DEBUG_INFO
 							pixelSet(data, line, column, 0);
+#endif
+						}
 					}
 				}
 
@@ -574,7 +584,7 @@ namespace KinectBrowser
 			{
 				int nonNull, maxBlobs;
 
-				memset(blobIdsCorrespondanceData, 0, lines * rows);
+				memset(blobIdsCorrespondanceData, 0, sizeof(int) * lines * rows);
 
 				processData(blobIdsCorrespondanceData, data, processingIntermediateOutput, lines, rows, stride, &nonNull, &maxBlobs);
 
