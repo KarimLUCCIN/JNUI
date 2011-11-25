@@ -227,6 +227,43 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+		<LinearGradientBrush x:Key="TextBoxBorder" EndPoint="0,20" MappingMode="Absolute" StartPoint="0,0">
+			<GradientStop Color="#ABADB3" Offset="0.05"/>
+			<GradientStop Color="#E2E3EA" Offset="0.07"/>
+			<GradientStop Color="#E3E9EF" Offset="1"/>
+		</LinearGradientBrush>
+		<Style x:Key="TextBoxStyle1" BasedOn="{x:Null}" TargetType="{x:Type TextBox}">
+			<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+			<Setter Property="Background" Value="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"/>
+			<Setter Property="BorderBrush" Value="{StaticResource TextBoxBorder}"/>
+			<Setter Property="BorderThickness" Value="1"/>
+			<Setter Property="Padding" Value="1"/>
+			<Setter Property="AllowDrop" Value="true"/>
+			<Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+			<Setter Property="ScrollViewer.PanningMode" Value="VerticalFirst"/>
+			<Setter Property="Stylus.IsFlicksEnabled" Value="False"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="{x:Type TextBox}">
+						<Microsoft_Windows_Themes:ListBoxChrome x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" RenderMouseOver="{TemplateBinding IsMouseOver}" RenderFocused="{TemplateBinding IsKeyboardFocusWithin}" SnapsToDevicePixels="true">
+							<ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Center"/>
+						</Microsoft_Windows_Themes:ListBoxChrome>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsEnabled" Value="false">
+								<Setter Property="Background" TargetName="Bd" Value="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"/>
+								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+		<LinearGradientBrush x:Key="ButtonDefaultBackground" EndPoint="0,1" StartPoint="0,0">
+			<GradientStop Color="#FFF3F3F3" Offset="0" />
+			<GradientStop Color="#FFEBEBEB" Offset="0.5" />
+			<GradientStop Color="#FFDDDDDD" Offset="0.5" />
+			<GradientStop Color="White" Offset="1" />
+		</LinearGradientBrush>
 	</Window.Resources>
 
 	<Grid x:Name="LayoutRoot">
@@ -242,32 +279,26 @@
 				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
 			</TextBox.SelectionBrush>
 		</TextBox>
-		<Button x:Name="cancelButton" Content="O" HorizontalAlignment="Right" VerticalAlignment="Bottom" Width="40" Margin="0,0,8,8" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="cancelButton_click" d:LayoutOverrides="VerticalAlignment" FontFamily="Wingdings 2" ToolTip="Cancel">
-			<Button.Background>
-				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-					<GradientStop Color="#FFF3F3F3" Offset="0"/>
-					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
-					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
-					<GradientStop Color="White" Offset="1"/>
-				</LinearGradientBrush>
-			</Button.Background>
-		</Button>
-		<Button x:Name="addButton" Content="P" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="40" Margin="8,0,0,8" Style="{DynamicResource ButtonStyle1}" Height="40" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="addButton_click" d:LayoutOverrides="VerticalAlignment" FontFamily="Wingdings 2" ToolTip="Add bookmark">
-			<Button.Background>
-				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
-					<GradientStop Color="#FFF3F3F3" Offset="0"/>
-					<GradientStop Color="#FFEBEBEB" Offset="0.5"/>
-					<GradientStop Color="#FFDDDDDD" Offset="0.5"/>
-					<GradientStop Color="White" Offset="1"/>
-				</LinearGradientBrush>
-			</Button.Background>
-		</Button>
-		<ListView x:Name="listView1" Margin="8,68.92,8,52" Background="{Binding Background, ElementName=Window}" Foreground="{Binding Foreground, ElementName=Window}" SelectedIndex="-1" Style="{DynamicResource ListViewStyle1}" ItemContainerStyle="{DynamicResource ListViewItemStyle1}">
+		<ListView x:Name="listView1" Margin="8,68.92,8,56" Background="{Binding Background, ElementName=Window}" Foreground="{Binding Foreground, ElementName=Window}" SelectedIndex="-1" Style="{DynamicResource ListViewStyle1}" ItemContainerStyle="{DynamicResource ListViewItemStyle1}">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn/>
 				</GridView>
 			</ListView.View>
 		</ListView>
+		
+		<Grid x:Name="controlsGrid" Height="56" VerticalAlignment="Bottom">
+			<Grid.ColumnDefinitions>
+                <ColumnDefinition Width="{Binding ElementName=controlsGrid, Path=Height}" />
+                <ColumnDefinition Width="*" />
+				<ColumnDefinition Width="{Binding ElementName=controlsGrid, Path=Height}" />
+				<ColumnDefinition Width="*" />
+				<ColumnDefinition Width="{Binding ElementName=controlsGrid, Path=Height}" />
+            </Grid.ColumnDefinitions>
+			
+			<Button Margin="4" Grid.Column="0" x:Name="addButton" Content="P" Style="{DynamicResource ButtonStyle1}"  Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="addButton_click" FontFamily="Wingdings 2" ToolTip="Add bookmark" d:LayoutOverrides="HorizontalAlignment, VerticalAlignment" Background="{StaticResource ButtonDefaultBackground}"></Button>
+			<Button Margin="4" Grid.Column="2" x:Name="removeButton" Content="3" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="removeButton_click" d:LayoutOverrides="VerticalAlignment, GridBox" FontFamily="Wingdings 2" ToolTip="Remove bookmark" Background="{StaticResource ButtonDefaultBackground}"></Button>
+			<Button Margin="4" Grid.Column="4" x:Name="cancelButton" Content="O" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="-0.725,2.126" FontSize="29.333" BorderThickness="0" Click="cancelButton_click" d:LayoutOverrides="VerticalAlignment, GridBox" FontFamily="Wingdings 2" ToolTip="Cancel" Background="{StaticResource ButtonDefaultBackground}"></Button>
+		</Grid>
 	</Grid>
 </Window>

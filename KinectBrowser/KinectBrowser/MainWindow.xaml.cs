@@ -120,7 +120,8 @@ namespace KinectBrowser
 
         private void button2_Click(object sender, RoutedEventArgs e)
         {
-            browser.Focus();
+            //browser.Focus();
+            browser.ActivePage.Close();
         }
 		
 		private void Back_click(object sender, System.Windows.RoutedEventArgs e)

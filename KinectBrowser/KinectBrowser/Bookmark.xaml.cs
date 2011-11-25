@@ -47,7 +47,8 @@ namespace KinectBrowser
 				ListViewItem item = new ListViewItem();
 				item.Content = title;
 				item.ToolTip = url;
-				item.Selected += new RoutedEventHandler(Select_bookmark);
+				//item.Selected += new RoutedEventHandler(Select_bookmark);
+				item.MouseDoubleClick += new MouseButtonEventHandler(Bookmark_DoubleClick);
 				listView1.Items.Add(item);
 			}
 		}
@@ -78,6 +79,25 @@ namespace KinectBrowser
 
 		private void cancelButton_click(object sender, System.Windows.RoutedEventArgs e)
 		{
+			this.Close();
+		}
+		
+		private void removeButton_click(object sender, System.Windows.RoutedEventArgs e)
+		{
+			XmlNodeList bookmarkList = xmlDoc.GetElementsByTagName("Bookmark");
+			
+			XmlNode deleteNode = bookmarkList.Item(listView1.SelectedIndex);
+			
+			deleteNode.ParentNode.RemoveChild(deleteNode);
+			listView1.Items.Remove(listView1.SelectedItem);
+			
+			xmlDoc.Save(xmlPath);
+		}
+		
+		private void Bookmark_DoubleClick(object sender, MouseButtonEventArgs e) 
+		{
+			ListViewItem item = e.Source as ListViewItem;
+            currentBrowser.NewTab(item.ToolTip.ToString());
 			this.Close();
 		}
 
