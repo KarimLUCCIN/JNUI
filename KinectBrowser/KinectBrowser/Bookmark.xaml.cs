@@ -21,11 +21,11 @@ namespace KinectBrowser
 	/// </summary>
 	public partial class Bookmark : Window
 	{
-		private KinectBrowser.D3D.Browser.D3DBrowserTab currentBrowser;
+		private KinectBrowser.D3D.Browser.D3DBrowser currentBrowser;
 		private XmlDocument xmlDoc;
 		private String xmlPath;
 		
-		public Bookmark(KinectBrowser.D3D.Browser.D3DBrowserTab browser)
+		public Bookmark(KinectBrowser.D3D.Browser.D3DBrowser browser)
 		{
 			this.InitializeComponent();
 
@@ -84,7 +84,7 @@ namespace KinectBrowser
 		private void Select_bookmark(object sender, System.Windows.RoutedEventArgs e)
 		{
 			ListViewItem item = e.Source as ListViewItem;
-            currentBrowser.Navigate(item.ToolTip.ToString());
+            currentBrowser.NewTab(item.ToolTip.ToString());
 			this.Close();
 		}
 	}

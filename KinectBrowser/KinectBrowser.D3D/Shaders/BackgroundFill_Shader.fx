@@ -19,7 +19,8 @@ VS_OUTPUT vs_main(in float4 pos      : POSITION,
 
 float4 ps_main(float2 TexCoord : TEXCOORD0) : COLOR0
 {
-	float4 baseColor = float4(cos(TexCoord.x),sin(TexCoord.y),TexCoord.x*TexCoord.y*4,1);
+	//float4 baseColor = float4(cos(TexCoord.x),sin(TexCoord.y),TexCoord.x*TexCoord.y,1);
+	float4 baseColor = float4(TexCoord.x*TexCoord.y,TexCoord.x*TexCoord.y,cos(TexCoord.x),1);
 	baseColor.xyz *= 0.4 * (1 - TexCoord.y);
 
 	return saturate(baseColor);

@@ -130,7 +130,7 @@ namespace KinectBrowser
 		{
 			if (browser.ActivePage != null) 
 			{
-				Bookmark fav = new Bookmark(browser.ActivePage);
+				Bookmark fav = new Bookmark(browser);
 				fav.urlTxt.Text = browser.ActivePage.CurrentUrl;
 				fav.titleTxt.Text = browser.ActivePage.Title;
 				fav.ShowDialog();

@@ -181,25 +181,25 @@
 										<RowDefinition MaxHeight="11"/>
 										<RowDefinition/>
 									</Grid.RowDefinitions>
-									<Rectangle x:Name="UpperHighlight" Fill="#75FFFFFF" Visibility="Collapsed"/>
+									<Rectangle x:Name="UpperHighlight" Visibility="Collapsed"/>
 									<GridViewRowPresenter Grid.RowSpan="2" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
 								</Grid>
 							</Border>
 						</Border>
 						<ControlTemplate.Triggers>
 							<Trigger Property="IsMouseOver" Value="true">
-								<Setter Property="Background" Value="{StaticResource ListItemHoverFill}"/>
-								<Setter Property="BorderBrush" Value="#FFCCF0FF"/>
 								<Setter Property="Visibility" TargetName="UpperHighlight" Value="Visible"/>
 								<Setter Property="Foreground" Value="Black"/>
+								<Setter Property="Background" Value="{DynamicResource ButtonNormalBackground}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource ButtonNormalBackground}"/>
 							</Trigger>
 							<Trigger Property="IsSelected" Value="true">
-								<Setter Property="Background" Value="{StaticResource ListItemSelectedFill}"/>
-								<Setter Property="BorderBrush" Value="#FF98DDFB"/>
 								<Setter Property="BorderBrush" TargetName="InnerBorder" Value="#80FFFFFF"/>
 								<Setter Property="Visibility" TargetName="UpperHighlight" Value="Visible"/>
 								<Setter Property="Fill" TargetName="UpperHighlight" Value="#40FFFFFF"/>
 								<Setter Property="Foreground" Value="Black"/>
+								<Setter Property="Background" Value="{DynamicResource ButtonNormalBackground}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource ButtonNormalBackground}"/>
 							</Trigger>
 							<MultiTrigger>
 								<MultiTrigger.Conditions>
@@ -215,9 +215,9 @@
 									<Condition Property="IsSelected" Value="true"/>
 									<Condition Property="IsMouseOver" Value="true"/>
 								</MultiTrigger.Conditions>
-								<Setter Property="Background" Value="{StaticResource ListItemSelectedHoverFill}"/>
-								<Setter Property="BorderBrush" Value="#FF98DDFB"/>
 								<Setter Property="Foreground" Value="Black"/>
+								<Setter Property="Background" Value="{DynamicResource ButtonNormalBackground}"/>
+								<Setter Property="BorderBrush" Value="{DynamicResource ButtonNormalBackground}"/>
 							</MultiTrigger>
 							<Trigger Property="IsEnabled" Value="false">
 								<Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
