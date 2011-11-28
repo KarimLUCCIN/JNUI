@@ -422,6 +422,15 @@ namespace KinectBrowser.D3D.Browser
                 webView.Reload();
         }
 
+        public void Scroll(int amountY, int amountX)
+        {
+            if (!webView.IsCrashed)
+            {
+                var jsCode = String.Format("window.scrollBy({0},{1});", amountX, amountY);
+                webView.ExecuteJavascript(jsCode);
+            }
+        }
+
         #endregion
     }
 }

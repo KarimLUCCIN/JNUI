@@ -545,6 +545,14 @@ namespace KinectBrowser.D3D.Browser
             }
         }
 
+        public void Scroll(int amountY, int amountX)
+        {
+            if (activePage != null)
+            {
+                activePage.Scroll(amountX, amountY);
+            }
+        }
+
         #region INotifyPropertyChanged Members
 
         public event PropertyChangedEventHandler PropertyChanged;

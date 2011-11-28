@@ -33,6 +33,7 @@ namespace KinectBrowser
         public WindowInteropHelper WindowInterop { get; private set; }
 
 		private string homepage;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -185,7 +186,7 @@ namespace KinectBrowser
         }
 		
 		private void Back_click(object sender, System.Windows.RoutedEventArgs e)
-		{
+        {
 			try
 			{
                 browser.GoBack();
@@ -202,7 +203,7 @@ namespace KinectBrowser
 		}
 
 		private void Home_click(object sender, System.Windows.RoutedEventArgs e)
-		{
+        {
             if (browser.ActivePage != null)
                 browser.ActivePage.Navigate(homepage);
             else
