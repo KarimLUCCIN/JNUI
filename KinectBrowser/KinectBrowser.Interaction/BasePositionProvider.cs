@@ -57,5 +57,13 @@ namespace KinectBrowser.Interaction
                 updating = false;
             }
         }
+
+        #region IPositionProvider Members
+
+        public bool LeftButtonCliked { get; protected set; }
+
+        public bool RightButtonClicked { get; protected set; }
+
+        #endregion
     }
 }

@@ -65,6 +65,7 @@ namespace KinectBrowser
             InteractionsManager.Initialize(providers.ToArray());
 
             browser.Attach(SoraEngine);
+            browser.CustomInput = true;
 			
             browser.NewTab("http://www.google.com");
             browser.NewTab("http://www.wikipedia.com");
@@ -73,6 +74,9 @@ namespace KinectBrowser
             InteractionsCore.Core.Loop += new EventHandler(Core_Loop);
         }
 
+        bool lastLeftButtonClickedState = false;
+        bool lastRightButtonClickedState = false;
+
         void Core_Loop(object sender, EventArgs e)
         {
             Dispatcher.Invoke((Action)delegate
@@ -80,10 +84,47 @@ namespace KinectBrowser
                 var provider = InteractionsManager.CurrentProvider;
                 if (provider != null)
                 {
-                    var p0 = provider.Positions[0].CurrentPoint;
+                    var posProvider = provider.Positions[0];
+                    var p0 = posProvider.CurrentPoint;
 
                     Canvas.SetLeft(mainCursor, p0.Position.X);
                     Canvas.SetTop(mainCursor, p0.Position.Y);
+
+                    browser.CustomInput_MouseMove(new Point(p0.Position.X, p0.Position.Y));
+
+                    var leftClicked = posProvider.LeftButtonCliked;
+                    var rightClicked = posProvider.RightButtonClicked;
+
+                    if (leftClicked != lastLeftButtonClickedState)
+                    {
+                        var mbev = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left);
+
+                        if (leftClicked)
+                        {
+                            browser.CustomInput_MouseDown(mbev);
+                        }
+                        else
+                        {
+                            browser.CustomInput_MouseUp(mbev);
+                        }
+                    }
+
+                    if (rightClicked != lastRightButtonClickedState)
+                    {
+                        var mbev = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Right);
+
+                        if (rightClicked)
+                        {
+                            browser.CustomInput_MouseDown(mbev);
+                        }
+                        else
+                        {
+                            browser.CustomInput_MouseUp(mbev);
+                        }
+                    }
+
+                    lastLeftButtonClickedState = leftClicked;
+                    lastRightButtonClickedState = rightClicked;
                 }
             });
         }

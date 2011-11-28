@@ -316,19 +316,67 @@ namespace KinectBrowser.D3D.Browser
             }
         }
 
-        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        #region Mouse
+
+        private bool customInput = false;
+
+        /// <summary>
+        /// Indique si l'input est générée à partir de Windows ou si elle doit être explicitement faite
+        /// via CustomInput_*
+        /// </summary>
+        public bool CustomInput
+        {
+            get { return customInput; }
+            set { customInput = value; }
+        }
+
+        public void CustomInput_MouseDown(MouseButtonEventArgs e)
         {
             if (isActive && !d3DBrowserFocusTrap.IsFocused)
                 d3DBrowserFocusTrap.Focus();
 
             if (activePage != null)
-                activePage.Handle_MouseDown(sender, e);
+                activePage.Handle_MouseDown(this, e);
+        }
+
+        public void CustomInput_MouseMove(System.Windows.Point position)
+        {
+            if (activePage != null)
+                activePage.Handle_MouseMove(OffsetMousePosition(position));
+        }
+
+        public void CustomInput_MouseUp(MouseButtonEventArgs e)
+        {
+            if (activePage != null)
+                activePage.Handle_MouseUp(this, e);
+        }
+
+        public void CustomInput_MouseWheel(int delta)
+        {
+            if (activePage != null)
+                activePage.Handle_MouseWheel(delta);
+        }
+
+
+        private void Grid_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (!customInput)
+            {
+                if (isActive && !d3DBrowserFocusTrap.IsFocused)
+                    d3DBrowserFocusTrap.Focus();
+
+                if (activePage != null)
+                    activePage.Handle_MouseDown(sender, e);
+            }
         }
 
         private void Grid_MouseMove(object sender, MouseEventArgs e)
         {
-            if (activePage != null)
-                activePage.Handle_MouseMove(OffsetMousePosition(e.GetPosition(this)));
+            if (!customInput)
+            {
+                if (activePage != null)
+                    activePage.Handle_MouseMove(OffsetMousePosition(e.GetPosition(this)));
+            }
         }
 
         /* Il y a une marge sur les bords */
@@ -353,17 +401,26 @@ namespace KinectBrowser.D3D.Browser
 
         private void Grid_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (activePage != null)
-                activePage.Handle_MouseUp(sender, e);
+            if (!customInput)
+            {
+                if (activePage != null)
+                    activePage.Handle_MouseUp(sender, e);
+            }
         }
 
         private void Grid_MouseWheel(object sender, MouseWheelEventArgs e)
         {
-            if (activePage != null)
-                activePage.Handle_MouseWheel(e.Delta);
+            if (!customInput)
+            {
+                if (activePage != null)
+                    activePage.Handle_MouseWheel(e.Delta);
+            }
         }
 
+        #endregion
+
         #region Events
+
         public event EventHandler TabCountChanged;
 
         private void RefreshCapabilities()

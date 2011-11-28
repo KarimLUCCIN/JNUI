@@ -12,5 +12,8 @@ namespace KinectBrowser.Interaction
         GesturePoint CurrentPoint { get; }
 
         string Id { get; }
+
+        bool LeftButtonCliked { get; }
+        bool RightButtonClicked { get; }
     }
 }
