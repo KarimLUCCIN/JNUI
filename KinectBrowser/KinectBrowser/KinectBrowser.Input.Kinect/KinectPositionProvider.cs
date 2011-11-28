@@ -27,7 +27,7 @@ namespace KinectBrowser.Input.Kinect
             return new Vector2(v.X, v.Y);
         }
 
-        private static Vector2 RelativePointToAbsolutePoint(Vector2 point, Rectangle rectangle)
+        public static Vector2 RelativePointToAbsolutePoint(Vector2 point, Rectangle rectangle)
         {
             var size = new Vector2(rectangle.Width, rectangle.Height);
             var origin = new Vector2(rectangle.X, rectangle.Y);
@@ -43,7 +43,9 @@ namespace KinectBrowser.Input.Kinect
                 {
                     var input = KinectProvider.Client;
 
-                    var clientMousePos = RelativePointToAbsolutePoint(XY(ref skeletonPosition), input.ClientArea);
+                    var localPoint = XY(ref skeletonPosition);
+
+                    var clientMousePos = RelativePointToAbsolutePoint(localPoint, input.ClientArea);
 
                     var origin = new Vector2(input.ClientArea.X, input.ClientArea.Y);
                     CurrentPoint.UpdatePosition(new Vector3(clientMousePos - origin, skeletonPosition.Z), state);

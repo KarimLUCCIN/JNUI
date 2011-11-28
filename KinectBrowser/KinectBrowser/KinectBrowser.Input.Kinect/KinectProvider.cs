@@ -38,6 +38,17 @@ namespace KinectBrowser.Input.Kinect
         private ImageProcessingEngine ImageProcessingEngine { get; set; }
         private KinectBlobsMatcher KinectBlobsMatcher { get; set; }
 
+        public IEnumerable<Vector2> AdditionnalCursors
+        {
+            get
+            {
+                if (KinectBlobsMatcher == null)
+                    return new Vector2[0];
+                else
+                    return KinectBlobsMatcher.AdditionnalBlobsCursors;
+            }
+        }
+
         public static bool HasKinects
         {
             get
@@ -93,7 +104,6 @@ namespace KinectBrowser.Input.Kinect
 
 
                 nui.DepthFrameReady += new EventHandler<ImageFrameReadyEventArgs>(nui_DepthFrameReady);
-                nui.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(nui_SkeletonFrameReady);
 
                 leftHandProvider = new KinectPositionProvider("left", this);
                 rightHandProvider = new KinectPositionProvider("right", this);
@@ -185,58 +195,7 @@ namespace KinectBrowser.Input.Kinect
                             minDepth = realDepth;
                         }
 
-                        maxDepth = maxDepth > realDepth ? maxDepth : realDepth;// Math.Max(maxDepth, realDepth);
-
-#if(!DISABLE_DEPTH_VIEW)
-                                                                                                                                                                                                        // transform 13-bit depth information into an 8-bit intensity appropriate
-                // for display (we disregard information in most significant bit)
-                byte intensity = (byte)(255 - (255 * realDepth / 0x0fff));
-
-                depthFrame32[i32 + RED_IDX] = 0;
-                depthFrame32[i32 + GREEN_IDX] = 0;
-                depthFrame32[i32 + BLUE_IDX] = 0;
-
-                // choose different display colors based on player
-                switch (player)
-                {
-                    case 0:
-                        depthFrame32[i32 + RED_IDX] = (byte)(intensity / 2);
-                        depthFrame32[i32 + GREEN_IDX] = (byte)(intensity / 2);
-                        depthFrame32[i32 + BLUE_IDX] = (byte)(intensity / 2);
-                        break;
-                    case 1:
-                        depthFrame32[i32 + RED_IDX] = intensity;
-                        break;
-                    case 2:
-                        depthFrame32[i32 + GREEN_IDX] = intensity;
-                        break;
-                    case 3:
-                        depthFrame32[i32 + RED_IDX] = (byte)(intensity / 4);
-                        depthFrame32[i32 + GREEN_IDX] = (byte)(intensity);
-                        depthFrame32[i32 + BLUE_IDX] = (byte)(intensity);
-                        break;
-                    case 4:
-                        depthFrame32[i32 + RED_IDX] = (byte)(intensity);
-                        depthFrame32[i32 + GREEN_IDX] = (byte)(intensity);
-                        depthFrame32[i32 + BLUE_IDX] = (byte)(intensity / 4);
-                        break;
-                    case 5:
-                        depthFrame32[i32 + RED_IDX] = (byte)(intensity);
-                        depthFrame32[i32 + GREEN_IDX] = (byte)(intensity / 4);
-                        depthFrame32[i32 + BLUE_IDX] = (byte)(intensity);
-                        break;
-                    case 6:
-                        depthFrame32[i32 + RED_IDX] = (byte)(intensity / 2);
-                        depthFrame32[i32 + GREEN_IDX] = (byte)(intensity / 2);
-                        depthFrame32[i32 + BLUE_IDX] = (byte)(intensity);
-                        break;
-                    case 7:
-                        depthFrame32[i32 + RED_IDX] = (byte)(255 - intensity);
-                        depthFrame32[i32 + GREEN_IDX] = (byte)(255 - intensity);
-                        depthFrame32[i32 + BLUE_IDX] = (byte)(255 - intensity);
-                        break;
-                }
-#endif
+                        maxDepth = maxDepth > realDepth ? maxDepth : realDepth;
                     }
                 }
             }
@@ -273,15 +232,6 @@ namespace KinectBrowser.Input.Kinect
 
                 leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition.X, KinectBlobsMatcher.LeftHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.LeftHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
                 rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition.X, KinectBlobsMatcher.RightHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
-
-                //Client.Update(this);
-                //Client.UpdateProcessingTimes(KinectBlobsMatcher.ProcessingTime, KinectBlobsMatcher.ImageProcessingTime);
-
-                //Client.UpdateAdditionnalCursors(KinectBlobsMatcher.AdditionnalBlobsCursors);
-
-#if(!DISABLE_DEPTH_VIEW)
-                Listener.DebugDisplayBgr32DepthImage(Image.Width, Image.Height, convertedDepthFrame, Image.Width * 4);
-#endif
             }
 
             lock (sync)
@@ -308,81 +258,6 @@ namespace KinectBrowser.Input.Kinect
                         return CursorState.StandBy;
                 }
             }
-        }
-
-        private Vector2 getDisplayPosition(Joint joint)
-        {
-            float depthX, depthY;
-            nui.SkeletonEngine.SkeletonToDepthImage(joint.Position, out depthX, out depthY);
-            depthX = depthX * 320; //convert to 320, 240 space
-            depthY = depthY * 240; //convert to 320, 240 space
-            int colorX, colorY;
-            ImageViewArea iv = new ImageViewArea();
-            // only ImageResolution.Resolution640x480 is supported at this point
-            nui.NuiCamera.GetColorPixelCoordinatesFromDepthPixel(ImageResolution.Resolution640x480, iv, (int)depthX, (int)depthY, (short)0, out colorX, out colorY);
-
-            // map back to skeleton.Width & skeleton.Height
-            return new Vector2((colorX / 640.0f), (colorY / 480.0f));
-        }
-
-        void nui_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
-        {
-            //SkeletonFrame skeletonFrame = e.SkeletonFrame;
-
-            //bool hasUpdate = false;
-
-            //bool hasLeft = false;
-            //bool hasRight = false;
-
-            //Vector2 leftHandPoint = Vector2.Zero;
-            //Vector2 rightHandPoint = Vector2.Zero;
-
-            //foreach (SkeletonData data in skeletonFrame.Skeletons)
-            //{
-            //    if (SkeletonTrackingState.Tracked == data.TrackingState)
-            //    {
-            //        bool b = false;
-
-            //        var firstSq = data;
-
-            //        var leftHand = SelectHand(firstSq, JointID.HandLeft);
-
-            //        if (leftHand != null && leftHand.HasValue)
-            //        {
-            //            hasLeft = true;
-
-            //            leftHandPoint = getDisplayPosition(leftHand.Value);
-
-            //            hasUpdate = leftHandProvider.Update(new Vector3(leftHandPoint, 0)) || hasUpdate;
-
-            //            b = true;
-            //        }
-
-            //        var rightHand = SelectHand(firstSq, JointID.HandRight);
-
-            //        if (rightHand != null && rightHand.HasValue)
-            //        {
-            //            hasRight = true;
-
-            //            rightHandPoint = getDisplayPosition(rightHand.Value);
-
-            //            hasUpdate = rightHandProvider.Update(new Vector3(rightHandPoint, 0)) || hasUpdate;
-
-            //            b = true;
-            //        }
-
-            //        if (b)
-            //            break;
-            //    }
-            //}
-
-            //if (!hasLeft)
-            //{
-            //    /* only take account of the closest point */
-            //    leftHandProvider.Update(new Vector3(closestPointCoordinates, 0));
-            //}
-
-            //Listener.Update(this);
         }
 
         private Joint? SelectHand(SkeletonData firstSq, JointID id)

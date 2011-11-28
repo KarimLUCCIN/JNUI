@@ -61,12 +61,14 @@ namespace KinectBrowser.Interaction
 
         public event EventHandler Loop;
 
+        private bool stopped = false;
+
         Stopwatch coreLoopWatch = new Stopwatch();
         private void CoreLoopThreadFunction()
         {
             coreLoopWatch.Restart();
 
-            while (true)
+            while (!stopped)
             {
                 if (coreLoopWatch.Elapsed > updateDuration)
                 {
@@ -83,6 +85,12 @@ namespace KinectBrowser.Interaction
         {
             if (Loop != null)
                 Loop(this, EventArgs.Empty);
+        }
+
+        public void Stop()
+        {
+            stopped = true;
+            Thread.Sleep(10);
         }
     }
 }

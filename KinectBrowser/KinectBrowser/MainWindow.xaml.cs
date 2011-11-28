@@ -42,6 +42,7 @@ namespace KinectBrowser
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Closed += new EventHandler(MainWindow_Closed);
             SizeChanged += new SizeChangedEventHandler(MainWindow_SizeChanged);
             LocationChanged += new EventHandler(MainWindow_LocationChanged);
 
@@ -75,6 +76,11 @@ namespace KinectBrowser
             InteractionsCore.Core.Loop += new EventHandler(Core_Loop);
         }
 
+        void MainWindow_Closed(object sender, EventArgs e)
+        {
+            InteractionsCore.Core.Stop();
+        }
+
         bool lastLeftButtonClickedState = false;
         bool lastRightButtonClickedState = false;
 
@@ -82,71 +88,116 @@ namespace KinectBrowser
         {
             Dispatcher.Invoke((Action)delegate
             {
-                var provider = InteractionsManager.CurrentProvider;
-                if (provider != null)
+                if (!IsActive)
+                    browser.IsActive = false;
+                else
                 {
-                    var posProvider = provider.Positions[0];
-                    var p0 = posProvider.CurrentPoint;
+                    browser.IsActive = true;
 
-                    Canvas.SetLeft(mainCursor, p0.Position.X);
-                    Canvas.SetTop(mainCursor, p0.Position.Y);
-
-                    if(provider.GetType() != typeof(MouseProvider))
+                    var provider = InteractionsManager.CurrentProvider;
+                    if (provider != null)
                     {
-                        try
+                        var posProvider = provider.Positions[0];
+                        var p0 = posProvider.CurrentPoint;
+
+                        Canvas.SetLeft(mainCursor, p0.Position.X);
+                        Canvas.SetTop(mainCursor, p0.Position.Y);
+
+                        if (provider.GetType() != typeof(MouseProvider))
                         {
-                            var absPoint = browser.PointToScreen(new Point(0, 0));
-                            absPoint.X += p0.Position.X;
-                            absPoint.Y += p0.Position.Y;
-
-                            System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)absPoint.X, (int)absPoint.Y);
-                        }
-                        catch
-                        {
-                            /* ignore it */
-                        }
-                    }
-
-                    if (p0.Position.Y <= browser.ActualHeight - 24)
-                    {
-                        browser.CustomInput_MouseMove(new Point(p0.Position.X, p0.Position.Y));
-
-                        var leftClicked = posProvider.LeftButtonCliked;
-                        var rightClicked = posProvider.RightButtonClicked;
-
-                        if (leftClicked != lastLeftButtonClickedState)
-                        {
-                            var mbev = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left);
-
-                            if (leftClicked)
+                            try
                             {
-                                browser.CustomInput_MouseDown(mbev);
+                                var absPoint = browser.PointToScreen(new Point(0, 0));
+                                absPoint.X += p0.Position.X;
+                                absPoint.Y += p0.Position.Y;
+
+                                System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)absPoint.X, (int)absPoint.Y);
                             }
-                            else
+                            catch
                             {
-                                browser.CustomInput_MouseUp(mbev);
+                                /* ignore it */
                             }
                         }
 
-                        if (rightClicked != lastRightButtonClickedState)
+                        if (provider as KinectProvider != null)
                         {
-                            var mbev = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Right);
-
-                            if (rightClicked)
-                            {
-                                browser.CustomInput_MouseDown(mbev);
-                            }
-                            else
-                            {
-                                browser.CustomInput_MouseUp(mbev);
-                            }
+                            UpdateKinectSpecificObjects((KinectProvider)provider);
                         }
 
-                        lastLeftButtonClickedState = leftClicked;
-                        lastRightButtonClickedState = rightClicked;
+                        if (p0.Position.Y <= browser.ActualHeight - 24)
+                        {
+                            browser.CustomInput_MouseMove(new Point(p0.Position.X, p0.Position.Y));
+
+                            var leftClicked = posProvider.LeftButtonCliked;
+                            var rightClicked = posProvider.RightButtonClicked;
+
+                            if (leftClicked != lastLeftButtonClickedState)
+                            {
+                                var mbev = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left);
+
+                                if (leftClicked)
+                                {
+                                    browser.CustomInput_MouseDown(mbev);
+                                }
+                                else
+                                {
+                                    browser.CustomInput_MouseUp(mbev);
+                                }
+                            }
+
+                            if (rightClicked != lastRightButtonClickedState)
+                            {
+                                var mbev = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Right);
+
+                                if (rightClicked)
+                                {
+                                    browser.CustomInput_MouseDown(mbev);
+                                }
+                                else
+                                {
+                                    browser.CustomInput_MouseUp(mbev);
+                                }
+                            }
+
+                            lastLeftButtonClickedState = leftClicked;
+                            lastRightButtonClickedState = rightClicked;
+                        }
                     }
                 }
             });
+        }
+
+        private void UpdateKinectSpecificObjects(KinectProvider provider)
+        {
+            if (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
+                provider.Positions[1].CurrentPoint.State == CursorState.Default)
+            {
+                int index = 0;
+                var lst = provider.AdditionnalCursors.ToList();
+
+                var origin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
+
+                for (index = 0; index < 4 && index < lst.Count; index++)
+                {
+                    var ellipse = (Ellipse)contentOptionnalCanvas.Children[index];
+                    ellipse.Visibility = System.Windows.Visibility.Visible;
+
+                    var point = KinectPositionProvider.RelativePointToAbsolutePoint(lst[index], ClientArea) - origin;
+
+                    Canvas.SetLeft(ellipse, point.X);
+                    Canvas.SetTop(ellipse, point.Y);
+                }
+
+                for (; index < 4; index++)
+                {
+                    ((Ellipse)contentOptionnalCanvas.Children[index]).Visibility = System.Windows.Visibility.Hidden;
+                }
+            }
+            else
+            {
+                foreach (var item in contentOptionnalCanvas.Children)
+                    ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
+            }
         }
 
         int lastRenderingDurationMs = -1;

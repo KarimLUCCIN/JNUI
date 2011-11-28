@@ -122,7 +122,6 @@ namespace KinectBrowser.Input.Kinect
             get { return additionnalBlobsCursors; }
         }
 
-
         public void Process(byte[] depthFilteredFrame32, float minDepth, float maxDepth)
         {
             processingTimeWatch.Reset();
@@ -146,6 +145,8 @@ namespace KinectBrowser.Input.Kinect
                         validScoringBlobs++;
                         //scoringBlobs[i].MBlob = i_blob;
 
+                        ReScale(i_blob);
+
                         stepBlobs.Add(i_blob);
                     }
                 }
@@ -159,6 +160,21 @@ namespace KinectBrowser.Input.Kinect
                 processingTimeWatch.Stop();
                 processingTime = processingTimeWatch.Elapsed;
             }
+        }
+
+        private double ReScale(double v, double range)
+        {
+            var c = ((v / range) - 0.5) * 2 + 0.5;
+            return c < 0 ? 0 : (c > 1 ? 1 : c);
+        }
+
+        private void ReScale(ManagedBlob i_blob)
+        {
+            i_blob.EstimatedCursorX = ReScale(i_blob.EstimatedCursorX, DataWidth);
+            i_blob.EstimatedCursorY = ReScale(i_blob.EstimatedCursorY, DataHeight);
+
+            i_blob.InvertedEstimatedCursorX = ReScale(i_blob.InvertedEstimatedCursorX, DataWidth);
+            i_blob.InvertedEstimatedCursorY = ReScale(i_blob.InvertedEstimatedCursorY, DataHeight);
         }
 
         bool wasCrossed = false;
