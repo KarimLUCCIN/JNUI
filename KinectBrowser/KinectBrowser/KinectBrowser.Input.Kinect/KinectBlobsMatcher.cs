@@ -122,6 +122,13 @@ namespace KinectBrowser.Input.Kinect
             get { return additionnalBlobsCursors; }
         }
 
+        private List<BlobsTracker.TrackedBlob> additionnalBlobs = new List<BlobsTracker.TrackedBlob>();
+
+        public List<BlobsTracker.TrackedBlob> AdditionnalBlobs
+        {
+            get { return additionnalBlobs; }
+        }
+
         public void Process(byte[] depthFilteredFrame32, float minDepth, float maxDepth)
         {
             processingTimeWatch.Reset();
@@ -228,6 +235,7 @@ namespace KinectBrowser.Input.Kinect
             }
 
             additionnalBlobsCursors.Clear();
+            additionnalBlobs.Clear();
 
             if (RightHandBlob.MBlob == null || LeftHandBlob.MBlob == null)
             {
@@ -239,6 +247,7 @@ namespace KinectBrowser.Input.Kinect
                 {
                     if (blob != RightHandBlob.MBlob && blob != LeftHandBlob.MBlob)
                     {
+                        additionnalBlobs.Add(blob);
                         additionnalBlobsCursors.Add(new Vector2((float)(blob.Current.EstimatedCursorX / DataWidth), (float)(blob.Current.EstimatedCursorY / DataHeight)));
                     }
                 }

@@ -36,18 +36,7 @@ namespace KinectBrowser.Input.Kinect
         }
 
         private ImageProcessingEngine ImageProcessingEngine { get; set; }
-        private KinectBlobsMatcher KinectBlobsMatcher { get; set; }
-
-        public IEnumerable<Vector2> AdditionnalCursors
-        {
-            get
-            {
-                if (KinectBlobsMatcher == null)
-                    return new Vector2[0];
-                else
-                    return KinectBlobsMatcher.AdditionnalBlobsCursors;
-            }
-        }
+        public KinectBlobsMatcher KinectBlobsMatcher { get; private set; }
 
         public static bool HasKinects
         {

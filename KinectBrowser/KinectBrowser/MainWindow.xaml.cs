@@ -173,7 +173,7 @@ namespace KinectBrowser
                 provider.Positions[1].CurrentPoint.State == CursorState.Default)
             {
                 int index = 0;
-                var lst = provider.AdditionnalCursors.ToList();
+                var lst = provider.KinectBlobsMatcher.AdditionnalBlobsCursors.ToList();
 
                 var origin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
 
