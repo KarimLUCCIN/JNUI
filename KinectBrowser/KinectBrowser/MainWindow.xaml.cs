@@ -97,7 +97,7 @@ namespace KinectBrowser
                     var provider = InteractionsManager.CurrentProvider;
                     if (provider != null)
                     {
-                        var posProvider = provider.Positions[0];
+                        var posProvider = provider.MainPosition;
                         var p0 = posProvider.CurrentPoint;
 
                         Canvas.SetLeft(mainCursor, p0.Position.X);

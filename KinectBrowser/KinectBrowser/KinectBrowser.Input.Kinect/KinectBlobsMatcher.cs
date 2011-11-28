@@ -165,7 +165,7 @@ namespace KinectBrowser.Input.Kinect
         private double ReScale(double v, double range)
         {
             var c = ((v / range) - 0.5) * 2 + 0.5;
-            return c < 0 ? 0 : (c > 1 ? 1 : c);
+            return (c < 0 ? 0 : (c > 1 ? 1 : c)) * range;
         }
 
         private void ReScale(ManagedBlob i_blob)

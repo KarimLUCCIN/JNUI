@@ -260,13 +260,6 @@ namespace KinectBrowser.Input.Kinect
             }
         }
 
-        private Joint? SelectHand(SkeletonData firstSq, JointID id)
-        {
-            return (from Joint j in firstSq.Joints
-                    where (j.ID == id)
-                    select new Nullable<Joint>(j)).FirstOrDefault();
-        }
-
         #region IInputProvider Members
 
         public bool Enabled { get; set; }
@@ -276,28 +269,15 @@ namespace KinectBrowser.Input.Kinect
             get { return providers; }
         }
 
-        #endregion
-
-        #region IInputProvider Members
-
         public int Priority
         {
             get { return 0; }
         }
-
-        #endregion
-
-        #region IInputProvider Members
-        
+                
         public void Update()
         {
 
         }
-
-        #endregion
-
-        #region IInputProvider Members
-
 
         public TimeSpan ProcessingTime
         {
@@ -308,6 +288,37 @@ namespace KinectBrowser.Input.Kinect
                 else
                     return TimeSpan.Zero;
             }
+        }
+
+        IPositionProvider mainPosition = null;
+        
+        public IPositionProvider MainPosition
+        {
+            get {
+                if (mainPosition == null)
+                {
+                    return SelectMainPosition();
+                }
+                else
+                {
+                    if (mainPosition.CurrentPoint.State == CursorState.Default)
+                    {
+                        return SelectMainPosition();
+                    }
+                    else
+                        return mainPosition;
+                }
+            }
+        }
+
+        private IPositionProvider SelectMainPosition()
+        {
+            if (rightHandProvider.CurrentPoint.State == CursorState.Tracked)
+                return mainPosition = rightHandProvider;
+            else if (leftHandProvider.CurrentPoint.State == CursorState.Tracked)
+                return mainPosition = leftHandProvider;
+            else
+                return mainPosition = rightHandProvider;
         }
 
         #endregion

@@ -14,6 +14,8 @@ namespace KinectBrowser.Interaction
 
         IPositionProvider[] Positions { get; }
 
+        IPositionProvider MainPosition { get; }
+
         void Shutdown();
 
         void Update();
