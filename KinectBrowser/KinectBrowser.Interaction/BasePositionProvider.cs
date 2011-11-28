@@ -60,9 +60,9 @@ namespace KinectBrowser.Interaction
 
         #region IPositionProvider Members
 
-        public bool LeftButtonCliked { get; protected set; }
+        public bool LeftButtonClicked { get; set; }
 
-        public bool RightButtonClicked { get; protected set; }
+        public bool RightButtonClicked { get; set; }
 
         #endregion
     }

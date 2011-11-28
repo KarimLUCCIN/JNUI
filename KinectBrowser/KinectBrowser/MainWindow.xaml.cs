@@ -128,7 +128,7 @@ namespace KinectBrowser
                         {
                             browser.CustomInput_MouseMove(new Point(p0.Position.X, p0.Position.Y));
 
-                            var leftClicked = posProvider.LeftButtonCliked;
+                            var leftClicked = posProvider.LeftButtonClicked;
                             var rightClicked = posProvider.RightButtonClicked;
 
                             if (leftClicked != lastLeftButtonClickedState)

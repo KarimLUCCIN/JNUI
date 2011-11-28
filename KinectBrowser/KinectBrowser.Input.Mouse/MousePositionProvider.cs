@@ -36,7 +36,7 @@ namespace KinectBrowser.Input.Mouse
 
                     CurrentPoint.UpdatePosition(new Vector3(clientMousePos - rectOrigin, 0), CursorState.Tracked);
 
-                    LeftButtonCliked = NativeFunctions.IsLeftButtonPressed();
+                    LeftButtonClicked = NativeFunctions.IsLeftButtonPressed();
                     RightButtonClicked = NativeFunctions.IsRightButtonPressed();
                 }
                 finally

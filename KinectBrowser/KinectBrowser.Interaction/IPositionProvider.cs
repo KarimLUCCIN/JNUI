@@ -13,7 +13,7 @@ namespace KinectBrowser.Interaction
 
         string Id { get; }
 
-        bool LeftButtonCliked { get; }
-        bool RightButtonClicked { get; }
+        bool LeftButtonClicked { get; set; }
+        bool RightButtonClicked { get; set; }
     }
 }

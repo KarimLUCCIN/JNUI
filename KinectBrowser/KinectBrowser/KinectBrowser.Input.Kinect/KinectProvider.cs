@@ -294,20 +294,31 @@ namespace KinectBrowser.Input.Kinect
         
         public IPositionProvider MainPosition
         {
-            get {
+            get
+            {
                 if (mainPosition == null)
                 {
-                    return SelectMainPosition();
+                    SelectMainPosition();
                 }
                 else
                 {
                     if (mainPosition.CurrentPoint.State == CursorState.Default)
                     {
-                        return SelectMainPosition();
+                        SelectMainPosition();
                     }
-                    else
-                        return mainPosition;
                 }
+
+                /* click ? */
+                if (mainPosition == leftHandProvider)
+                {
+                    mainPosition.LeftButtonClicked = rightHandProvider.CurrentPoint.State == CursorState.Tracked;
+                }
+                else
+                {
+                    mainPosition.LeftButtonClicked = leftHandProvider.CurrentPoint.State == CursorState.Tracked;
+                }
+
+                return mainPosition;
             }
         }
 
