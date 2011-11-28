@@ -280,6 +280,8 @@ namespace KinectBrowser.Input.Kinect
         }
 
         IPositionProvider mainPosition = null;
+
+        BlobsTracker.TrackedBlob clickBlob = null;
         
         public IPositionProvider MainPosition
         {
@@ -297,15 +299,48 @@ namespace KinectBrowser.Input.Kinect
                     }
                 }
 
-                /* click ? */
-                if (mainPosition == leftHandProvider)
+                if (clickBlob != null)
                 {
-                    mainPosition.LeftButtonClicked = rightHandProvider.CurrentPoint.State == CursorState.Tracked;
+                    if (clickBlob.Status != BlobsTracker.Status.Tracking)
+                    {
+                        mainPosition.LeftButtonClicked = false;
+                        clickBlob = null;
+                    }
+                    else
+                    {
+                        if ((mainPosition == leftHandProvider && clickBlob == KinectBlobsMatcher.LeftHandBlob.MBlob) ||
+                            (mainPosition == rightHandProvider && clickBlob == KinectBlobsMatcher.RightHandBlob.MBlob))
+                        {
+                            mainPosition.LeftButtonClicked = false;
+                            clickBlob = null;
+                        }
+                        else
+                            mainPosition.LeftButtonClicked = true;
+                    }
                 }
                 else
                 {
-                    mainPosition.LeftButtonClicked = leftHandProvider.CurrentPoint.State == CursorState.Tracked;
+                    var forbiddenBlob = (mainPosition == leftHandProvider) ? KinectBlobsMatcher.LeftHandBlob.MBlob : KinectBlobsMatcher.RightHandBlob.MBlob;
+
+                    var candidate = (from blob in KinectBlobsMatcher.AdditionnalBlobs
+                                     where blob != forbiddenBlob
+                                    select blob).ToList();
+                    candidate.Sort((a, b) => a.Age.CompareTo(b.Age));
+
+                    /* on prend le plus jeune, mais on attend le prochain tour pour cliquer */
+                    if (candidate.Count > 0)
+                        clickBlob = candidate[0];
                 }
+
+                /* click ? */
+                //if (mainPosition == leftHandProvider)
+                //{
+                //    mainPosition.LeftButtonClicked = rightHandProvider.CurrentPoint.State == CursorState.Tracked;
+                //}
+                //else
+                //{
+                //    mainPosition.LeftButtonClicked = leftHandProvider.CurrentPoint.State == CursorState.Tracked;
+                //}
 
                 return mainPosition;
             }
