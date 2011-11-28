@@ -90,6 +90,21 @@ namespace KinectBrowser
                     Canvas.SetLeft(mainCursor, p0.Position.X);
                     Canvas.SetTop(mainCursor, p0.Position.Y);
 
+                    if(provider.GetType() != typeof(MouseProvider))
+                    {
+                        try
+                        {
+                            var absPoint = browser.PointToScreen(new Point(0, 0));
+                            absPoint.X += p0.Position.X;
+                            absPoint.Y += p0.Position.Y;
+
+                            System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)absPoint.X, (int)absPoint.Y);
+                        }
+                        catch
+                        {
+                            /* ignore it */
+                        }
+                    }
 
                     if (p0.Position.Y <= browser.ActualHeight - 24)
                     {
