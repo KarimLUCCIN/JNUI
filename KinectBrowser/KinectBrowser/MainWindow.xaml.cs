@@ -176,6 +176,9 @@ namespace KinectBrowser
 
             if (!hasValidCursor)
             {
+                Cursor = Cursors.None;
+                mainCursor.Visibility = System.Windows.Visibility.Visible;
+
                 foreach (var item in contentOptionnalCanvas.Children)
                     ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
 
@@ -183,6 +186,9 @@ namespace KinectBrowser
             }
             else
             {
+                Cursor = Cursors.Arrow;
+                mainCursor.Visibility = System.Windows.Visibility.Hidden;
+
                 var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
 
                 bool hasClickPoint = false;
