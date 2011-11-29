@@ -69,9 +69,9 @@ namespace KinectBrowser
             browser.Attach(SoraEngine);
             browser.CustomInput = true;
 			
-            browser.NewTab("http://www.google.com");
             browser.NewTab("http://www.wikipedia.com");
             browser.NewTab("http://www.youtube.com");
+            browser.NewTab("http://www.google.com");
 
             InteractionsCore.Core.Loop += new EventHandler(Core_Loop);
         }
@@ -169,34 +169,63 @@ namespace KinectBrowser
 
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
-            if (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
-                provider.Positions[1].CurrentPoint.State == CursorState.Default)
-            {
-                int index = 0;
-                var lst = provider.KinectBlobsMatcher.AdditionnalBlobsCursors.ToList();
+            bool hasValidCursor = provider.MainPosition.CurrentPoint.State == CursorState.Tracked;
 
-                var origin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
-
-                for (index = 0; index < 4 && index < lst.Count; index++)
-                {
-                    var ellipse = (Ellipse)contentOptionnalCanvas.Children[index];
-                    ellipse.Visibility = System.Windows.Visibility.Visible;
-
-                    var point = KinectPositionProvider.RelativePointToAbsolutePoint(lst[index], ClientArea) - origin;
-
-                    Canvas.SetLeft(ellipse, point.X);
-                    Canvas.SetTop(ellipse, point.Y);
-                }
-
-                for (; index < 4; index++)
-                {
-                    ((Ellipse)contentOptionnalCanvas.Children[index]).Visibility = System.Windows.Visibility.Hidden;
-                }
-            }
-            else
+            if (!hasValidCursor)
             {
                 foreach (var item in contentOptionnalCanvas.Children)
                     ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
+
+                additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
+            }
+            else
+            {
+                var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
+
+                bool hasClickPoint = false;
+
+                if (provider.ClickBlob == null || provider.ClickBlob.Status != ImageProcessing.BlobsTracker.Status.Tracking)
+                    additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
+                else
+                {
+                    hasClickPoint = true;
+
+                    additionnalActionsUI.Visibility = System.Windows.Visibility.Visible;
+
+                    var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.Cursor *
+                        new Microsoft.Xna.Framework.Vector2(1 / provider.KinectBlobsMatcher.DataWidth, 1 / provider.KinectBlobsMatcher.DataHeight), ClientArea) - clientOrigin;
+
+                    Canvas.SetLeft(additionnalActionsUI, point.X);
+                    Canvas.SetTop(additionnalActionsUI, point.Y);
+                }
+
+                if (!hasClickPoint && (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
+                    provider.Positions[1].CurrentPoint.State == CursorState.Default))
+                {
+                    int index = 0;
+                    var lst = provider.KinectBlobsMatcher.AdditionnalBlobsCursors.ToList();
+
+                    for (index = 0; index < 4 && index < lst.Count; index++)
+                    {
+                        var ellipse = (Ellipse)contentOptionnalCanvas.Children[index];
+                        ellipse.Visibility = System.Windows.Visibility.Visible;
+
+                        var point = KinectPositionProvider.RelativePointToAbsolutePoint(lst[index], ClientArea) - clientOrigin;
+
+                        Canvas.SetLeft(ellipse, point.X);
+                        Canvas.SetTop(ellipse, point.Y);
+                    }
+
+                    for (; index < 4; index++)
+                    {
+                        ((Ellipse)contentOptionnalCanvas.Children[index]).Visibility = System.Windows.Visibility.Hidden;
+                    }
+                }
+                else
+                {
+                    foreach (var item in contentOptionnalCanvas.Children)
+                        ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
+                }
             }
         }
 

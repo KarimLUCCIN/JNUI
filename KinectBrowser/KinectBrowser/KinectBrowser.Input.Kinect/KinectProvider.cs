@@ -282,6 +282,11 @@ namespace KinectBrowser.Input.Kinect
         IPositionProvider mainPosition = null;
 
         BlobsTracker.TrackedBlob clickBlob = null;
+
+        public BlobsTracker.TrackedBlob ClickBlob
+        {
+            get { return clickBlob; }
+        }
         
         public IPositionProvider MainPosition
         {
@@ -299,37 +304,53 @@ namespace KinectBrowser.Input.Kinect
                     }
                 }
 
-                if (clickBlob != null)
+                if (mainPosition.CurrentPoint.State != CursorState.Tracked)
                 {
-                    if (clickBlob.Status != BlobsTracker.Status.Tracking)
+                    mainPosition.LeftButtonClicked = false;
+                    clickBlob = null;
+                }
+                else
+                {
+                    if (clickBlob != null)
                     {
-                        mainPosition.LeftButtonClicked = false;
-                        clickBlob = null;
-                    }
-                    else
-                    {
-                        if ((mainPosition == leftHandProvider && clickBlob == KinectBlobsMatcher.LeftHandBlob.MBlob) ||
-                            (mainPosition == rightHandProvider && clickBlob == KinectBlobsMatcher.RightHandBlob.MBlob))
+                        if (clickBlob.Status != BlobsTracker.Status.Tracking)
                         {
                             mainPosition.LeftButtonClicked = false;
                             clickBlob = null;
                         }
                         else
-                            mainPosition.LeftButtonClicked = true;
+                        {
+                            if ((mainPosition == leftHandProvider && clickBlob == KinectBlobsMatcher.LeftHandBlob.MBlob) ||
+                                (mainPosition == rightHandProvider && clickBlob == KinectBlobsMatcher.RightHandBlob.MBlob))
+                            {
+                                mainPosition.LeftButtonClicked = false;
+                                clickBlob = null;
+                            }
+                            else
+                                mainPosition.LeftButtonClicked = true;
+                        }
                     }
-                }
-                else
-                {
-                    var forbiddenBlob = (mainPosition == leftHandProvider) ? KinectBlobsMatcher.LeftHandBlob.MBlob : KinectBlobsMatcher.RightHandBlob.MBlob;
+                    else
+                    {
+                        var forbiddenBlob = (mainPosition == leftHandProvider) ? KinectBlobsMatcher.LeftHandBlob.MBlob : KinectBlobsMatcher.RightHandBlob.MBlob;
 
-                    var candidate = (from blob in KinectBlobsMatcher.AdditionnalBlobs
-                                     where blob != forbiddenBlob
-                                    select blob).ToList();
-                    candidate.Sort((a, b) => a.Age.CompareTo(b.Age));
+                        var candidate = (from blob in KinectBlobsMatcher.AdditionnalBlobs
+                                         where blob != forbiddenBlob
+                                         select blob).ToList();
 
-                    /* on prend le plus jeune, mais on attend le prochain tour pour cliquer */
-                    if (candidate.Count > 0)
-                        clickBlob = candidate[0];
+                        /* on ajoute aussi le blob non utilisé pour l'autre main */
+                        if (mainPosition == leftHandProvider && KinectBlobsMatcher.RightHandBlob.MBlob != null)
+                            candidate.Add(KinectBlobsMatcher.RightHandBlob.MBlob);
+                        else if (mainPosition == rightHandProvider && KinectBlobsMatcher.LeftHandBlob.MBlob != null)
+                            candidate.Add(KinectBlobsMatcher.LeftHandBlob.MBlob);
+
+
+                        candidate.Sort((a, b) => a.Age.CompareTo(b.Age));
+
+                        /* on prend le plus jeune, mais on attend le prochain tour pour cliquer */
+                        if (candidate.Count > 0)
+                            clickBlob = candidate[0];
+                    }
                 }
 
                 /* click ? */

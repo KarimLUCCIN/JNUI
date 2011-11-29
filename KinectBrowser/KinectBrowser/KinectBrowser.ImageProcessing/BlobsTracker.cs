@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using KinectBrowser.ImageProcessing.SectionsBuilders;
+using Microsoft.Xna.Framework;
 
 namespace KinectBrowser.ImageProcessing
 {
@@ -30,6 +31,22 @@ namespace KinectBrowser.ImageProcessing
             internal bool attached = false;
 
             public bool InvertedCursor { get; internal set; }
+
+            public Vector2 Center
+            {
+                get { return Current == null ? Vector2.Zero : new Vector2((float)Current.AvgCenterX, (float)Current.AvgCenterY); }
+            }
+
+            public Vector2 Cursor
+            {
+                get
+                {
+                    return Current == null ? Vector2.Zero :
+                        (InvertedCursor
+                            ? new Vector2((float)Current.InvertedEstimatedCursorX, (float)Current.InvertedEstimatedCursorY)
+                            : new Vector2((float)Current.EstimatedCursorX, (float)Current.EstimatedCursorY));
+                }
+            }
         }
 
         internal class TrackedBlobIntermediate

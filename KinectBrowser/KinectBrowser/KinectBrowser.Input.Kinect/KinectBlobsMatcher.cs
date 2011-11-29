@@ -182,6 +182,9 @@ namespace KinectBrowser.Input.Kinect
 
             i_blob.InvertedEstimatedCursorX = ReScale(i_blob.InvertedEstimatedCursorX, DataWidth);
             i_blob.InvertedEstimatedCursorY = ReScale(i_blob.InvertedEstimatedCursorY, DataHeight);
+
+            i_blob.AvgCenterX = ReScale(i_blob.AvgCenterX, DataWidth);
+            i_blob.AvgCenterY = ReScale(i_blob.AvgCenterY, DataHeight);
         }
 
         bool wasCrossed = false;
@@ -237,7 +240,8 @@ namespace KinectBrowser.Input.Kinect
             additionnalBlobsCursors.Clear();
             additionnalBlobs.Clear();
 
-            if (RightHandBlob.MBlob == null || LeftHandBlob.MBlob == null)
+#warning always update the list
+            //if (RightHandBlob.MBlob == null || LeftHandBlob.MBlob == null)
             {
                 /*
                  * This should help the user to see something at the screen
