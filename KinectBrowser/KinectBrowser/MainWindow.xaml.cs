@@ -16,6 +16,7 @@ using KinectBrowser.Interaction;
 using KinectBrowser.Input.Mouse;
 using System.Windows.Interop;
 using KinectBrowser.Input.Kinect;
+using KinectBrowser.Interaction.Gestures;
 
 namespace KinectBrowser
 {
@@ -167,6 +168,8 @@ namespace KinectBrowser
             });
         }
 
+        GesturePoint kinectClickPoint = new GesturePoint() { PixelMoveTreshold = 10, UpdateLatency = 0.25f, HistorySize = 10 };
+
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
             bool hasValidCursor = provider.MainPosition.CurrentPoint.State == CursorState.Tracked;
@@ -195,8 +198,10 @@ namespace KinectBrowser
                     var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.Cursor *
                         new Microsoft.Xna.Framework.Vector2(1 / provider.KinectBlobsMatcher.DataWidth, 1 / provider.KinectBlobsMatcher.DataHeight), ClientArea) - clientOrigin;
 
-                    Canvas.SetLeft(additionnalActionsUI, point.X);
-                    Canvas.SetTop(additionnalActionsUI, point.Y);
+                    kinectClickPoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
+
+                    Canvas.SetLeft(additionnalActionsUI, kinectClickPoint.Position.X);
+                    Canvas.SetTop(additionnalActionsUI, kinectClickPoint.Position.Y);
                 }
 
                 if (!hasClickPoint && (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
