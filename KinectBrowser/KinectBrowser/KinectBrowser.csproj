@@ -78,6 +78,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="MenuControls.xaml.cs">
+      <DependentUpon>MenuControls.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Shape.xaml.cs">
+      <DependentUpon>Shape.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="MenuButton.xaml.cs">
+      <DependentUpon>MenuButton.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowUtils.cs" />
     <Page Include="Bookmark.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -98,6 +107,18 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="MenuControls.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Shape.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MenuButton.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">

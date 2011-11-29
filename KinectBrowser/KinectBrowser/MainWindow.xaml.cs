@@ -291,6 +291,9 @@ namespace KinectBrowser
 		private void Refresh_click(object sender, System.Windows.RoutedEventArgs e)
 		{
             browser.Reload();
+			
+			MenuControls menuControls = new MenuControls();
+			menuControls.ShowDialog();
 		}
 
 		private void Home_click(object sender, System.Windows.RoutedEventArgs e)
@@ -332,15 +335,13 @@ namespace KinectBrowser
 		
 		private void Bookmark_click(object sender, System.Windows.RoutedEventArgs e)
 		{
+			Bookmark fav = new Bookmark(browser);
 			if (browser.ActivePage != null) 
 			{
-				Bookmark fav = new Bookmark(browser);
 				fav.urlTxt.Text = browser.ActivePage.CurrentUrl;
 				fav.titleTxt.Text = browser.ActivePage.Title;
-				fav.ShowDialog();
 			}
-			else
-                browser.NewTab(homepage);
+			fav.ShowDialog();
 		}
 
 		private void GoTo_click(object sender, System.Windows.RoutedEventArgs e)

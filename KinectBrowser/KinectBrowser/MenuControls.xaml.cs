@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Text;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+
+namespace KinectBrowser
+{
+	/// <summary>
+	/// Interaction logic for MenuControls.xaml
+	/// </summary>
+	public partial class MenuControls : Window
+	{
+		public MenuControls()
+		{
+			this.InitializeComponent();
+			TextBlock textUp = upButton.LayoutRoot.Children[1] as TextBlock;
+			textUp.Text = "Top";
+			
+			TextBlock textRight = rightButton.LayoutRoot.Children[1] as TextBlock;
+			textRight.Text = "Right";
+			
+			TextBlock textDown = downButton.LayoutRoot.Children[1] as TextBlock;
+			textDown.Text = "Down";
+			
+			TextBlock textLeft = leftButton.LayoutRoot.Children[1] as TextBlock;
+			textLeft.Text = "Left";
+		}
+
+		private void upButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			MessageBox.Show("Up button click");
+		}
+
+		private void rightButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			MessageBox.Show("Right button click");
+		}
+
+		private void downButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			MessageBox.Show("Down button click");
+		}
+
+		private void leftButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			MessageBox.Show("Left button click");
+		}
+	}
+}

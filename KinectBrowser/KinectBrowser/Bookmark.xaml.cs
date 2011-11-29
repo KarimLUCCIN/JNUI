@@ -28,7 +28,7 @@ namespace KinectBrowser
 		public Bookmark(KinectBrowser.D3D.Browser.D3DBrowser browser)
 		{
 			this.InitializeComponent();
-
+			
             currentBrowser = browser;
 			xmlPath = Directory.GetParent(Environment.CurrentDirectory)+"\\KinectBrowser\\bookmark.xml";
 			

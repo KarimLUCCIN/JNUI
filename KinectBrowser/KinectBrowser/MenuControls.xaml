@@ -1,0 +1,43 @@
+﻿<Window
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:local="clr-namespace:KinectBrowser" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d"
+	x:Class="KinectBrowser.MenuControls"
+	x:Name="Window"
+	Title="MenuControls"
+	Width="332" Height="348.5" WindowStyle="None" Background="{x:Null}" WindowStartupLocation="CenterScreen" AllowsTransparency="True" ResizeMode="NoResize">
+
+	<Grid x:Name="LayoutRoot">
+		<local:MenuButton x:Name="upButton" Margin="59.25,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" d:LayoutOverrides="Width" MouseDown="upButtonClick"/>
+		<local:MenuButton x:Name="rightButton" Margin="172,129,-46,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" d:LayoutOverrides="Height" MouseDown="rightButtonClick">
+			<local:MenuButton.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform Angle="90"/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</local:MenuButton.RenderTransform>
+		</local:MenuButton>
+		<local:MenuButton x:Name="downButton" VerticalAlignment="Bottom" Margin="60.75,0,0,9.5" RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="VerticalAlignment, Width" HorizontalAlignment="Left" MouseDown="downButtonClick">
+			<local:MenuButton.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform Angle="180"/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</local:MenuButton.RenderTransform>
+		</local:MenuButton>
+		<local:MenuButton x:Name="leftButton" HorizontalAlignment="Left" Margin="-54,131,0,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" d:LayoutOverrides="Height" MouseDown="leftButtonClick">
+			<local:MenuButton.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform Angle="270"/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</local:MenuButton.RenderTransform>
+		</local:MenuButton>
+	</Grid>
+</Window>
