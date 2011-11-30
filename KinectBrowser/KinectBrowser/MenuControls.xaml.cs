@@ -38,25 +38,25 @@ namespace KinectBrowser
 
 		private void upButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			MessageBox.Show("Up button click");
+			//MessageBox.Show("Up button click");
 			this.Close();
 		}
 
 		private void rightButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			MessageBox.Show("Right button click");
+			//MessageBox.Show("Right button click");
 			this.Close();
 		}
 
 		private void downButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			MessageBox.Show("Down button click");
+			//MessageBox.Show("Down button click");
 			this.Close();
 		}
 
 		private void leftButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
-			MessageBox.Show("Left button click");
+			//MessageBox.Show("Left button click");
 			this.Close();
 		}
 	}

@@ -257,7 +257,7 @@ namespace KinectBrowser
 			MenuControls menuControls = new MenuControls();
 			menuControls.Left = this.Left + kinectClickBeginPosition.X;
 			menuControls.Top = this.Top + kinectClickBeginPosition.Y;
-			menuControls.ShowDialog();	
+			menuControls.ShowDialog();
         }
 
         int lastRenderingDurationMs = -1;

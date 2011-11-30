@@ -6,9 +6,75 @@
 	x:Name="Window"
 	Title="MenuControls"
 	Width="182" Height="177.5" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize">
+	<Window.Resources>
+		<Storyboard x:Key="initAnim">
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="upButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="7"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-6"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="upButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="9"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-3"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="leftButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="4"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-5"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="leftButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="-31"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-6"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="rightButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="-30.333"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-8"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="rightButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="14.667"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-5"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="downButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="-32"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-4"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="downButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="-26"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="-8"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="upButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="25"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="0"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="leftButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="295"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="270"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="downButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="205"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="180"/>
+			</DoubleAnimationUsingKeyFrames>
+			<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[2].(RotateTransform.Angle)" Storyboard.TargetName="rightButton">
+				<EasingDoubleKeyFrame KeyTime="0" Value="115"/>
+				<EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="90"/>
+			</DoubleAnimationUsingKeyFrames>
+		</Storyboard>
+	</Window.Resources>
+	<Window.Triggers>
+		<EventTrigger RoutedEvent="FrameworkElement.Loaded">
+			<BeginStoryboard Storyboard="{StaticResource initAnim}"/>
+		</EventTrigger>
+	</Window.Triggers>
 
 	<Grid x:Name="LayoutRoot">
-		<local:MenuButton x:Name="upButton" Margin="45.25,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" d:LayoutOverrides="Width" MouseDown="upButtonClick"/>
+		<local:MenuButton x:Name="upButton" Margin="45.25,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" d:LayoutOverrides="Width" MouseDown="upButtonClick" RenderTransformOrigin="0.5,0.5">
+			<local:MenuButton.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</local:MenuButton.RenderTransform>
+		</local:MenuButton>
 		<local:MenuButton x:Name="rightButton" Margin="105.5,66,-26.5,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" d:LayoutOverrides="Height" MouseDown="rightButtonClick">
 			<local:MenuButton.RenderTransform>
 				<TransformGroup>
