@@ -5,11 +5,11 @@
 	x:Class="KinectBrowser.MenuControls"
 	x:Name="Window"
 	Title="MenuControls"
-	Width="332" Height="348.5" WindowStyle="None" Background="{x:Null}" WindowStartupLocation="CenterScreen" AllowsTransparency="True" ResizeMode="NoResize">
+	Width="182" Height="177.5" WindowStyle="None" Background="{x:Null}" AllowsTransparency="True" ResizeMode="NoResize">
 
 	<Grid x:Name="LayoutRoot">
-		<local:MenuButton x:Name="upButton" Margin="59.25,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" d:LayoutOverrides="Width" MouseDown="upButtonClick"/>
-		<local:MenuButton x:Name="rightButton" Margin="172,129,-46,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" d:LayoutOverrides="Height" MouseDown="rightButtonClick">
+		<local:MenuButton x:Name="upButton" Margin="45.25,8,0,0" VerticalAlignment="Top" HorizontalAlignment="Left" d:LayoutOverrides="Width" MouseDown="upButtonClick"/>
+		<local:MenuButton x:Name="rightButton" Margin="105.5,66,-26.5,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" d:LayoutOverrides="Height" MouseDown="rightButtonClick">
 			<local:MenuButton.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -19,7 +19,7 @@
 				</TransformGroup>
 			</local:MenuButton.RenderTransform>
 		</local:MenuButton>
-		<local:MenuButton x:Name="downButton" VerticalAlignment="Bottom" Margin="60.75,0,0,9.5" RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="VerticalAlignment, Width" HorizontalAlignment="Left" MouseDown="downButtonClick">
+		<local:MenuButton x:Name="downButton" VerticalAlignment="Bottom" Margin="44.75,0,0,3.5" RenderTransformOrigin="0.5,0.5" d:LayoutOverrides="VerticalAlignment, Width" HorizontalAlignment="Left" MouseDown="downButtonClick">
 			<local:MenuButton.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -29,7 +29,7 @@
 				</TransformGroup>
 			</local:MenuButton.RenderTransform>
 		</local:MenuButton>
-		<local:MenuButton x:Name="leftButton" HorizontalAlignment="Left" Margin="-54,131,0,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" d:LayoutOverrides="Height" MouseDown="leftButtonClick">
+		<local:MenuButton x:Name="leftButton" HorizontalAlignment="Left" Margin="-14,71,0,0" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Top" d:LayoutOverrides="VerticalAlignment, Height" MouseDown="leftButtonClick">
 			<local:MenuButton.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>

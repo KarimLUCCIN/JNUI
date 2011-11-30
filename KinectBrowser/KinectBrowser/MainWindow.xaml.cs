@@ -307,9 +307,7 @@ namespace KinectBrowser
 		private void Refresh_click(object sender, System.Windows.RoutedEventArgs e)
 		{
             browser.Reload();
-			
-			MenuControls menuControls = new MenuControls();
-			menuControls.ShowDialog();
+			Show_CircularMenu(250, 250);
 		}
 
 		private void Home_click(object sender, System.Windows.RoutedEventArgs e)
@@ -380,6 +378,14 @@ namespace KinectBrowser
             UpdateClientArea();
         }
 
+		void Show_CircularMenu(int posX, int posY)
+		{
+			MenuControls menuControls = new MenuControls();
+			menuControls.Left = this.Left + posX;
+			menuControls.Top = this.Top + posY;
+			menuControls.ShowDialog();	
+		}
+		
         private void UpdateClientArea()
         {
             var origin = rootGrid.PointToScreen(new Point(0, 0));

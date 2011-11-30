@@ -20,6 +20,7 @@ namespace KinectBrowser
 		public MenuControls()
 		{
 			this.InitializeComponent();
+			
 			TextBlock textUp = upButton.LayoutRoot.Children[1] as TextBlock;
 			textUp.Text = "Top";
 			
@@ -28,6 +29,8 @@ namespace KinectBrowser
 			
 			TextBlock textDown = downButton.LayoutRoot.Children[1] as TextBlock;
 			textDown.Text = "Down";
+			RotateTransform rotation = new RotateTransform(180, textDown.RenderTransformOrigin.X, textDown.RenderTransformOrigin.Y);
+			textDown.RenderTransform = rotation;
 			
 			TextBlock textLeft = leftButton.LayoutRoot.Children[1] as TextBlock;
 			textLeft.Text = "Left";
@@ -36,21 +39,25 @@ namespace KinectBrowser
 		private void upButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			MessageBox.Show("Up button click");
+			this.Close();
 		}
 
 		private void rightButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			MessageBox.Show("Right button click");
+			this.Close();
 		}
 
 		private void downButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			MessageBox.Show("Down button click");
+			this.Close();
 		}
 
 		private void leftButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			MessageBox.Show("Left button click");
+			this.Close();
 		}
 	}
 }
