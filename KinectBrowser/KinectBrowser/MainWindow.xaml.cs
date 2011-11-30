@@ -168,10 +168,13 @@ namespace KinectBrowser
             });
         }
 
-        GesturePoint kinectClickPoint = new GesturePoint() { PixelMoveTreshold = 10, UpdateLatency = 0.25f, HistorySize = 10 };
+        GesturePoint kinectClickGesturePoint = new GesturePoint() { PixelMoveTreshold = 10, UpdateLatency = 0.25f, HistorySize = 10 };
+        Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition = Microsoft.Xna.Framework.Vector2.Zero;
 
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
+            bool isNewClick = additionnalActionsUI.Visibility == System.Windows.Visibility.Hidden;
+ 
             bool hasValidCursor = provider.MainPosition.CurrentPoint.State == CursorState.Tracked;
 
             if (!hasValidCursor)
@@ -204,10 +207,13 @@ namespace KinectBrowser
                     var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.Cursor *
                         new Microsoft.Xna.Framework.Vector2(1 / provider.KinectBlobsMatcher.DataWidth, 1 / provider.KinectBlobsMatcher.DataHeight), ClientArea) - clientOrigin;
 
-                    kinectClickPoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
+                    kinectClickGesturePoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
 
-                    Canvas.SetLeft(additionnalActionsUI, kinectClickPoint.Position.X);
-                    Canvas.SetTop(additionnalActionsUI, kinectClickPoint.Position.Y);
+                    Canvas.SetLeft(additionnalActionsUI, kinectClickGesturePoint.Position.X);
+                    Canvas.SetTop(additionnalActionsUI, kinectClickGesturePoint.Position.Y);
+
+                    if(isNewClick)
+                        kinectClickBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
                 }
 
                 if (!hasClickPoint && (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
@@ -238,6 +244,16 @@ namespace KinectBrowser
                         ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
                 }
             }
+
+            isNewClick = isNewClick && additionnalActionsUI.Visibility == System.Windows.Visibility.Visible;
+
+            if (isNewClick)
+                KinectLeftClickBegin(kinectClickBeginPosition);
+        }
+
+        public void KinectLeftClickBegin(Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition)
+        {
+            /* TODO (ICI LE CODE POUR AFFICHER LA FENETRE DU CLICK) */
         }
 
         int lastRenderingDurationMs = -1;
