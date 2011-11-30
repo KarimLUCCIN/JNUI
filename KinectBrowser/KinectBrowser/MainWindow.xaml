@@ -263,6 +263,7 @@
             <Image x:Name="mainCursor" Source="/KinectBrowser;component/Images/right-default.png" Width="48" Height="48" IsHitTestVisible="False" Margin="-24,-24,0,0" />
             
             <Ellipse x:Name="additionnalActionsUI" Width="72" Height="72" Fill="#250000FF" Margin="-36"/>
+            <local:MenuControls Width="180" Height="180" Margin="-90" x:Name="additionnalActionsUIControls"/>
         </Canvas>
         
         <Canvas x:Name="contentOptionnalCanvas">

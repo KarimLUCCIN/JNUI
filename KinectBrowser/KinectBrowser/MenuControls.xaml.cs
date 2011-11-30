@@ -15,7 +15,7 @@ namespace KinectBrowser
 	/// <summary>
 	/// Interaction logic for MenuControls.xaml
 	/// </summary>
-	public partial class MenuControls : Window
+    public partial class MenuControls : UserControl
 	{
 		public MenuControls()
 		{
@@ -39,25 +39,25 @@ namespace KinectBrowser
 		private void upButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			//MessageBox.Show("Up button click");
-			this.Close();
+			//this.Close();
 		}
 
 		private void rightButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			//MessageBox.Show("Right button click");
-			this.Close();
+			//this.Close();
 		}
 
 		private void downButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			//MessageBox.Show("Down button click");
-			this.Close();
+			//this.Close();
 		}
 
 		private void leftButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			//MessageBox.Show("Left button click");
-			this.Close();
+			//this.Close();
 		}
 	}
 }

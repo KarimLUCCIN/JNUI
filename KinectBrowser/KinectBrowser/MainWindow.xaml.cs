@@ -186,6 +186,7 @@ namespace KinectBrowser
                     ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
 
                 additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
+                additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
             }
             else
             {
@@ -197,7 +198,10 @@ namespace KinectBrowser
                 bool hasClickPoint = false;
 
                 if (provider.ClickBlob == null || provider.ClickBlob.Status != ImageProcessing.BlobsTracker.Status.Tracking)
+                {
                     additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
+                    additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
+                }
                 else
                 {
                     hasClickPoint = true;
@@ -212,7 +216,7 @@ namespace KinectBrowser
                     Canvas.SetLeft(additionnalActionsUI, kinectClickGesturePoint.Position.X);
                     Canvas.SetTop(additionnalActionsUI, kinectClickGesturePoint.Position.Y);
 
-                    if(isNewClick)
+                    if (isNewClick)
                         kinectClickBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
                 }
 
@@ -253,11 +257,9 @@ namespace KinectBrowser
 
         public void KinectLeftClickBegin(Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition)
         {
-            /* TODO (ICI LE CODE POUR AFFICHER LA FENETRE DU CLICK) */
-			MenuControls menuControls = new MenuControls();
-			menuControls.Left = this.Left + kinectClickBeginPosition.X;
-			menuControls.Top = this.Top + kinectClickBeginPosition.Y;
-			menuControls.ShowDialog();
+            Canvas.SetLeft(additionnalActionsUIControls, kinectClickBeginPosition.X);
+            Canvas.SetTop(additionnalActionsUIControls, kinectClickBeginPosition.Y);
+            additionnalActionsUIControls.Visibility = System.Windows.Visibility.Visible;
         }
 
         int lastRenderingDurationMs = -1;
