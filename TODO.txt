@@ -1,0 +1,10 @@
+- Mettre un cooldown pour les clicks (afin d'éviter que les erreurs de la Kinect ne fassent des clicks intempestifs)
+=> Idem pour ce qui est de l'apparition et la disparition du "R" de la souris. (Penser aussi à mettre le R de gauche)
+
+- Scale du cursor de la kinect x3 au lieu de x2 (ou peut être x2.5)
+
+- Faire disparaître l'ui du click après l'action
+
+- Un mouvement pour activer le tracking, et un mouvement pour le désactiver (parce que là au repos ça fait n'importe nawak)
+
+- Un mouvement pour inverser main droite et main gauche ? (croiser les mains ?)
