@@ -254,6 +254,10 @@ namespace KinectBrowser
         public void KinectLeftClickBegin(Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition)
         {
             /* TODO (ICI LE CODE POUR AFFICHER LA FENETRE DU CLICK) */
+			MenuControls menuControls = new MenuControls();
+			menuControls.Left = this.Left + kinectClickBeginPosition.X;
+			menuControls.Top = this.Top + kinectClickBeginPosition.Y;
+			menuControls.ShowDialog();	
         }
 
         int lastRenderingDurationMs = -1;
@@ -307,7 +311,6 @@ namespace KinectBrowser
 		private void Refresh_click(object sender, System.Windows.RoutedEventArgs e)
 		{
             browser.Reload();
-			Show_CircularMenu(250, 250);
 		}
 
 		private void Home_click(object sender, System.Windows.RoutedEventArgs e)
@@ -377,14 +380,6 @@ namespace KinectBrowser
         {
             UpdateClientArea();
         }
-
-		void Show_CircularMenu(int posX, int posY)
-		{
-			MenuControls menuControls = new MenuControls();
-			menuControls.Left = this.Left + posX;
-			menuControls.Top = this.Top + posY;
-			menuControls.ShowDialog();	
-		}
 		
         private void UpdateClientArea()
         {
