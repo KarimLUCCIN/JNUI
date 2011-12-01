@@ -47,8 +47,8 @@ namespace KinectBrowser
 				ListViewItem item = new ListViewItem();
 				item.Content = title;
 				item.ToolTip = url;
-				//item.Selected += new RoutedEventHandler(Select_bookmark);
-				item.MouseDoubleClick += new MouseButtonEventHandler(Bookmark_DoubleClick);
+				item.Selected += new RoutedEventHandler(Select_bookmark);
+				//item.MouseDoubleClick += new MouseButtonEventHandler(Bookmark_DoubleClick);
 				listView1.Items.Add(item);
 			}
 		}
