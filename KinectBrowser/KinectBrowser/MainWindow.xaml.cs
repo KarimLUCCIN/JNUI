@@ -101,8 +101,10 @@ namespace KinectBrowser
                         var posProvider = provider.MainPosition;
                         var p0 = posProvider.CurrentPoint;
 
-                        Canvas.SetLeft(mainCursor, p0.Position.X);
-                        Canvas.SetTop(mainCursor, p0.Position.Y);
+                        Canvas.SetLeft(leftCursor, p0.Position.X);
+                        Canvas.SetTop(leftCursor, p0.Position.Y);
+
+                        rightCursor.Visibility = System.Windows.Visibility.Hidden;
 
                         if (provider.GetType() != typeof(MouseProvider))
                         {
@@ -125,7 +127,7 @@ namespace KinectBrowser
                             UpdateKinectSpecificObjects((KinectProvider)provider);
                         }
 
-                        if (p0.Position.Y <= browser.ActualHeight - 24)
+                        if (p0.Position.Y <= browser.ActualHeight - BrowserMargin)
                         {
                             browser.CustomInput_MouseMove(new Point(p0.Position.X, p0.Position.Y));
 
@@ -168,6 +170,14 @@ namespace KinectBrowser
             });
         }
 
+        private int BrowserMargin
+        {
+            get
+            {
+                return 24;
+            }
+        }
+
         GesturePoint kinectClickGesturePoint = new GesturePoint() { PixelMoveTreshold = 10, UpdateLatency = 0.25f, HistorySize = 10 };
         Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition = Microsoft.Xna.Framework.Vector2.Zero;
 
@@ -180,7 +190,14 @@ namespace KinectBrowser
             if (!hasValidCursor)
             {
                 Cursor = Cursors.None;
-                mainCursor.Visibility = System.Windows.Visibility.Visible;
+                leftCursor.Visibility = System.Windows.Visibility.Visible;
+                rightCursor.Visibility = System.Windows.Visibility.Visible;
+
+                Canvas.SetLeft(leftCursor, provider.Positions[0].CurrentPoint.Position.X);
+                Canvas.SetTop(leftCursor, provider.Positions[0].CurrentPoint.Position.Y);
+
+                Canvas.SetLeft(rightCursor, provider.Positions[1].CurrentPoint.Position.X);
+                Canvas.SetTop(rightCursor, provider.Positions[1].CurrentPoint.Position.Y);
 
                 foreach (var item in contentOptionnalCanvas.Children)
                     ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
@@ -191,7 +208,7 @@ namespace KinectBrowser
             else
             {
                 Cursor = Cursors.Arrow;
-                mainCursor.Visibility = System.Windows.Visibility.Hidden;
+                leftCursor.Visibility = rightCursor.Visibility = System.Windows.Visibility.Hidden;
 
                 var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
 
@@ -252,14 +269,35 @@ namespace KinectBrowser
             isNewClick = isNewClick && additionnalActionsUI.Visibility == System.Windows.Visibility.Visible;
 
             if (isNewClick)
-                KinectLeftClickBegin(kinectClickBeginPosition);
+                KinectLeftClickBegin(provider, kinectClickBeginPosition);
         }
 
-        public void KinectLeftClickBegin(Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition)
+        DateTime lastChangePageActionDate = DateTime.MinValue;
+
+        public void KinectLeftClickBegin(KinectProvider provider, Microsoft.Xna.Framework.Vector2 position)
         {
-            Canvas.SetLeft(additionnalActionsUIControls, kinectClickBeginPosition.X);
-            Canvas.SetTop(additionnalActionsUIControls, kinectClickBeginPosition.Y);
-            additionnalActionsUIControls.Visibility = System.Windows.Visibility.Visible;
+            var cursorPosition = provider.MainPosition.CurrentPoint.Position;
+
+            /* pour éviter la madness */
+            bool canChangePage = (DateTime.Now - lastChangePageActionDate).TotalSeconds >= 2;
+
+            if (canChangePage && cursorPosition.Y < browser.ActualHeight - BrowserMargin && cursorPosition.X <= BrowserMargin)
+            {
+                browser.TabNext();
+                lastChangePageActionDate = DateTime.Now;
+            }
+            else if (canChangePage && cursorPosition.Y < browser.ActualHeight - BrowserMargin && cursorPosition.X >= browser.ActualWidth - BrowserMargin)
+            {
+                browser.TabPrev();
+                lastChangePageActionDate = DateTime.Now;
+            }
+            else
+            {
+                Canvas.SetLeft(additionnalActionsUIControls, position.X);
+                Canvas.SetTop(additionnalActionsUIControls, position.Y);
+
+                additionnalActionsUIControls.Visibility = System.Windows.Visibility.Visible;
+            }
         }
 
         int lastRenderingDurationMs = -1;

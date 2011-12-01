@@ -260,9 +260,14 @@
         </Grid>
 
         <Canvas x:Name="contentOverlayCanvas">
-            <Image x:Name="mainCursor" Source="/KinectBrowser;component/Images/right-default.png" Width="48" Height="48" IsHitTestVisible="False" Margin="-24,-24,0,0" />
+            <Image x:Name="rightCursor" Source="/KinectBrowser;component/Images/empty-default.png" Width="48" Height="48" IsHitTestVisible="False" Margin="-24,-24,0,0" />
+            <Image x:Name="leftCursor" Source="/KinectBrowser;component/Images/empty-default.png" Width="48" Height="48" IsHitTestVisible="False" Margin="-24,-24,0,0" />
+
+            <!-- Juste pour masquer le curseur pour la presentation avec Mr Sato -->
+            <Border Visibility="Hidden">
+                <Ellipse x:Name="additionnalActionsUI" Width="72" Height="72" Fill="#250000FF" Margin="-36"/>
+            </Border>
             
-            <Ellipse x:Name="additionnalActionsUI" Width="72" Height="72" Fill="#250000FF" Margin="-36"/>
             <local:MenuControls Width="180" Height="180" Margin="-90" x:Name="additionnalActionsUIControls"/>
         </Canvas>
         
