@@ -1,0 +1,41 @@
+3D Natural User Interface using Kinect
+-------------------------
+
+Plan présentation (10mn - 15mn):
+
+- Motivations: 
+pourquoi on a fait ce projet
+
+- Background
+Problem description
+=> Actuellement dans le milieu peut de personnes utilisent la Kinect
+=> Maybe il y a des manières plus naturelle d'utiliser un pc que la souris (cf. smartphones & co)
+
+- Objectives of this work (on a résolut ce type de problème etc etc)
+=> Découvrir le fonctionnement de la Kinect, ses possibilités & limites
+=> Provider une nouvelle expérience d'utilisation de pc à commencer par un webbrowser
+
+- Explication brève de l'approche : Comment on a résolut ce problème (globalement)
+=> A cause des limites de précision du squelette fournit par la Kinect (distance quand on est assis, reconnaissance, précision), nous avons décidé d'utiliser directement la profondeur pour en extraire les formes
+=> Utilisation de la Cg pour palier au problèmes de performances
+=> Rendu final via DirectX
+
+- Les principales parties de la recherche, les différentes étapes de la résolution du problème
+S'il y a de la théorie et/ou de la technique, l'expliquer ici
+
+Utilisation de la CG
+Screens debug output
+
+Rendu via DirectX
+Screen etapes
+
+- Results, expliquer comment ça marche, how good it is
+Si on peut montrer une comparaison avec les systèmes existants c'est mieux.
+Real time demo ftw
+
+- ConcluZion
+
+
+-----------------
+PPT, Movies,
+C'est mieux d'avoir des images que des maths
