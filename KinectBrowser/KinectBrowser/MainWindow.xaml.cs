@@ -69,12 +69,22 @@ namespace KinectBrowser
 
             browser.Attach(SoraEngine);
             browser.CustomInput = true;
-			
+
             browser.NewTab("http://www.wikipedia.com");
             browser.NewTab("http://www.youtube.com");
             browser.NewTab("http://www.google.com");
 
+            //browser.NewTab("file://C|/Users/Audrey/Downloads/html/Latin%20Union%20-%20Wikipedia,%20the%20free%20encyclopedia.htm");
+            //browser.NewTab("file://C|/Users/Audrey/Downloads/html/Latin%20Union%20-%20Wikipedia,%20the%20free%20encyclopedia.htm");
+            //browser.NewTab("file://C|/Users/Audrey/Downloads/html/Latin%20Union%20-%20Wikipedia,%20the%20free%20encyclopedia.htm");
+
             InteractionsCore.Core.Loop += new EventHandler(Core_Loop);
+        }
+
+        private void DemoOpenURI(string p)
+        {
+            p = "file:///" + p.Replace(":", "|").Replace("\\", "/");
+            browser.NewTab(p);
         }
 
         void MainWindow_Closed(object sender, EventArgs e)
