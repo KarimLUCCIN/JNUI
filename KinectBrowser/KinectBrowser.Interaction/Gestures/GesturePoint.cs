@@ -74,6 +74,11 @@ namespace KinectBrowser.Interaction.Gestures
 
         public void UpdatePosition(Vector3 newPosition, CursorState state)
         {
+            if (float.IsNaN(newPosition.X) || float.IsNaN(newPosition.Y) || float.IsNaN(newPosition.Z))
+            {
+                throw new ArgumentException("newPosition is NaN");
+            }
+
             State = state;
 
             Vector3 medPosition;

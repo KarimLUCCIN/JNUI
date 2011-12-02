@@ -28,6 +28,11 @@ namespace KinectBrowser.ImageProcessing
 
             internal int waitingCycles = 0;
 
+            public int WaitingCycles
+            {
+                get { return waitingCycles; }
+            }
+
             internal bool attached = false;
 
             public bool InvertedCursor { get; internal set; }

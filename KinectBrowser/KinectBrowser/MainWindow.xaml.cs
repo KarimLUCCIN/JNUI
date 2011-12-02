@@ -191,6 +191,7 @@ namespace KinectBrowser
         GesturePoint kinectClickGesturePoint = new GesturePoint() { PixelMoveTreshold = 10, UpdateLatency = 0.25f, HistorySize = 10 };
         Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition = Microsoft.Xna.Framework.Vector2.Zero;
 
+
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
             bool isNewClick = additionnalActionsUI.Visibility == System.Windows.Visibility.Hidden;
@@ -224,7 +225,9 @@ namespace KinectBrowser
 
                 bool hasClickPoint = false;
 
-                if (provider.ClickBlob == null || provider.ClickBlob.Status != ImageProcessing.BlobsTracker.Status.Tracking)
+                if (provider.ClickBlob == null || 
+                    provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Lost ||
+                    (provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Waiting && provider.ClickBlob.WaitingCycles > 10))
                 {
                     additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
                     additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
@@ -235,16 +238,20 @@ namespace KinectBrowser
 
                     additionnalActionsUI.Visibility = System.Windows.Visibility.Visible;
 
-                    var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.Cursor *
-                        new Microsoft.Xna.Framework.Vector2(1 / provider.KinectBlobsMatcher.DataWidth, 1 / provider.KinectBlobsMatcher.DataHeight), ClientArea) - clientOrigin;
+                    /* Sinon, on peut se manger des NaN vu que la position du blob n'est pas défnie */
+                    if (provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Tracking)
+                    {
+                        var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.Cursor *
+                            new Microsoft.Xna.Framework.Vector2(1 / provider.KinectBlobsMatcher.DataWidth, 1 / provider.KinectBlobsMatcher.DataHeight), ClientArea) - clientOrigin;
 
-                    kinectClickGesturePoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
+                        kinectClickGesturePoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
 
-                    Canvas.SetLeft(additionnalActionsUI, kinectClickGesturePoint.Position.X);
-                    Canvas.SetTop(additionnalActionsUI, kinectClickGesturePoint.Position.Y);
+                        Canvas.SetLeft(additionnalActionsUI, kinectClickGesturePoint.Position.X);
+                        Canvas.SetTop(additionnalActionsUI, kinectClickGesturePoint.Position.Y);
 
-                    if (isNewClick)
-                        kinectClickBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
+                        if (isNewClick)
+                            kinectClickBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
+                    }
                 }
 
                 if (!hasClickPoint && (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
