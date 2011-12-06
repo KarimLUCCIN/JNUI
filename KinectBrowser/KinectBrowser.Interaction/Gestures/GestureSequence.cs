@@ -10,7 +10,7 @@ namespace KinectBrowser.Interaction.Gestures
     /// </summary>
     public class GestureSequence
     {
-        private List<GestureSequenceKey> data = new List<GestureSequenceKey>();
+        private List<SimpleGestureKey> data = new List<SimpleGestureKey>();
 
         /// <summary>
         /// Maximum amount of time that define an unique sequence
@@ -30,7 +30,7 @@ namespace KinectBrowser.Interaction.Gestures
             get { return data.Count; }
         }
 
-        public GestureSequenceKey this[int index]
+        public SimpleGestureKey this[int index]
         {
             get
             {
@@ -38,17 +38,17 @@ namespace KinectBrowser.Interaction.Gestures
             }
         }
 
-        public bool Enqueue(GestureSequenceKey key)
+        public bool Enqueue(SimpleGestureKey key)
         {
             bool shouldAdd = true;
 
             /* ignore repetitions */
             if (data.Count > 0)
             {
-                if (data[data.Count - 1].SameGestureAs(key))
+                if (data[data.Count - 1].Gesture == key.Gesture)
                 {
                     shouldAdd = false;
-                    data[data.Count - 1] = new GestureSequenceKey() { simpleGestures = data[data.Count - 1].simpleGestures, keyTime = DateTime.Now };
+                    data[data.Count - 1].Time = key.Time;
                 }
             }
 
@@ -70,7 +70,7 @@ namespace KinectBrowser.Interaction.Gestures
             /* remove old values */
             while (data.Count > 0)
             {
-                if ((refTime - data[0].keyTime) > MaxDuration)
+                if ((refTime - data[0].Time) > MaxDuration)
                     data.RemoveAt(0);
                 else
                     break;
@@ -85,18 +85,7 @@ namespace KinectBrowser.Interaction.Gestures
 
                 for (int i = 0; i < data.Count; i++)
                 {
-                    res += "(";
-
-                    var seq = data[i];
-                    for (int j = 0; j < seq.simpleGestures.Length; j++)
-                    {
-                        res += String.Format("\"{0}-{1}\"", seq.simpleGestures[j].ManagerId, seq.simpleGestures[j].MainGesture);
-
-                        if (j + 1 < seq.simpleGestures.Length)
-                            res += ",";
-                    }
-
-                    res += ")";
+                    res += "(" + data[i].Gesture.ToString() + ")";
 
                     if (i + 1 < data.Count)
                         res += " ; ";

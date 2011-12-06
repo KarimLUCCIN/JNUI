@@ -10,15 +10,9 @@ namespace KinectBrowser.Interaction
     {
         public IInputClient Client { get; private set; }
 
-        public GestureSequenceManager GestureSequenceManager { get; private set; }
-
         public IInputProvider[] Providers { get; private set; }
 
         public IInputProvider CurrentProvider { get; private set; }
-
-        public TimeSpan GestureRecognitionLatency { get; set; }
-
-        private List<RecognizedGesture> RecognizedGestures = new List<RecognizedGesture>();
 
         public InteractionsManager(IInputClient client)
         {
@@ -26,7 +20,6 @@ namespace KinectBrowser.Interaction
                 throw new ArgumentNullException("client");
 
             Client = client;
-            GestureRecognitionLatency = TimeSpan.FromMilliseconds(500);
         }
 
         public void Initialize(IInputProvider[] providers)
@@ -59,9 +52,6 @@ namespace KinectBrowser.Interaction
                 {
                     var positionProviders = CurrentProvider.Positions;
 
-                    GestureSequenceManager = new GestureSequenceManager(
-                        (from position in positionProviders select new GestureManager(position.Id)).ToArray(), TimeSpan.FromSeconds(5));
-
                     foreach (var p in Providers)
                     {
                         p.Enabled = p == CurrentProvider;
@@ -85,35 +75,11 @@ namespace KinectBrowser.Interaction
                 provider.Shutdown();
         }
 
-        public void RecordSingleRecognizedGesture(string key, EventHandler actionDelegate, params SimpleGesture[] gestures)
-        {
-            if (actionDelegate != null)
-            {
-                var gestureElements = new Dictionary<string, SimpleGesture[]>();
-                gestureElements[key] = gestures;
-                var gestureContent = new RecognizedGesture(gestureElements);
-                gestureContent.Activated += delegate(object sender, EventArgs e)
-                {
-                    actionDelegate(sender, e);
-                };
-                RecordRecognizedGesture(gestureContent);
-            }
-        }
-
-        public void RecordRecognizedGesture(RecognizedGesture gesture)
-        {
-            if (gesture == null)
-                throw new ArgumentNullException("gesture");
-
-            if (!RecognizedGestures.Contains(gesture))
-                RecognizedGestures.Add(gesture);
-        }
-
         public void Update()
         {
             var provider = CurrentProvider;
 
-            if (provider == null || GestureSequenceManager == null || !CheckCurrentProvider())
+            if (provider == null || !CheckCurrentProvider())
             {
                 /* not yet initialized */
                 return;
@@ -122,61 +88,6 @@ namespace KinectBrowser.Interaction
             provider.Update();
 
             var positions = provider.Positions;
-
-            GestureSequenceManager.Update(positions, Client.ClientArea);
-
-            var now = DateTime.Now;
-            
-            /* Maximize Test Sequence */
-            var currentSequence = GestureSequenceManager.CurrentSequence;
-
-            if ((now - currentSequence.LastModificationTime) >= GestureRecognitionLatency)
-            {
-                bool hasAValidGesture = false;
-
-                foreach (var item in RecognizedGestures)
-                {
-                    var allValid = true;
-                    var score = 0.0;
-
-                    foreach (var machine in item.Machines)
-                    {
-                        var machineInst = machine.Value;
-                        machineInst.Reset();
-
-                        for (int i = 0; i < GestureSequenceManager.CurrentSequence.Count && !machineInst.Valid; i++)
-                        {
-                            var gesture = GestureSequenceManager.CurrentSequence[GestureSequenceManager.CurrentSequence.Count - i - 1].GetById(machine.Key);
-                            if (gesture != null)
-                            {
-                                machineInst.Update(gesture);
-                            }
-                        }
-
-                        allValid = allValid && machineInst.Valid;
-
-                        if (!allValid)
-                            break;
-                        else
-                            score += machineInst.Score;
-                    }
-
-                    item.LastScore = allValid ? score : 0;
-                    hasAValidGesture = hasAValidGesture || allValid;
-                }
-
-                if (hasAValidGesture)
-                {
-                    var recognizedGesture = (from g in RecognizedGestures where g.LastScore > 0 select g).OrderByDescending(g => g.LastScore).FirstOrDefault();
-
-                    if (recognizedGesture != null)
-                    {
-                        recognizedGesture.RaiseActivated();
-
-                        GestureSequenceManager.CurrentSequence.Reset();
-                    }
-                }
-            }
         }
     }
 }

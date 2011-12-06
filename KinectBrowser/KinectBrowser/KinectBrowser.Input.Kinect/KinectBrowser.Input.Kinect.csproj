@@ -48,10 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BlobGestureFollower.cs" />
     <Compile Include="KinectBlobsMatcher.cs" />
+    <Compile Include="KinectGesturesTracker.cs" />
     <Compile Include="KinectPositionProvider.cs" />
     <Compile Include="KinectProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RecognizedGesture.cs" />
+    <Compile Include="RecognizedGestureEventArgs.cs" />
+    <Compile Include="RecognizedGestureEventHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\KinectBrowser.D3D\KinectBrowser.D3D.csproj">

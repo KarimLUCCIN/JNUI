@@ -20,20 +20,6 @@ namespace KinectBrowser.Interaction.Gestures
             get { return currentGesture; }
             set { currentGesture = value; }
         }
-
-        public WeightedSimpleGestureKey WeightedCurrentGesture
-        {
-            get
-            {
-                var result = new WeightedSimpleGestureKey(Id);
-
-                result.WeightedSimpleGestures = (
-                    from entry in currentGestureWeights 
-                    select new WeightedSimpleGesture() { weight = entry.Value, gesture = entry.Key }).ToArray();
-
-                return result;
-            }
-        }
         
         private GesturePoint lastPoint = null;
 
@@ -58,24 +44,15 @@ namespace KinectBrowser.Interaction.Gestures
             get { return minimumGestureLength; }
             set { minimumGestureLength = value; }
         }
-
-        private string id;
-
-        public string Id
-        {
-            get { return id; }
-            private set { id = value; }
-        }
                 
-        public GestureManager(string id)
-            :this(id, TimeSpan.FromSeconds(1 / 24.0))
+        public GestureManager()
+            :this(TimeSpan.FromSeconds(1 / 24.0))
         {
 
         }
 
-        public GestureManager(string id, TimeSpan latency)
+        public GestureManager(TimeSpan latency)
         {
-            this.id = id;
             this.latency = latency;
 
             InitializeSimpleGesturesPatterns();

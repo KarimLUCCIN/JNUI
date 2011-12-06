@@ -17,6 +17,7 @@ using KinectBrowser.Input.Mouse;
 using System.Windows.Interop;
 using KinectBrowser.Input.Kinect;
 using KinectBrowser.Interaction.Gestures;
+using KinectBrowser.ImageProcessing;
 
 namespace KinectBrowser
 {
@@ -28,6 +29,8 @@ namespace KinectBrowser
         public SoraEngineHost SoraEngine { get; private set; }
 
         public InteractionsManager InteractionsManager { get; private set; }
+
+        public KinectGesturesTracker KinectGesturesTracker { get; private set; }
 
         public IntPtr WindowHandle { get; private set; }
 
@@ -66,6 +69,24 @@ namespace KinectBrowser
 
             InteractionsManager = new Interaction.InteractionsManager(this);
             InteractionsManager.Initialize(providers.ToArray());
+
+            KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
+            KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    browser.NewTab("http://www.google.com");
+                });
+            }, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right);
+
+            KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    if (browser.ActivePage != null)
+                        browser.ActivePage.Close();
+                });
+            }, SimpleGesture.Bottom, SimpleGesture.Top, SimpleGesture.Right);
 
             browser.Attach(SoraEngine);
             browser.CustomInput = true;
@@ -191,9 +212,12 @@ namespace KinectBrowser
         GesturePoint kinectClickGesturePoint = new GesturePoint() { PixelMoveTreshold = 10, UpdateLatency = 0.25f, HistorySize = 10 };
         Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition = Microsoft.Xna.Framework.Vector2.Zero;
 
+        List<BlobsTracker.TrackedBlob> kinectBlobs = new List<BlobsTracker.TrackedBlob>();
 
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
+            kinectBlobs.Clear();
+
             bool isNewClick = additionnalActionsUI.Visibility == System.Windows.Visibility.Hidden;
  
             bool hasValidCursor = provider.MainPosition.CurrentPoint.State == CursorState.Tracked;
@@ -237,7 +261,7 @@ namespace KinectBrowser
                     hasClickPoint = true;
 
                     additionnalActionsUI.Visibility = System.Windows.Visibility.Visible;
-
+                    //KinectGesturesTracker
                     /* Sinon, on peut se manger des NaN vu que la position du blob n'est pas défnie */
                     if (provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Tracking)
                     {
@@ -253,6 +277,8 @@ namespace KinectBrowser
                             kinectClickBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
                     }
                 }
+
+                kinectBlobs.Add(provider.MainBlob);
 
                 if (!hasClickPoint && (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
                     provider.Positions[1].CurrentPoint.State == CursorState.Default))
@@ -281,6 +307,8 @@ namespace KinectBrowser
                     foreach (var item in contentOptionnalCanvas.Children)
                         ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
                 }
+
+                KinectGesturesTracker.Update(kinectBlobs);
             }
 
             isNewClick = isNewClick && additionnalActionsUI.Visibility == System.Windows.Visibility.Visible;

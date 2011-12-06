@@ -5,6 +5,7 @@ using System.Text;
 using KinectBrowser.Interaction;
 using KinectBrowser.Interaction.Maths;
 using Microsoft.Xna.Framework;
+using KinectBrowser.ImageProcessing;
 
 namespace KinectBrowser.Input.Kinect
 {
@@ -35,12 +36,21 @@ namespace KinectBrowser.Input.Kinect
             return new Vector2((point.X * size.X) + origin.X, (point.Y * size.Y) + origin.Y);
         }
 
-        public bool Update(Vector3 skeletonPosition, CursorState state)
+        BlobsTracker.TrackedBlob currentBlob = null;
+
+        public BlobsTracker.TrackedBlob CurrentBlob
+        {
+            get { return currentBlob; }
+        }
+
+        public bool Update(BlobsTracker.TrackedBlob blob, Vector3 skeletonPosition, CursorState state)
         {
             if (BeginUpdate())
             {
                 try
                 {
+                    currentBlob = blob;
+
                     var input = KinectProvider.Client;
 
                     var localPoint = XY(ref skeletonPosition);

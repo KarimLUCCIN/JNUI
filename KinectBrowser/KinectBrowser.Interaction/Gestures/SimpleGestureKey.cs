@@ -5,10 +5,10 @@ using System.Text;
 
 namespace KinectBrowser.Interaction.Gestures
 {
-    public struct WeightedSimpleGesture
+    public class SimpleGestureKey
     {
-        public double weight;
+        public SimpleGesture Gesture { get; set; }
 
-        public SimpleGesture gesture;
+        public DateTime Time { get; set; }
     }
 }

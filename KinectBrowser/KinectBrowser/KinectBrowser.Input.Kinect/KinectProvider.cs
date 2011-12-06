@@ -219,8 +219,8 @@ namespace KinectBrowser.Input.Kinect
                 PlanarImage Image = e.ImageFrame.Image;
                 byte[] convertedDepthFrame = convertDepthFrame(Image.Bits);
 
-                leftHandProvider.Update(new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition.X, KinectBlobsMatcher.LeftHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.LeftHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
-                rightHandProvider.Update(new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition.X, KinectBlobsMatcher.RightHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
+                leftHandProvider.Update(KinectBlobsMatcher.LeftHandBlob.MBlob, new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition.X, KinectBlobsMatcher.LeftHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.LeftHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
+                rightHandProvider.Update(KinectBlobsMatcher.RightHandBlob.MBlob, new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition.X, KinectBlobsMatcher.RightHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
             }
 
             lock (sync)
@@ -287,6 +287,13 @@ namespace KinectBrowser.Input.Kinect
         {
             get { return clickBlob; }
         }
+
+        BlobsTracker.TrackedBlob mainBlob;
+
+        public BlobsTracker.TrackedBlob MainBlob
+        {
+            get { return mainBlob; }
+        }
         
         public IPositionProvider MainPosition
         {
@@ -308,9 +315,12 @@ namespace KinectBrowser.Input.Kinect
                 {
                     mainPosition.LeftButtonClicked = false;
                     clickBlob = null;
+                    mainBlob = null;
                 }
                 else
                 {
+                    mainBlob = (mainPosition == leftHandProvider) ? KinectBlobsMatcher.LeftHandBlob.MBlob : KinectBlobsMatcher.RightHandBlob.MBlob; ;
+
                     if (clickBlob != null)
                     {
                         if (clickBlob.Status != BlobsTracker.Status.Tracking)

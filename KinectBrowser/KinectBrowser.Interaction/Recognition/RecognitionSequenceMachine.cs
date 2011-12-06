@@ -37,11 +37,6 @@ namespace KinectBrowser.Interaction.Recognition
             CurrentStates = new List<RecognitionState>();
         }
 
-        public void Update(WeightedSimpleGestureKey gesture)
-        {
-            Update(gesture.MainGesture);
-        }
-
         public void Update(SimpleGesture gesture)
         {
             if (gesture != SimpleGesture.None)
