@@ -52,6 +52,11 @@ namespace KinectBrowser.ImageProcessing
                             : new Vector2((float)Current.EstimatedCursorX, (float)Current.EstimatedCursorY));
                 }
             }
+
+            public bool Crossed
+            {
+                get { return Current == null ? false : Current.Crossed; }
+            }
         }
 
         internal class TrackedBlobIntermediate
@@ -99,6 +104,21 @@ namespace KinectBrowser.ImageProcessing
 
         List<TrackedBlobEvaluator> waitingBlobs = new List<TrackedBlobEvaluator>();
         List<TrackedBlobIntermediate> newBlobs = new List<TrackedBlobIntermediate>();
+
+        /// <summary>
+        /// Si ce blob est croisé avec un autre, renvoi l'autre blob correspondant. Sinon, null.
+        /// </summary>
+        /// <param name="blob"></param>
+        /// <returns></returns>
+        public TrackedBlob FindCrossedTarget(TrackedBlob blob)
+        {
+            if (blob.Crossed && blob.Current != null)
+            {
+                return (from l_blob in TrackedBlobs where blob.Current.Equals(l_blob.Current) select l_blob).FirstOrDefault();
+            }
+            else
+                return null;
+        }
 
         public void Update(IEnumerable<ManagedBlob> blobs)
         {

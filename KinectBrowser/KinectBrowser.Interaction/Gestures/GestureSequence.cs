@@ -53,7 +53,10 @@ namespace KinectBrowser.Interaction.Gestures
             }
 
             if (shouldAdd)
+            {
+                Console.WriteLine(key.Gesture);
                 data.Add(key);
+            }
 
             CleanOldValues();
 

@@ -113,18 +113,23 @@ namespace KinectBrowser.Input.Kinect
             if ((now - sequence.LastModificationTime) >= gestureDetectionLatency)
             {
                 var machine = desiredGesture.Machine;
-                machine.Reset();
-
-                for (int i = 0; i < sequence.Count && !machine.Valid; i++)
+                if (sequence.Count >= machine.Descriptor.Count)
                 {
-                    var gesture = sequence[sequence.Count - i - 1];
-                    if (gesture != null)
-                    {
-                        machine.Update(gesture.Gesture);
-                    }
-                }
+                    machine.Reset();
 
-                return machine.Valid ? machine.Score : 0;
+                    for (int i = 0; i < sequence.Count && !machine.Valid; i++)
+                    {
+                        var gesture = sequence[sequence.Count - i - 1];
+                        if (gesture != null)
+                        {
+                            machine.Update(gesture.Gesture);
+                        }
+                    }
+
+                    return machine.Valid ? machine.Score : 0;
+                }
+                else
+                    return 0;
             }
             else
                 return 0;

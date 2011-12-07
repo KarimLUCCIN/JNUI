@@ -74,9 +74,9 @@ namespace KinectBrowser.Interaction.Recognition
                     }
                     else
                     {
-                        /* not recognized */
-                        CurrentStates.RemoveAt(i);
-                        i--;
+                        /* not recognized, skip */
+                        //CurrentStates.RemoveAt(i);
+                        //i--;
                     }
                 }
 

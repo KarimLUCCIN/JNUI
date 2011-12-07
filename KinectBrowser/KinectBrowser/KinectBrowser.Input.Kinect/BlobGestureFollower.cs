@@ -39,7 +39,8 @@ namespace KinectBrowser.Input.Kinect
 
         public void Update()
         {
-            AssociatedPoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3( Blob.Cursor, 0), ParseState(Blob.Status));
+            if(Blob.Status == BlobsTracker.Status.Tracking)
+                AssociatedPoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3( Blob.Cursor, 0), ParseState(Blob.Status));
 
             Manager.Update(AssociatedPoint);
 

@@ -70,23 +70,48 @@ namespace KinectBrowser
             InteractionsManager = new Interaction.InteractionsManager(this);
             InteractionsManager.Initialize(providers.ToArray());
 
-            KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
-            KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
-            {
-                Dispatcher.Invoke((Action)delegate
-                {
-                    browser.NewTab("http://www.google.com");
-                });
-            }, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right);
+            //KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
+            //KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
+            //{
+            //    Dispatcher.Invoke((Action)delegate
+            //    {
+            //        browser.NewTab("http://www.google.com");
+            //    });
+            //}, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right);
 
-            KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
+            //KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
+            //{
+            //    Dispatcher.Invoke((Action)delegate
+            //    {
+            //        if (browser.ActivePage != null)
+            //            browser.ActivePage.Close();
+            //    });
+            //}, SimpleGesture.Bottom, SimpleGesture.Top, SimpleGesture.Right);
+
+            KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
+            KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
             {
                 Dispatcher.Invoke((Action)delegate
                 {
-                    if (browser.ActivePage != null)
-                        browser.ActivePage.Close();
+                    if (!cursorIsAlive)
+                    {
+                        forcedAction_CursorFocusChangeTarget = m_e.Origin;
+                        forcedAction = SpecialKinectForcedAction.CursorFocusChange;
+                    }
                 });
-            }, SimpleGesture.Bottom, SimpleGesture.Top, SimpleGesture.Right);
+            }, SimpleGesture.Left, SimpleGesture.Right, SimpleGesture.Left);
+
+            KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    if (cursorIsAlive && m_e.Origin == kinectCursorBlob)
+                    {
+                        forcedAction_CursorFocusChangeTarget = null;
+                        forcedAction = SpecialKinectForcedAction.CursorFocusChange;
+                    }
+                });
+            }, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
 
             browser.Attach(SoraEngine);
             browser.CustomInput = true;
@@ -116,6 +141,27 @@ namespace KinectBrowser
         bool lastLeftButtonClickedState = false;
         bool lastRightButtonClickedState = false;
 
+        private void ClickAction_Right()
+        {
+
+        }
+
+        private void ClickAction_Left()
+        {
+
+        }
+
+        private void ClickAction_Bottom()
+        {
+            if (browser.ActivePage != null)
+                browser.ActivePage.Close();
+        }
+
+        private void ClickAction_Top()
+        {
+            browser.NewTab("http://www.google.com");
+        }
+
         void Core_Loop(object sender, EventArgs e)
         {
             Dispatcher.Invoke((Action)delegate
@@ -129,6 +175,9 @@ namespace KinectBrowser
                     var provider = InteractionsManager.CurrentProvider;
                     if (provider != null)
                     {
+                        if (provider is MousePositionProvider)
+                            cursorIsAlive = true;
+
                         var posProvider = provider.MainPosition;
                         var p0 = posProvider.CurrentPoint;
 
@@ -137,7 +186,7 @@ namespace KinectBrowser
 
                         rightCursor.Visibility = System.Windows.Visibility.Hidden;
 
-                        if (provider.GetType() != typeof(MouseProvider))
+                        if (cursorIsAlive && (provider as KinectProvider) != null)
                         {
                             try
                             {
@@ -158,7 +207,7 @@ namespace KinectBrowser
                             UpdateKinectSpecificObjects((KinectProvider)provider);
                         }
 
-                        if (p0.Position.Y <= browser.ActualHeight - BrowserMargin)
+                        if (cursorIsAlive && p0.Position.Y <= browser.ActualHeight - BrowserMargin)
                         {
                             browser.CustomInput_MouseMove(new Point(p0.Position.X, p0.Position.Y));
 
@@ -201,6 +250,8 @@ namespace KinectBrowser
             });
         }
 
+        #region Kinect Specifics
+
         private int BrowserMargin
         {
             get
@@ -209,117 +260,269 @@ namespace KinectBrowser
             }
         }
 
-        GesturePoint kinectClickGesturePoint = new GesturePoint() { PixelMoveTreshold = 10, UpdateLatency = 0.25f, HistorySize = 10 };
+        GesturePoint kinectClickGesturePoint = new GesturePoint() { PixelMoveTreshold = 5, UpdateLatency = 0.25f, HistorySize = 0 };
         Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition = Microsoft.Xna.Framework.Vector2.Zero;
 
         List<BlobsTracker.TrackedBlob> kinectBlobs = new List<BlobsTracker.TrackedBlob>();
 
+        BlobsTracker.TrackedBlob kinectCursorBlob = null;
+
+        //bool wasHandCrossed = false;
+
+        SpecialKinectForcedAction forcedAction = SpecialKinectForcedAction.None;
+        BlobsTracker.TrackedBlob forcedAction_CursorFocusChangeTarget = null;
+
+        DateTime lastForcedActionTime = DateTime.Now;
+        TimeSpan forcedActionLatency = TimeSpan.FromSeconds(1);
+
+        bool cursorIsAlive = false;
+
+        bool isWaitingForClickAction = false;
+        bool hasValidatedClickAction = false;
+        DateTime waitinForClickActionTime = DateTime.MinValue;
+        TimeSpan waitingForClickActionLatency = TimeSpan.FromMilliseconds(500);
+
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
+            kinectCursorBlob = null;
+
             kinectBlobs.Clear();
 
             bool isNewClick = additionnalActionsUI.Visibility == System.Windows.Visibility.Hidden;
- 
+
             bool hasValidCursor = provider.MainPosition.CurrentPoint.State == CursorState.Tracked;
 
-            if (!hasValidCursor)
+            kinectCursorBlob = provider.MainBlob;
+
+            kinectBlobs.AddRange(provider.KinectBlobsMatcher.BlobsTracker.TrackedBlobs);
+
+            KinectGesturesTracker.Update(kinectBlobs);
+
+            if (forcedAction != SpecialKinectForcedAction.None)
+            {
+                if ((DateTime.Now - lastForcedActionTime) >= forcedActionLatency)
+                {
+                    switch (forcedAction)
+                    {
+                        case SpecialKinectForcedAction.CursorFocusChange:
+                            {
+                                if (!hasValidCursor)
+                                {
+                                    provider.ForceCursorAquire(forcedAction_CursorFocusChangeTarget);
+                                    cursorIsAlive = true;
+                                }
+                                else
+                                {
+                                    provider.ForceCursorRelease();
+                                    cursorIsAlive = false;
+                                }
+
+                                hasValidCursor = provider.MainPosition.CurrentPoint.State == CursorState.Tracked;
+
+                                break;
+                            }
+                    }
+                }
+
+                lastForcedActionTime = DateTime.Now;
+
+                forcedAction = SpecialKinectForcedAction.None;
+            }
+
+            if (!cursorIsAlive)
+            {
+                provider.ForceCursorRelease();
+                hasValidCursor = false;
+                isNewClick = false;
+            }
+
+            //if (hasValidCursor)
+            //{
+            //    if (!wasHandCrossed && provider.MainBlob.Crossed)
+            //    {
+            //        provider.SwitchMainBlobWitchCrossedOne();
+            //        wasHandCrossed = true;
+            //    }
+            //    else if (wasHandCrossed && !provider.MainBlob.Crossed)
+            //        wasHandCrossed = false;
+            //}
+
+            if (!cursorIsAlive)
             {
                 Cursor = Cursors.None;
-                leftCursor.Visibility = System.Windows.Visibility.Visible;
-                rightCursor.Visibility = System.Windows.Visibility.Visible;
 
-                Canvas.SetLeft(leftCursor, provider.Positions[0].CurrentPoint.Position.X);
-                Canvas.SetTop(leftCursor, provider.Positions[0].CurrentPoint.Position.Y);
-
-                Canvas.SetLeft(rightCursor, provider.Positions[1].CurrentPoint.Position.X);
-                Canvas.SetTop(rightCursor, provider.Positions[1].CurrentPoint.Position.Y);
+                leftCursor.Visibility = System.Windows.Visibility.Hidden;
+                rightCursor.Visibility = System.Windows.Visibility.Hidden;
 
                 foreach (var item in contentOptionnalCanvas.Children)
                     ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
 
                 additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
                 additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
+
+                isWaitingForClickAction = false;
+                hasValidatedClickAction = false;
             }
             else
             {
-                Cursor = Cursors.Arrow;
-                leftCursor.Visibility = rightCursor.Visibility = System.Windows.Visibility.Hidden;
-
-                var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
-
-                bool hasClickPoint = false;
-
-                if (provider.ClickBlob == null || 
-                    provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Lost ||
-                    (provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Waiting && provider.ClickBlob.WaitingCycles > 10))
+                if (!hasValidCursor)
                 {
+                    Cursor = Cursors.None;
+                    leftCursor.Visibility = System.Windows.Visibility.Visible;
+                    rightCursor.Visibility = System.Windows.Visibility.Visible;
+
+                    Canvas.SetLeft(leftCursor, provider.Positions[0].CurrentPoint.Position.X);
+                    Canvas.SetTop(leftCursor, provider.Positions[0].CurrentPoint.Position.Y);
+
+                    Canvas.SetLeft(rightCursor, provider.Positions[1].CurrentPoint.Position.X);
+                    Canvas.SetTop(rightCursor, provider.Positions[1].CurrentPoint.Position.Y);
+
+                    foreach (var item in contentOptionnalCanvas.Children)
+                        ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
+
                     additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
                     additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
                 }
                 else
                 {
-                    hasClickPoint = true;
+                    Cursor = Cursors.Arrow;
+                    leftCursor.Visibility = rightCursor.Visibility = System.Windows.Visibility.Hidden;
 
-                    additionnalActionsUI.Visibility = System.Windows.Visibility.Visible;
-                    //KinectGesturesTracker
-                    /* Sinon, on peut se manger des NaN vu que la position du blob n'est pas défnie */
-                    if (provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Tracking)
+                    var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
+
+                    bool hasClickPoint = false;
+
+                    if (provider.ClickBlob == null ||
+                        provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Lost ||
+                        (provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Waiting && provider.ClickBlob.WaitingCycles > 10))
                     {
-                        var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.Cursor *
-                            new Microsoft.Xna.Framework.Vector2(1 / provider.KinectBlobsMatcher.DataWidth, 1 / provider.KinectBlobsMatcher.DataHeight), ClientArea) - clientOrigin;
+                        additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
+                        additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
+                    }
+                    else
+                    {
+                        hasClickPoint = true;
 
-                        kinectClickGesturePoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
+                        additionnalActionsUI.Visibility = System.Windows.Visibility.Visible;
+                        //KinectGesturesTracker
+                        /* Sinon, on peut se manger des NaN vu que la position du blob n'est pas défnie */
+                        if (provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Tracking)
+                        {
+                            var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.Cursor *
+                                new Microsoft.Xna.Framework.Vector2(1 / provider.KinectBlobsMatcher.DataWidth, 1 / provider.KinectBlobsMatcher.DataHeight), ClientArea) - clientOrigin;
+                            
+                            kinectClickGesturePoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
 
-                        Canvas.SetLeft(additionnalActionsUI, kinectClickGesturePoint.Position.X);
-                        Canvas.SetTop(additionnalActionsUI, kinectClickGesturePoint.Position.Y);
+                            if (isNewClick)
+                                kinectClickBeginPosition = point;
+                        }
+                    }
 
-                        if (isNewClick)
+                    if (!hasClickPoint && (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
+                        provider.Positions[1].CurrentPoint.State == CursorState.Default))
+                    {
+                        int index = 0;
+                        var lst = provider.KinectBlobsMatcher.AdditionnalBlobsCursors.ToList();
+
+                        for (index = 0; index < 4 && index < lst.Count; index++)
+                        {
+                            var ellipse = (Ellipse)contentOptionnalCanvas.Children[index];
+                            ellipse.Visibility = System.Windows.Visibility.Visible;
+
+                            var point = KinectPositionProvider.RelativePointToAbsolutePoint(lst[index], ClientArea) - clientOrigin;
+
+                            Canvas.SetLeft(ellipse, point.X);
+                            Canvas.SetTop(ellipse, point.Y);
+                        }
+
+                        for (; index < 4; index++)
+                        {
+                            ((Ellipse)contentOptionnalCanvas.Children[index]).Visibility = System.Windows.Visibility.Hidden;
+                        }
+                    }
+                    else
+                    {
+                        foreach (var item in contentOptionnalCanvas.Children)
+                            ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
+                    }
+                }
+
+                isNewClick = isNewClick && additionnalActionsUI.Visibility == System.Windows.Visibility.Visible;
+
+                if (additionnalActionsUI.Visibility == System.Windows.Visibility.Visible)
+                    additionnalActionsUIControls.Opacity = hasValidatedClickAction ? 0.2 : 1;
+
+                if (isNewClick)
+                {
+                    KinectLeftClickBegin(provider, provider.MainPosition.CurrentPoint.Position);
+                    isWaitingForClickAction = false;
+                    hasValidatedClickAction = false;
+                }
+                else if (additionnalActionsUI.Visibility == System.Windows.Visibility.Visible)
+                {
+                    if (!isWaitingForClickAction)
+                    {
+                        hasValidatedClickAction = false;
+                        isWaitingForClickAction = true;
+                        waitinForClickActionTime = DateTime.Now;
+                    }
+                    else
+                    {
+                        var now = DateTime.Now;
+
+                        if ((now - waitinForClickActionTime) >= waitingForClickActionLatency)
+                            HandleLeftMenuAction(kinectClickGesturePoint.Position, kinectClickBeginPosition);
+                        else
                             kinectClickBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
                     }
                 }
-
-                kinectBlobs.Add(provider.MainBlob);
-
-                if (!hasClickPoint && (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
-                    provider.Positions[1].CurrentPoint.State == CursorState.Default))
-                {
-                    int index = 0;
-                    var lst = provider.KinectBlobsMatcher.AdditionnalBlobsCursors.ToList();
-
-                    for (index = 0; index < 4 && index < lst.Count; index++)
-                    {
-                        var ellipse = (Ellipse)contentOptionnalCanvas.Children[index];
-                        ellipse.Visibility = System.Windows.Visibility.Visible;
-
-                        var point = KinectPositionProvider.RelativePointToAbsolutePoint(lst[index], ClientArea) - clientOrigin;
-
-                        Canvas.SetLeft(ellipse, point.X);
-                        Canvas.SetTop(ellipse, point.Y);
-                    }
-
-                    for (; index < 4; index++)
-                    {
-                        ((Ellipse)contentOptionnalCanvas.Children[index]).Visibility = System.Windows.Visibility.Hidden;
-                    }
-                }
-                else
-                {
-                    foreach (var item in contentOptionnalCanvas.Children)
-                        ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
-                }
-
-                KinectGesturesTracker.Update(kinectBlobs);
             }
+        }
 
-            isNewClick = isNewClick && additionnalActionsUI.Visibility == System.Windows.Visibility.Visible;
+        private void HandleLeftMenuAction(Microsoft.Xna.Framework.Vector3 point, Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition)
+        {
+            var pos2d = new Microsoft.Xna.Framework.Vector2(point.X, point.Y);
 
-            if (isNewClick)
-                KinectLeftClickBegin(provider, kinectClickBeginPosition);
+            if (!hasValidatedClickAction && Microsoft.Xna.Framework.Vector2.Distance(kinectClickBeginPosition, pos2d) >= 80)
+            {
+                var top = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = 1 };
+                var bottom = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = -1 };
+                var left = new Microsoft.Xna.Framework.Vector2() { X = 1, Y = 0 };
+                var right = new Microsoft.Xna.Framework.Vector2() { X = -1, Y = 0 };
+
+                var dir = kinectClickBeginPosition - pos2d;
+
+                var s_top = Microsoft.Xna.Framework.Vector2.Dot(dir, top);
+                var s_bottom = Microsoft.Xna.Framework.Vector2.Dot(dir, bottom);
+                var s_left = Microsoft.Xna.Framework.Vector2.Dot(dir, left);
+                var s_right = Microsoft.Xna.Framework.Vector2.Dot(dir, right);
+
+                var max_dir = Math.Max(Math.Max(Math.Max(s_top, s_bottom), s_left), s_right);
+
+                if (max_dir == s_top)
+                {
+                    ClickAction_Top();
+                }
+                else if (max_dir == s_bottom)
+                {
+                    ClickAction_Bottom();
+                }
+                else if (max_dir == s_left)
+                {
+                    ClickAction_Left();
+                }
+                else if (max_dir == s_right)
+                {
+                    ClickAction_Right();
+                }
+
+                hasValidatedClickAction = true;
+            }
         }
 
         DateTime lastChangePageActionDate = DateTime.MinValue;
 
-        public void KinectLeftClickBegin(KinectProvider provider, Microsoft.Xna.Framework.Vector2 position)
+        public void KinectLeftClickBegin(KinectProvider provider, Microsoft.Xna.Framework.Vector3 position)
         {
             var cursorPosition = provider.MainPosition.CurrentPoint.Position;
 
@@ -344,6 +547,8 @@ namespace KinectBrowser
                 additionnalActionsUIControls.Visibility = System.Windows.Visibility.Visible;
             }
         }
+
+        #endregion
 
         int lastRenderingDurationMs = -1;
         int lastProcessingTime = -1;

@@ -92,6 +92,9 @@ namespace KinectBrowser
 
 				bool Crossed;
 
+				/* Le blob qui est actuellement croisé avec celui-ci */
+				ManagedBlob^ CrossedTarget;
+
 				property double Width
 				{
 					double get ()
@@ -106,6 +109,22 @@ namespace KinectBrowser
 					{
 						return MaxY - MinY;
 					}
+				}
+
+				bool Equals(ManagedBlob^ other)
+				{
+					/* on ne compare que certaine propriété, on suppose le reste */
+					return 
+						other != nullptr &&
+
+						AvgCenterX == other->AvgCenterX &&
+						AvgCenterY == other->AvgCenterY &&
+
+						EstimatedCursorX == other->EstimatedCursorX &&
+						EstimatedCursorY == other->EstimatedCursorY &&
+
+						InvertedEstimatedCursorX == other->InvertedEstimatedCursorX &&
+						InvertedEstimatedCursorY == other->InvertedEstimatedCursorY;
 				}
 
 				ManagedBlob^ Clone()
@@ -135,6 +154,7 @@ namespace KinectBrowser
 					res->MaxY = MaxY;
 
 					res->Crossed = Crossed;
+					res->CrossedTarget = CrossedTarget;
 
 					return res;
 				}

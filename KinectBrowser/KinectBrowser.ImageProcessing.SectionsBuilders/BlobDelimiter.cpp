@@ -552,7 +552,11 @@ namespace KinectBrowser
 						double primaryCenterY = blobs[native_blob_index].AvgCenterY;
 
 						if(!blobs[native_blob_index].haveCrossingPattern)
+						{
 							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY, false);
+
+							m_blobs[managed_blob_count]->CrossedTarget = nullptr;
+						}
 						else
 						{
 							/* équivalent à deux blobs avec chacun une des directions */
@@ -571,6 +575,9 @@ namespace KinectBrowser
 							blobs[native_blob_index].AvgCenterY = blobs[native_blob_index].AvgCenterYright;
 
 							convertBlob(m_blobs[managed_blob_count], &blobs[native_blob_index], primaryCenterX, primaryCenterY, true);
+
+							m_blobs[managed_blob_count-1]->CrossedTarget = m_blobs[managed_blob_count];
+							m_blobs[managed_blob_count]->CrossedTarget = m_blobs[managed_blob_count-1];
 						}
 
 						managed_blob_count++;

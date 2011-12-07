@@ -22,6 +22,11 @@ namespace KinectBrowser.Input.Kinect
 
             internal BlobsTracker.TrackedBlob MBlob = new BlobsTracker.TrackedBlob();
 
+            public BlobsTracker.TrackedBlob TrackedBlob
+            {
+                get { return MBlob; }
+            }
+
             internal bool useInvertedLeftCursor = false;
             internal bool useInvertedRightCursor = false;
 

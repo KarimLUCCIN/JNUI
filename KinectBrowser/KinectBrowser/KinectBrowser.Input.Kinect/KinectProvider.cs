@@ -294,6 +294,18 @@ namespace KinectBrowser.Input.Kinect
         {
             get { return mainBlob; }
         }
+
+        public void ForceCursorAquire(BlobsTracker.TrackedBlob blob)
+        {
+            KinectBlobsMatcher.LeftHandBlob.MBlob = null;
+            KinectBlobsMatcher.RightHandBlob.MBlob = blob;
+        }
+
+        public void ForceCursorRelease()
+        {
+            KinectBlobsMatcher.LeftHandBlob.MBlob = null;
+            KinectBlobsMatcher.RightHandBlob.MBlob = null;
+        }
         
         public IPositionProvider MainPosition
         {
@@ -363,17 +375,37 @@ namespace KinectBrowser.Input.Kinect
                     }
                 }
 
-                /* click ? */
-                //if (mainPosition == leftHandProvider)
-                //{
-                //    mainPosition.LeftButtonClicked = rightHandProvider.CurrentPoint.State == CursorState.Tracked;
-                //}
-                //else
-                //{
-                //    mainPosition.LeftButtonClicked = leftHandProvider.CurrentPoint.State == CursorState.Tracked;
-                //}
-
                 return mainPosition;
+            }
+        }
+
+        /// <summary>
+        /// Si le blob principal est croisé avec un autre, inverse les deux
+        /// </summary>
+        public void SwitchMainBlobWitchCrossedOne()
+        {
+            if (mainBlob != null && mainBlob.Crossed)
+            {
+                var oldMainBlob = mainBlob;
+                var target = KinectBlobsMatcher.BlobsTracker.FindCrossedTarget(mainBlob);
+
+                if (target != null)
+                {
+                    if (mainBlob == KinectBlobsMatcher.LeftHandBlob.MBlob)
+                    {
+                        KinectBlobsMatcher.LeftHandBlob.MBlob = target;
+
+                        if (KinectBlobsMatcher.RightHandBlob.MBlob == target)
+                            KinectBlobsMatcher.RightHandBlob.MBlob = oldMainBlob;
+                    }
+                    else
+                    {
+                        KinectBlobsMatcher.RightHandBlob.MBlob = target;
+
+                        if (KinectBlobsMatcher.LeftHandBlob.MBlob == target)
+                            KinectBlobsMatcher.LeftHandBlob.MBlob = oldMainBlob;
+                    }
+                }
             }
         }
 

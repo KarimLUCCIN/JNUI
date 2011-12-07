@@ -19,7 +19,7 @@ namespace KinectBrowser.Input.Kinect
             KinectProvider = kinectProvider;
 
             CurrentPoint.HistorySize = 10;
-            CurrentPoint.PixelMoveTreshold = 10;
+            CurrentPoint.PixelMoveTreshold = 5;
             CurrentPoint.UpdateLatency = 0.25f;
         }
 
