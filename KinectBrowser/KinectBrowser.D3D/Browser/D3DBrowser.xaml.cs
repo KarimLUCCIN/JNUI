@@ -304,6 +304,7 @@ namespace KinectBrowser.D3D.Browser
                     }
                 }
 
+                ReOrderTabsNode();
                 RaiseTabCountChanged();
             }
         }
