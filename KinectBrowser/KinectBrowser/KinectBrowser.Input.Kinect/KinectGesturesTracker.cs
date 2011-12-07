@@ -98,10 +98,12 @@ namespace KinectBrowser.Input.Kinect
                 select match.gesture
                 ).FirstOrDefault();
 
-#warning TODO : vider les séquences si on détecte un truc (sinon ça duplique)
-
             if (bestMatch != null)
+            {
+                follower.Sequence.Reset();
+
                 bestMatch.RaiseActivated(follower.Blob);
+            }
         }
 
         private double ComputeGestureScore(DateTime now, BlobGestureFollower follower, RecognizedGesture desiredGesture)
