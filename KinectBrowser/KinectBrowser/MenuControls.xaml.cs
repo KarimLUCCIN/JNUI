@@ -25,7 +25,7 @@ namespace KinectBrowser
 			textUp.Text = "New Tab";
 			
 			TextBlock textRight = rightButton.LayoutRoot.Children[1] as TextBlock;
-			textRight.Text = "Right";
+			textRight.Text = "Scroll";
 			
 			TextBlock textDown = downButton.LayoutRoot.Children[1] as TextBlock;
             textDown.Text = "Close Tab";

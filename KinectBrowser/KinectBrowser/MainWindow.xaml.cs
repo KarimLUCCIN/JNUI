@@ -84,7 +84,7 @@ namespace KinectBrowser
 
         private void ClickAction_Right()
         {
-
+            kinectClickAction = SpacialKinectClickAction.Scroll;
         }
 
         private void ClickAction_Left()
@@ -136,6 +136,8 @@ namespace KinectBrowser
             }
         }
 
+        Point lastCursorPoint = new Point();
+
         void Core_Loop(object sender, EventArgs e)
         {
             Dispatcher.Invoke((Action)delegate
@@ -170,6 +172,15 @@ namespace KinectBrowser
                                 absPoint.Y += p0.Position.Y;
 
                                 System.Windows.Forms.Cursor.Position = new System.Drawing.Point((int)absPoint.X, (int)absPoint.Y);
+
+                                if (kinectClickAction == SpacialKinectClickAction.Scroll)
+                                {
+                                    var dist = new Point(absPoint.X - lastCursorPoint.X, absPoint.Y - lastCursorPoint.Y);
+
+                                    browser.Scroll((int)dist.X * 10, (int)dist.Y * 10);
+                                }
+
+                                lastCursorPoint = absPoint;
                             }
                             catch
                             {

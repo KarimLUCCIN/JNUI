@@ -8,6 +8,7 @@ namespace KinectBrowser
     public enum SpacialKinectClickAction
     {
         None,
-        Click
+        Click,
+        Scroll
     }
 }
