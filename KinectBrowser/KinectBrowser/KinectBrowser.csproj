@@ -87,6 +87,7 @@
     <Compile Include="MenuButton.xaml.cs">
       <DependentUpon>MenuButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="SpacialKinectClickAction.cs" />
     <Compile Include="SpecialKinectForcedAction.cs" />
     <Compile Include="WindowUtils.cs" />
     <Page Include="Bookmark.xaml">

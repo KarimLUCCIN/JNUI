@@ -52,66 +52,7 @@ namespace KinectBrowser
 
             UpdateClientArea();
 
-            WindowInterop = new WindowInteropHelper(this);
-            WindowHandle = WindowInterop.Handle;
-
-            InteractionsCore.Initialize();
-
-            SoraEngine = new SoraEngineHost((int)browser.ActualWidth, (int)browser.ActualHeight);
-            SoraEngine.Initialize();
-            SoraEngine.CurrentEngine.AfterRender += new EventHandler(CurrentEngine_AfterRender);
-
-            var providers = new List<IInputProvider>();
-            providers.Add(new MouseProvider(this));
-
-            if (KinectProvider.HasKinects)
-                providers.Add(new KinectProvider(SoraEngine, this));
-
-            InteractionsManager = new Interaction.InteractionsManager(this);
-            InteractionsManager.Initialize(providers.ToArray());
-
-            //KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
-            //KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
-            //{
-            //    Dispatcher.Invoke((Action)delegate
-            //    {
-            //        browser.NewTab("http://www.google.com");
-            //    });
-            //}, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right);
-
-            //KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
-            //{
-            //    Dispatcher.Invoke((Action)delegate
-            //    {
-            //        if (browser.ActivePage != null)
-            //            browser.ActivePage.Close();
-            //    });
-            //}, SimpleGesture.Bottom, SimpleGesture.Top, SimpleGesture.Right);
-
-            KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
-            KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
-            {
-                Dispatcher.Invoke((Action)delegate
-                {
-                    if (!cursorIsAlive)
-                    {
-                        forcedAction_CursorFocusChangeTarget = m_e.Origin;
-                        forcedAction = SpecialKinectForcedAction.CursorFocusChange;
-                    }
-                });
-            }, SimpleGesture.Left, SimpleGesture.Right, SimpleGesture.Left);
-
-            KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
-            {
-                Dispatcher.Invoke((Action)delegate
-                {
-                    if (cursorIsAlive && m_e.Origin == kinectCursorBlob)
-                    {
-                        forcedAction_CursorFocusChangeTarget = null;
-                        forcedAction = SpecialKinectForcedAction.CursorFocusChange;
-                    }
-                });
-            }, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
+            InitializeCore();
 
             browser.Attach(SoraEngine);
             browser.CustomInput = true;
@@ -148,7 +89,7 @@ namespace KinectBrowser
 
         private void ClickAction_Left()
         {
-
+            kinectClickAction = SpacialKinectClickAction.Click;
         }
 
         private void ClickAction_Bottom()
@@ -162,6 +103,39 @@ namespace KinectBrowser
             browser.NewTab("http://www.google.com");
         }
 
+        #region Core
+
+        private void InitializeCore()
+        {
+            WindowInterop = new WindowInteropHelper(this);
+            WindowHandle = WindowInterop.Handle;
+
+            InteractionsCore.Initialize();
+
+            SoraEngine = new SoraEngineHost((int)browser.ActualWidth, (int)browser.ActualHeight);
+            SoraEngine.Initialize();
+            SoraEngine.CurrentEngine.AfterRender += new EventHandler(CurrentEngine_AfterRender);
+
+            var providers = new List<IInputProvider>();
+            providers.Add(new MouseProvider(this));
+
+            if (KinectProvider.HasKinects)
+                providers.Add(new KinectProvider(SoraEngine, this));
+
+            InteractionsManager = new Interaction.InteractionsManager(this);
+            InteractionsManager.Initialize(providers.ToArray());
+
+            RegisterKinectGestures();
+        }
+
+        public bool IsKinectEnabled
+        {
+            get
+            {
+                return InteractionsManager.CurrentProvider as KinectProvider != null;
+            }
+        }
+
         void Core_Loop(object sender, EventArgs e)
         {
             Dispatcher.Invoke((Action)delegate
@@ -173,6 +147,7 @@ namespace KinectBrowser
                     browser.IsActive = true;
 
                     var provider = InteractionsManager.CurrentProvider;
+
                     if (provider != null)
                     {
                         if (provider is MousePositionProvider)
@@ -211,8 +186,8 @@ namespace KinectBrowser
                         {
                             browser.CustomInput_MouseMove(new Point(p0.Position.X, p0.Position.Y));
 
-                            var leftClicked = posProvider.LeftButtonClicked;
-                            var rightClicked = posProvider.RightButtonClicked;
+                            var leftClicked = IsKinectEnabled ? kinectClickAction == SpacialKinectClickAction.Click : posProvider.LeftButtonClicked;
+                            var rightClicked = IsKinectEnabled ? false : posProvider.RightButtonClicked; /* pas de click droit en l'état */
 
                             if (leftClicked != lastLeftButtonClickedState)
                             {
@@ -250,7 +225,55 @@ namespace KinectBrowser
             });
         }
 
+        #endregion
+
         #region Kinect Specifics
+
+        private void RegisterKinectGestures()
+        {
+            //KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
+            //KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
+            //{
+            //    Dispatcher.Invoke((Action)delegate
+            //    {
+            //        browser.NewTab("http://www.google.com");
+            //    });
+            //}, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right);
+
+            //KinectGesturesTracker.RecordSingleRecognizedGesture(delegate
+            //{
+            //    Dispatcher.Invoke((Action)delegate
+            //    {
+            //        if (browser.ActivePage != null)
+            //            browser.ActivePage.Close();
+            //    });
+            //}, SimpleGesture.Bottom, SimpleGesture.Top, SimpleGesture.Right);
+
+            KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
+            KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    if (!cursorIsAlive)
+                    {
+                        kinectForcedAction_CursorFocusChangeTarget = m_e.Origin;
+                        kinectForcedAction = SpecialKinectForcedAction.CursorFocusChange;
+                    }
+                });
+            }, SimpleGesture.Left, SimpleGesture.Right, SimpleGesture.Left);
+
+            KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
+            {
+                Dispatcher.Invoke((Action)delegate
+                {
+                    if (cursorIsAlive && m_e.Origin == kinectCursorBlob)
+                    {
+                        kinectForcedAction_CursorFocusChangeTarget = null;
+                        kinectForcedAction = SpecialKinectForcedAction.CursorFocusChange;
+                    }
+                });
+            }, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
+        }
 
         private int BrowserMargin
         {
@@ -267,10 +290,10 @@ namespace KinectBrowser
 
         BlobsTracker.TrackedBlob kinectCursorBlob = null;
 
-        //bool wasHandCrossed = false;
+        SpecialKinectForcedAction kinectForcedAction = SpecialKinectForcedAction.None;
+        SpacialKinectClickAction kinectClickAction = SpacialKinectClickAction.None;
 
-        SpecialKinectForcedAction forcedAction = SpecialKinectForcedAction.None;
-        BlobsTracker.TrackedBlob forcedAction_CursorFocusChangeTarget = null;
+        BlobsTracker.TrackedBlob kinectForcedAction_CursorFocusChangeTarget = null;
 
         DateTime lastForcedActionTime = DateTime.Now;
         TimeSpan forcedActionLatency = TimeSpan.FromSeconds(1);
@@ -298,17 +321,17 @@ namespace KinectBrowser
 
             KinectGesturesTracker.Update(kinectBlobs);
 
-            if (forcedAction != SpecialKinectForcedAction.None)
+            if (kinectForcedAction != SpecialKinectForcedAction.None)
             {
                 if ((DateTime.Now - lastForcedActionTime) >= forcedActionLatency)
                 {
-                    switch (forcedAction)
+                    switch (kinectForcedAction)
                     {
                         case SpecialKinectForcedAction.CursorFocusChange:
                             {
                                 if (!hasValidCursor)
                                 {
-                                    provider.ForceCursorAquire(forcedAction_CursorFocusChangeTarget);
+                                    provider.ForceCursorAquire(kinectForcedAction_CursorFocusChangeTarget);
                                     cursorIsAlive = true;
                                 }
                                 else
@@ -326,7 +349,7 @@ namespace KinectBrowser
 
                 lastForcedActionTime = DateTime.Now;
 
-                forcedAction = SpecialKinectForcedAction.None;
+                kinectForcedAction = SpecialKinectForcedAction.None;
             }
 
             if (!cursorIsAlive)
@@ -362,6 +385,8 @@ namespace KinectBrowser
 
                 isWaitingForClickAction = false;
                 hasValidatedClickAction = false;
+
+                kinectClickAction = SpacialKinectClickAction.None;
             }
             else
             {
@@ -382,6 +407,8 @@ namespace KinectBrowser
 
                     additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
                     additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
+
+                    kinectClickAction = SpacialKinectClickAction.None;
                 }
                 else
                 {
@@ -445,6 +472,9 @@ namespace KinectBrowser
                         foreach (var item in contentOptionnalCanvas.Children)
                             ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
                     }
+
+                    if (!hasClickPoint)
+                        kinectClickAction = SpacialKinectClickAction.None;
                 }
 
                 isNewClick = isNewClick && additionnalActionsUI.Visibility == System.Windows.Visibility.Visible;
@@ -550,6 +580,8 @@ namespace KinectBrowser
 
         #endregion
 
+        #region Statistics
+
         int lastRenderingDurationMs = -1;
         int lastProcessingTime = -1;
 
@@ -574,6 +606,8 @@ namespace KinectBrowser
                 });
             }
         }
+
+        #endregion
 
         private void button1_Click(object sender, RoutedEventArgs e)
         {

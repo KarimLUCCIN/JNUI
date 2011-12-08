@@ -22,18 +22,18 @@ namespace KinectBrowser
 			this.InitializeComponent();
 			
 			TextBlock textUp = upButton.LayoutRoot.Children[1] as TextBlock;
-			textUp.Text = "Top";
+			textUp.Text = "New Tab";
 			
 			TextBlock textRight = rightButton.LayoutRoot.Children[1] as TextBlock;
 			textRight.Text = "Right";
 			
 			TextBlock textDown = downButton.LayoutRoot.Children[1] as TextBlock;
-			textDown.Text = "Down";
+            textDown.Text = "Close Tab";
 			RotateTransform rotation = new RotateTransform(180, textDown.RenderTransformOrigin.X, textDown.RenderTransformOrigin.Y);
 			textDown.RenderTransform = rotation;
 			
 			TextBlock textLeft = leftButton.LayoutRoot.Children[1] as TextBlock;
-			textLeft.Text = "Left";
+			textLeft.Text = "Click";
 		}
 
 		private void upButtonClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
