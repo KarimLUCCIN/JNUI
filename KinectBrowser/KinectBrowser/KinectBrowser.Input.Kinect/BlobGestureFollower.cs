@@ -39,7 +39,7 @@ namespace KinectBrowser.Input.Kinect
 
         public void Update()
         {
-            if(Blob.Status == BlobsTracker.Status.Tracking)
+            if(Blob.Status == BlobsTracker.Status.Tracking && !float.IsNaN(Blob.Cursor.X) && !float.IsNaN(Blob.Cursor.Y))
                 AssociatedPoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3( Blob.Cursor, 0), ParseState(Blob.Status));
 
             Manager.Update(AssociatedPoint);
