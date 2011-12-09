@@ -118,6 +118,8 @@ namespace KinectBrowser.D3D
             {
                 var soraEngine = CurrentEngine;
 
+                soraEngine.InputManager.UpdateKeyboardState();
+
                 soraEngine.EngineUpdate(drawAccumulator);
 
                 soraEngine.Renderer.RendererMode = RendererMode.ColorOnly;

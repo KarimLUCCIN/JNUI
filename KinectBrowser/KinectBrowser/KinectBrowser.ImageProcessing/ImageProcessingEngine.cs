@@ -48,6 +48,8 @@ namespace KinectBrowser.ImageProcessing
             get { return maxMainBlobsCount; }
         }
 
+        private RasterizerState wireFrameRasterizerState;
+
         public ImageProcessingEngine(SoraEngineHost host, int width, int height, int maxMainBlobsCount)
         {
             if (maxMainBlobsCount <= 0)
@@ -69,6 +71,10 @@ namespace KinectBrowser.ImageProcessing
             Host.CurrentEngine.Device.DeviceLost += new EventHandler<EventArgs>(Device_DeviceLost);
 
             Device_DeviceLost(this, EventArgs.Empty);
+
+            wireFrameRasterizerState = new RasterizerState();
+            wireFrameRasterizerState.CullMode = CullMode.None;
+            wireFrameRasterizerState.FillMode = FillMode.WireFrame;
         }
 
         byte[] grownBordersData;
@@ -142,8 +148,34 @@ namespace KinectBrowser.ImageProcessing
             get { return processingTime; }
         }
 
+        private void PrintDebugImage(string name, Texture2D texture)
+        {
+#if(DEBUG)
+            var path = ResolveDebugOutputFileName(name);
+
+            using (var stream = new FileStream(path, FileMode.Create))
+            {
+                texture.SaveAsPng(stream, texture.Width, texture.Height);
+            }
+#endif
+        }
+
+        private static string ResolveDebugOutputFileName(string name)
+        {
+            var path = "H:\\Kinect Debug Images\\" + name + ".png";
+            var dir = Path.GetDirectoryName(path);
+
+            if (!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+            return path;
+        }
+
         public void Process(byte[] kinectDepthDataBytes, float minDepth, float maxDepth)
         {
+#if(DEBUG)
+            bool printDebugOutput = Host.CurrentEngine.InputManager.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F12);
+#endif
+
             processingTimeWatch.Reset();
             processingTimeWatch.Start();
             try
@@ -163,6 +195,9 @@ namespace KinectBrowser.ImageProcessing
                     /* set source data */
                     kinectDepthSource.SetData<byte>(kinectDepthDataBytes);
 
+                    if (printDebugOutput)
+                        PrintDebugImage("original-0", kinectDepthSource);
+
                     /* full screen pass */
                     bordersDetectShader.halfPixel = new Vector2(0.5f / ((float)Width), 0.5f / ((float)Height));
 
@@ -180,6 +215,9 @@ namespace KinectBrowser.ImageProcessing
                         Host.CurrentEngine.Renderer.QuadRenderer.RenderFullScreen();
                     }
                     Host.CurrentEngine.RenderTargetManager.Pop();
+
+                    if (printDebugOutput)
+                        PrintDebugImage("detect-1", kinectProcessedOutput);
 
                     /* Downsize */
                     bordersDetectShader.depthMap = kinectProcessedOutput;
@@ -202,6 +240,9 @@ namespace KinectBrowser.ImageProcessing
                     }
                     Host.CurrentEngine.RenderTargetManager.Pop();
 
+                    if (printDebugOutput)
+                        PrintDebugImage("regions-2", grownRegions);
+
                     //bordersGrownDebugPresenter.Update(grownRegions, PixelFormats.Bgr32, 4);
 
 
@@ -223,6 +264,9 @@ namespace KinectBrowser.ImageProcessing
                     }
                     Host.CurrentEngine.RenderTargetManager.Pop();
 
+                    if (printDebugOutput)
+                        PrintDebugImage("grad-3", gradDirectionDetect1);
+
                     gradDirectionDetect1.GetData(gradDirectionDetect1Data);
 
                     //if (bordersDebugPresenter != null)
@@ -232,7 +276,7 @@ namespace KinectBrowser.ImageProcessing
                     //#warning FUCKING SLOW
                     //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
                     grownRegions.GetData(grownBordersData);
-                    ProcessBlobs(grownBordersData, gradDirectionDetect1Data);
+                    ProcessBlobs(printDebugOutput, grownBordersData, gradDirectionDetect1Data);
 
                     //grownBorders.GetData(grownBordersData);
 
@@ -248,7 +292,7 @@ namespace KinectBrowser.ImageProcessing
 
         private List<ManagedBlob> sortingList = new List<ManagedBlob>();
 
-        private unsafe int ProcessBlobs(byte[] mask, byte[] grad)
+        private unsafe int ProcessBlobs(bool printDebugOutput, byte[] mask, byte[] grad)
         {
             int blobCount = 0;
 
@@ -276,6 +320,148 @@ namespace KinectBrowser.ImageProcessing
             for (int i = sortingList.Count; i < maxMainBlobsCount; i++)
             {
                 mainBlobs[i] = null;
+            }
+
+            if (printDebugOutput)
+            {
+                var device = Host.Device;
+                Host.CurrentEngine.RenderTargetManager.Push(grownRegions);
+                {
+                    device.Clear(Microsoft.Xna.Framework.Color.Black);
+
+                    Host.CurrentEngine.Renderer.RendererSpriteBatch.Begin();
+                    Host.CurrentEngine.Renderer.RendererSpriteBatch.Draw(gradDirectionDetect1, new Vector2(0, 0), Microsoft.Xna.Framework.Color.White);
+                    Host.CurrentEngine.Renderer.RendererSpriteBatch.End();
+
+                    device.BlendState = BlendState.Opaque;
+                    device.RasterizerState = wireFrameRasterizerState;
+                    bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["SolidFill"];
+                    bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                    Vector2 a, b;
+
+                    int maxColor = 1 << 16;
+
+                    var oldRasterizer = device.RasterizerState;
+                    device.RasterizerState = wireFrameRasterizerState;
+
+                    var blobs = blobDelimiter.Blobs;
+
+                    for (int i = 0; i < blobCount; i++)
+                    {
+                        a.X = 2 * ((float)blobs[i].MinX / (float)grownRegions.Width) - 1;
+                        a.Y = (2 * ((float)blobs[i].MinY / (float)grownRegions.Height) - 1) * (-1);
+                        b.X = 2 * ((float)blobs[i].MaxX / (float)grownRegions.Width) - 1;
+                        b.Y = (2 * ((float)blobs[i].MaxY / (float)grownRegions.Height) - 1) * (-1);
+
+                        var d = Vector2.Distance(a, b);
+                        if (d > 0.25f)
+                        {
+                            device.BlendState = BlendState.Opaque;
+                            device.RasterizerState = wireFrameRasterizerState;
+                            bordersDetectShader.CurrentTechnique = bordersDetectShader.Techniques["SolidFill"];
+                            bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                            int currentColor = (maxColor / (blobCount + 1)) * (i + 1);
+
+                            bordersDetectShader.SolidFillColor = new Vector3(1, 0, 0) * (float)(1 - blobs[i].AverageDepth);
+                            bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                            Host.CurrentEngine.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+
+
+                            a.X = 2 * ((float)(blobs[i].AvgCenterX - 1) / (float)grownRegions.Width) - 1;
+                            a.Y = (2 * ((float)(blobs[i].AvgCenterY - 1) / (float)grownRegions.Height) - 1) * (-1);
+                            b.X = 2 * ((float)(blobs[i].AvgCenterX + 1) / (float)grownRegions.Width) - 1;
+                            b.Y = (2 * ((float)(blobs[i].AvgCenterY + 1) / (float)grownRegions.Height) - 1) * (-1);
+
+                            bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)0, (byte)0);
+                            bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                            Host.CurrentEngine.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+
+
+                            a.X = 2 * ((float)(blobs[i].EstimatedCursorX - 1) / (float)grownRegions.Width) - 1;
+                            a.Y = (2 * ((float)(blobs[i].EstimatedCursorY - 1) / (float)grownRegions.Height) - 1) * (-1);
+                            b.X = 2 * ((float)(blobs[i].EstimatedCursorX + 1) / (float)grownRegions.Width) - 1;
+                            b.Y = (2 * ((float)(blobs[i].EstimatedCursorY + 1) / (float)grownRegions.Height) - 1) * (-1);
+
+                            bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)1, (byte)0);
+                            bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                            Host.CurrentEngine.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+
+                            a.X = 2 * ((float)(blobs[i].InvertedEstimatedCursorX - 1) / (float)grownRegions.Width) - 1;
+                            a.Y = (2 * ((float)(blobs[i].InvertedEstimatedCursorY - 1) / (float)grownRegions.Height) - 1) * (-1);
+                            b.X = 2 * ((float)(blobs[i].InvertedEstimatedCursorX + 1) / (float)grownRegions.Width) - 1;
+                            b.Y = (2 * ((float)(blobs[i].InvertedEstimatedCursorY + 1) / (float)grownRegions.Height) - 1) * (-1);
+
+                            bordersDetectShader.SolidFillColor = new Vector3((byte)1, (byte)0, (byte)1);
+                            bordersDetectShader.CurrentTechnique.Passes[0].Apply();
+
+                            Host.CurrentEngine.Renderer.QuadRenderer.Render(ref a, ref b, 0);
+
+                            Host.CurrentEngine.Renderer.RendererSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.Opaque);
+
+                            var l_pos = new Vector2((float)blobs[i].AvgCenterX, (float)blobs[i].AvgCenterY);
+
+                            LineBatch.DrawLine(Host.CurrentEngine.Renderer.RendererSpriteBatch, Microsoft.Xna.Framework.Color.White,
+                                l_pos,
+                                l_pos +
+                                Vector2.UnitX * (float)Math.Cos(blobs[i].AverageDirection) * 10f +
+                                Vector2.UnitY * (float)Math.Sin(blobs[i].AverageDirection) * -10f);
+
+                            LineBatch.DrawLine(Host.CurrentEngine.Renderer.RendererSpriteBatch, Microsoft.Xna.Framework.Color.Green,
+                                l_pos,
+                                l_pos +
+                                Vector2.UnitX * (float)Math.Cos(blobs[i].PrincipalDirection) * 10f +
+                                Vector2.UnitY * (float)Math.Sin(blobs[i].PrincipalDirection) * -10f);
+
+                            Host.CurrentEngine.Renderer.RendererSpriteBatch.End();
+                        }
+                    }
+
+                    device.RasterizerState = oldRasterizer;
+                }
+                Host.CurrentEngine.RenderTargetManager.Pop();
+
+                PrintDebugImage("blobs-4", grownRegions);
+
+                using (var stream = new FileStream(ResolveDebugOutputFileName("stats-final") + ".txt", FileMode.Create))
+                {
+                    using (var writer = new StreamWriter(stream))
+                    {
+                        writer.WriteLine(String.Format("Blobs count : {0}", blobCount));
+                        writer.WriteLine("---------------");
+                        writer.WriteLine();
+
+                        for (int i = 0; i < maxMainBlobsCount; i++)
+                        {
+                            writer.WriteLine(String.Format("Blob {0}", i));
+                            var blob = mainBlobs[i];
+
+                            if (blob == null)
+                                writer.WriteLine("NULL");
+                            else
+                            {
+                                writer.WriteLine("Depth : {0}", blob.AverageDepth);
+                                writer.WriteLine("Average Direction : {0}", blob.AverageDirection);
+                                writer.WriteLine("Principal Direction : {0}", blob.PrincipalDirection);
+                                writer.WriteLine("Center X : {0}", blob.AvgCenterX);
+                                writer.WriteLine("Center Y : {0}", blob.AvgCenterY);
+                                writer.WriteLine("Cursor X : {0}", blob.EstimatedCursorX);
+                                writer.WriteLine("Cursor Y : {0}", blob.EstimatedCursorX);
+                                writer.WriteLine("Inverted Cursor X : {0}", blob.InvertedEstimatedCursorX);
+                                writer.WriteLine("Inverted Cursor Y : {0}", blob.InvertedEstimatedCursorY);
+                            }
+
+
+                            writer.WriteLine();
+                            writer.WriteLine();
+                            writer.WriteLine();
+                        }
+                    }
+                }
             }
 
             return blobCount;
