@@ -1,0 +1,39 @@
+Blobs count : 2
+---------------
+
+Blob 0
+Depth : 0,638440111420613
+Average Direction : 1,86313315744392
+Principal Direction : 1,5707963267949
+Center X : 89,908077994429
+Center Y : 66,6991643454039
+Cursor X : 83,9967393210606
+Cursor Y : 83,9967393210606
+Inverted Cursor X : 95,8194166677973
+Inverted Cursor Y : 86
+
+
+
+Blob 1
+Depth : 0,47841482584595
+Average Direction : 2,56925824454828
+Principal Direction : 3,14159265358979
+Center X : 20,915611814346
+Center Y : 96,8270042194093
+Cursor X : 13,312425087142
+Cursor Y : 13,312425087142
+Inverted Cursor X : 28,51879854155
+Inverted Cursor Y : 101,725486312145
+
+
+
+Blob 2
+NULL
+
+
+
+Blob 3
+NULL
+
+
+
