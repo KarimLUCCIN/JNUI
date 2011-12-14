@@ -17,6 +17,18 @@ namespace KinectBrowser
 	/// </summary>
     public partial class MenuControls : UserControl
 	{
+        private MenuMode menuMode;
+
+        public MenuMode MenuMode
+        {
+            get { return menuMode; }
+            set
+            {
+                menuMode = value;
+                UpdateTexts();
+            }
+        }
+
 		public MenuControls()
 		{
             this.InitializeComponent();
@@ -25,10 +37,33 @@ namespace KinectBrowser
             RotateTransform rotation = new RotateTransform(180, textDown.RenderTransformOrigin.X, textDown.RenderTransformOrigin.Y);
             textDown.RenderTransform = rotation;
 
-            upButton.ButtonText = "New Tab";
-            rightButton.ButtonText = "Scroll";
-            downButton.ButtonText = "Close Tab";
-            leftButton.ButtonText = "Click";
+            MenuMode = KinectBrowser.MenuMode.ClickPrincipal;
 		}
+
+        private void UpdateTexts()
+        {
+            switch (menuMode)
+            {
+                case MenuMode.ZoomPrincipal:
+                    {
+                        upButton.ButtonText = "Zoom";
+                        rightButton.ButtonText = "Next Tab";
+                        downButton.ButtonText = "?";
+                        leftButton.ButtonText = "Previous Tab";
+
+                        break;
+                    }
+                default:
+                case MenuMode.ClickPrincipal:
+                    {
+                        upButton.ButtonText = "New Tab";
+                        rightButton.ButtonText = "Scroll";
+                        downButton.ButtonText = "Close Tab";
+                        leftButton.ButtonText = "Click";
+
+                        break;
+                    }
+            }
+        }
 	}
 }

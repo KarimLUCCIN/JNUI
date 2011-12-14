@@ -84,33 +84,70 @@ namespace KinectBrowser
 
         private void Left_ClickAction_Right()
         {
-            kinectClickAction = SpacialKinectClickAction.Scroll;
+            switch (additionnalActionsUIControls.MenuMode)
+            {
+                case MenuMode.ZoomPrincipal:
+                    browser.TabPrev();
+                    break;
+                case MenuMode.ClickPrincipal:
+                    kinectClickAction = SpacialKinectClickAction.Scroll;
+                    break;
+            }
         }
 
         private void Left_ClickAction_Left()
         {
-            kinectClickAction = SpacialKinectClickAction.Click;
+            switch (additionnalActionsUIControls.MenuMode)
+            {
+                case MenuMode.ZoomPrincipal:
+                    browser.TabNext();
+                    break;
+                case MenuMode.ClickPrincipal:
+                    kinectClickAction = SpacialKinectClickAction.Click;
+                    break;
+            }
         }
 
         private void Left_ClickAction_Bottom()
         {
-            if (browser.ActivePage != null)
-                browser.ActivePage.Close();
+            switch (additionnalActionsUIControls.MenuMode)
+            {
+                case MenuMode.ZoomPrincipal:
+                    /* ? */
+                    break;
+                case MenuMode.ClickPrincipal:
+                    if (browser.ActivePage != null)
+                        browser.ActivePage.Close();
+                    break;
+            }
         }
 
         private void Left_ClickAction_Top()
         {
-            browser.NewTab("http://www.google.com");
+            switch (additionnalActionsUIControls.MenuMode)
+            {
+                case MenuMode.ZoomPrincipal:
+                    kinectClickAction = SpacialKinectClickAction.Zoom;
+                    break;
+                case MenuMode.ClickPrincipal:
+                    browser.NewTab("http://www.google.com");
+                    break;
+            }
+        }
+
+        private static int absMod(int v, int m)
+        {
+            return ((v % m) + m) % m;
         }
                 
         private void Right_ClickAction_Right()
         {
-
+            additionnalActionsUIControls.MenuMode = (MenuMode)absMod((int)additionnalActionsUIControls.MenuMode + 1, (int)MenuMode.Count);
         }
 
         private void Right_ClickAction_Left()
         {
-
+            additionnalActionsUIControls.MenuMode = (MenuMode)absMod((int)additionnalActionsUIControls.MenuMode - 1, (int)MenuMode.Count);
         }
 
         private void Right_ClickAction_Bottom()
@@ -198,6 +235,16 @@ namespace KinectBrowser
                                     var dist = new Point(absPoint.X - lastCursorPoint.X, absPoint.Y - lastCursorPoint.Y);
 
                                     browser.Scroll((int)dist.X * 10, (int)dist.Y * 10);
+                                }
+                                else if (kinectClickAction == SpacialKinectClickAction.Zoom)
+                                {
+                                    var page = browser.ActivePage;
+                                    if (page != null)
+                                    {
+                                        var dist = new Point(absPoint.X - lastCursorPoint.X, absPoint.Y - lastCursorPoint.Y);
+
+                                        page.Zoom += (int)(dist.X + dist.Y);
+                                    }
                                 }
 
                                 lastCursorPoint = absPoint;
@@ -520,6 +567,8 @@ namespace KinectBrowser
 
                 if (isNewClick)
                 {
+                    additionnalActionsUIControls.MenuMode = MenuMode.ClickPrincipal;
+
                     KinectLeftClickBegin(provider, provider.MainPosition.CurrentPoint.Position);
                     isWaitingForClickAction = false;
                     hasValidatedClickAction = false;

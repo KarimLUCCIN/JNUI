@@ -81,6 +81,7 @@
     <Compile Include="MenuControls.xaml.cs">
       <DependentUpon>MenuControls.xaml</DependentUpon>
     </Compile>
+    <Compile Include="MenuMode.cs" />
     <Compile Include="Shape.xaml.cs">
       <DependentUpon>Shape.xaml</DependentUpon>
     </Compile>

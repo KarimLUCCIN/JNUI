@@ -432,5 +432,27 @@ namespace KinectBrowser.D3D.Browser
         }
 
         #endregion
+
+        public int Zoom
+        {
+            get
+            {
+                if (!webView.IsCrashed)
+                {
+                    return webView.Zoom;
+                }
+                else
+                    return 100;
+            }
+            set
+            {
+                if (!webView.IsCrashed)
+                {
+                    int v = Math.Max(10, Math.Min(500, value));
+
+                    webView.Zoom = v;
+                }
+            }
+        }
     }
 }

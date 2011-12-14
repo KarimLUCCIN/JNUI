@@ -5,11 +5,11 @@ using System.Text;
 
 namespace KinectBrowser
 {
-    public enum SpacialKinectClickAction
+    public enum MenuMode : int
     {
-        None,
-        Click,
-        Scroll,
-        Zoom
+        ZoomPrincipal = 0,
+        ClickPrincipal = 1,
+
+        Count = 2
     }
 }
