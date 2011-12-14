@@ -88,6 +88,7 @@ namespace KinectBrowser
             {
                 case MenuMode.ZoomPrincipal:
                     browser.TabPrev();
+                    hasValidatedClickAction = false;
                     break;
                 case MenuMode.ClickPrincipal:
                     kinectClickAction = SpacialKinectClickAction.Scroll;
@@ -101,6 +102,7 @@ namespace KinectBrowser
             {
                 case MenuMode.ZoomPrincipal:
                     browser.TabNext();
+                    hasValidatedClickAction = false;
                     break;
                 case MenuMode.ClickPrincipal:
                     kinectClickAction = SpacialKinectClickAction.Click;
@@ -658,44 +660,54 @@ namespace KinectBrowser
             }
         }
 
+        DateTime lastLeftMenuAction = DateTime.Now;
+        TimeSpan leftMenuActionCooldownDuration = TimeSpan.FromMilliseconds(2000);
+
         private void HandleLeftMenuAction(Microsoft.Xna.Framework.Vector3 currentPosition, Microsoft.Xna.Framework.Vector2 clickPosition)
         {
             var pos2d = XY(currentPosition);
 
             if (!hasValidatedClickAction && Microsoft.Xna.Framework.Vector2.Distance(clickPosition, pos2d) >= menuActionPixelsTreshold)
             {
-                var top = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = 1 };
-                var bottom = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = -1 };
-                var left = new Microsoft.Xna.Framework.Vector2() { X = 1, Y = 0 };
-                var right = new Microsoft.Xna.Framework.Vector2() { X = -1, Y = 0 };
+                var now = DateTime.Now;
 
-                var dir = clickPosition - pos2d;
-
-                var s_top = Microsoft.Xna.Framework.Vector2.Dot(dir, top);
-                var s_bottom = Microsoft.Xna.Framework.Vector2.Dot(dir, bottom);
-                var s_left = Microsoft.Xna.Framework.Vector2.Dot(dir, left);
-                var s_right = Microsoft.Xna.Framework.Vector2.Dot(dir, right);
-
-                var max_dir = Math.Max(Math.Max(Math.Max(s_top, s_bottom), s_left), s_right);
-
-                if (max_dir == s_top)
+                if ((now - lastLeftMenuAction) >= leftMenuActionCooldownDuration)
                 {
-                    Left_ClickAction_Top();
-                }
-                else if (max_dir == s_bottom)
-                {
-                    Left_ClickAction_Bottom();
-                }
-                else if (max_dir == s_left)
-                {
-                    Left_ClickAction_Left();
-                }
-                else if (max_dir == s_right)
-                {
-                    Left_ClickAction_Right();
-                }
+                    lastLeftMenuAction = now;
 
-                hasValidatedClickAction = true;
+                    var top = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = 1 };
+                    var bottom = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = -1 };
+                    var left = new Microsoft.Xna.Framework.Vector2() { X = 1, Y = 0 };
+                    var right = new Microsoft.Xna.Framework.Vector2() { X = -1, Y = 0 };
+
+                    var dir = clickPosition - pos2d;
+
+                    var s_top = Microsoft.Xna.Framework.Vector2.Dot(dir, top);
+                    var s_bottom = Microsoft.Xna.Framework.Vector2.Dot(dir, bottom);
+                    var s_left = Microsoft.Xna.Framework.Vector2.Dot(dir, left);
+                    var s_right = Microsoft.Xna.Framework.Vector2.Dot(dir, right);
+
+                    var max_dir = Math.Max(Math.Max(Math.Max(s_top, s_bottom), s_left), s_right);
+
+                    hasValidatedClickAction = true;
+
+                    if (max_dir == s_top)
+                    {
+                        Left_ClickAction_Top();
+                    }
+                    else if (max_dir == s_bottom)
+                    {
+                        Left_ClickAction_Bottom();
+                    }
+                    else if (max_dir == s_left)
+                    {
+                        Left_ClickAction_Left();
+                    }
+                    else if (max_dir == s_right)
+                    {
+                        Left_ClickAction_Right();
+                    }
+                }
             }
         }
 
