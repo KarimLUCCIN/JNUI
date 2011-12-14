@@ -82,25 +82,45 @@ namespace KinectBrowser
         bool lastLeftButtonClickedState = false;
         bool lastRightButtonClickedState = false;
 
-        private void ClickAction_Right()
+        private void Left_ClickAction_Right()
         {
             kinectClickAction = SpacialKinectClickAction.Scroll;
         }
 
-        private void ClickAction_Left()
+        private void Left_ClickAction_Left()
         {
             kinectClickAction = SpacialKinectClickAction.Click;
         }
 
-        private void ClickAction_Bottom()
+        private void Left_ClickAction_Bottom()
         {
             if (browser.ActivePage != null)
                 browser.ActivePage.Close();
         }
 
-        private void ClickAction_Top()
+        private void Left_ClickAction_Top()
         {
             browser.NewTab("http://www.google.com");
+        }
+                
+        private void Right_ClickAction_Right()
+        {
+
+        }
+
+        private void Right_ClickAction_Left()
+        {
+
+        }
+
+        private void Right_ClickAction_Bottom()
+        {
+
+        }
+
+        private void Right_ClickAction_Top()
+        {
+
         }
 
         #region Core
@@ -295,7 +315,9 @@ namespace KinectBrowser
         }
 
         GesturePoint kinectClickGesturePoint = new GesturePoint() { PixelMoveTreshold = 5, UpdateLatency = 0.25f, HistorySize = 0 };
-        Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition = Microsoft.Xna.Framework.Vector2.Zero;
+
+        Microsoft.Xna.Framework.Vector2 kinectClickLeftBeginPosition = Microsoft.Xna.Framework.Vector2.Zero;
+        Microsoft.Xna.Framework.Vector2 kinectClickRightBeginPosition = Microsoft.Xna.Framework.Vector2.Zero;
 
         List<BlobsTracker.TrackedBlob> kinectBlobs = new List<BlobsTracker.TrackedBlob>();
 
@@ -452,7 +474,10 @@ namespace KinectBrowser
                             kinectClickGesturePoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
 
                             if (isNewClick)
-                                kinectClickBeginPosition = point;
+                            {
+                                kinectClickLeftBeginPosition = point;
+                                kinectClickRightBeginPosition = XY(provider.MainPosition.CurrentPoint.Position);
+                            }
                         }
                     }
 
@@ -512,26 +537,90 @@ namespace KinectBrowser
                         var now = DateTime.Now;
 
                         if ((now - waitinForClickActionTime) >= waitingForClickActionLatency)
-                            HandleLeftMenuAction(kinectClickGesturePoint.Position, kinectClickBeginPosition);
+                        {
+                            HandleLeftMenuAction(kinectClickGesturePoint.Position, kinectClickLeftBeginPosition);
+
+                            HandleRightMenuAction(provider.MainPosition.CurrentPoint.Position, kinectClickRightBeginPosition);
+                        }
                         else
-                            kinectClickBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
+                        {
+                            kinectClickLeftBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
+                            kinectClickRightBeginPosition = XY(provider.MainPosition.CurrentPoint.Position);
+                        }
                     }
                 }
             }
         }
 
-        private void HandleLeftMenuAction(Microsoft.Xna.Framework.Vector3 point, Microsoft.Xna.Framework.Vector2 kinectClickBeginPosition)
+        private static Microsoft.Xna.Framework.Vector2 XY(Microsoft.Xna.Framework.Vector3 v3)
         {
-            var pos2d = new Microsoft.Xna.Framework.Vector2(point.X, point.Y);
+            return new Microsoft.Xna.Framework.Vector2(v3.X, v3.Y);
+        }
 
-            if (!hasValidatedClickAction && Microsoft.Xna.Framework.Vector2.Distance(kinectClickBeginPosition, pos2d) >= 80)
+        const float menuActionPixelsTreshold = 80;
+
+        /* pour faire un cooldown le temps de replacer la main */
+        DateTime lastRightMenuAction = DateTime.Now;
+        TimeSpan rightMenuActionCooldownDuration = TimeSpan.FromMilliseconds(600);
+
+        private void HandleRightMenuAction(Microsoft.Xna.Framework.Vector3 currentPosition, Microsoft.Xna.Framework.Vector2 clickPosition)
+        {
+            var pos2d = XY(currentPosition);
+
+            if (!hasValidatedClickAction && Microsoft.Xna.Framework.Vector2.Distance(clickPosition, pos2d) >= menuActionPixelsTreshold)
+            {
+                var now = DateTime.Now;
+
+                if ((now - lastRightMenuAction) >= rightMenuActionCooldownDuration)
+                {
+                    lastRightMenuAction = now;
+
+                    var top = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = 1 };
+                    var bottom = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = -1 };
+                    var left = new Microsoft.Xna.Framework.Vector2() { X = 1, Y = 0 };
+                    var right = new Microsoft.Xna.Framework.Vector2() { X = -1, Y = 0 };
+
+                    var dir = clickPosition - pos2d;
+
+                    var s_top = Microsoft.Xna.Framework.Vector2.Dot(dir, top);
+                    var s_bottom = Microsoft.Xna.Framework.Vector2.Dot(dir, bottom);
+                    var s_left = Microsoft.Xna.Framework.Vector2.Dot(dir, left);
+                    var s_right = Microsoft.Xna.Framework.Vector2.Dot(dir, right);
+
+                    var max_dir = Math.Max(Math.Max(Math.Max(s_top, s_bottom), s_left), s_right);
+
+                    if (max_dir == s_top)
+                    {
+                        Right_ClickAction_Top();
+                    }
+                    else if (max_dir == s_bottom)
+                    {
+                        Right_ClickAction_Bottom();
+                    }
+                    else if (max_dir == s_left)
+                    {
+                        Right_ClickAction_Left();
+                    }
+                    else if (max_dir == s_right)
+                    {
+                        Right_ClickAction_Right();
+                    }
+                }
+            }
+        }
+
+        private void HandleLeftMenuAction(Microsoft.Xna.Framework.Vector3 currentPosition, Microsoft.Xna.Framework.Vector2 clickPosition)
+        {
+            var pos2d = XY(currentPosition);
+
+            if (!hasValidatedClickAction && Microsoft.Xna.Framework.Vector2.Distance(clickPosition, pos2d) >= menuActionPixelsTreshold)
             {
                 var top = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = 1 };
                 var bottom = new Microsoft.Xna.Framework.Vector2() { X = 0, Y = -1 };
                 var left = new Microsoft.Xna.Framework.Vector2() { X = 1, Y = 0 };
                 var right = new Microsoft.Xna.Framework.Vector2() { X = -1, Y = 0 };
 
-                var dir = kinectClickBeginPosition - pos2d;
+                var dir = clickPosition - pos2d;
 
                 var s_top = Microsoft.Xna.Framework.Vector2.Dot(dir, top);
                 var s_bottom = Microsoft.Xna.Framework.Vector2.Dot(dir, bottom);
@@ -542,19 +631,19 @@ namespace KinectBrowser
 
                 if (max_dir == s_top)
                 {
-                    ClickAction_Top();
+                    Left_ClickAction_Top();
                 }
                 else if (max_dir == s_bottom)
                 {
-                    ClickAction_Bottom();
+                    Left_ClickAction_Bottom();
                 }
                 else if (max_dir == s_left)
                 {
-                    ClickAction_Left();
+                    Left_ClickAction_Left();
                 }
                 else if (max_dir == s_right)
                 {
-                    ClickAction_Right();
+                    Left_ClickAction_Right();
                 }
 
                 hasValidatedClickAction = true;
