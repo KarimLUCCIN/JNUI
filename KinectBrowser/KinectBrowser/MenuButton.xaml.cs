@@ -22,5 +22,23 @@ namespace KinectBrowser
 		{
 			this.InitializeComponent();
 		}
+        
+        public string ButtonText
+        {
+            get { return (string)GetValue(ButtonTextProperty); }
+            set { SetValue(ButtonTextProperty, value); }
+        }
+
+        public static readonly DependencyProperty ButtonTextProperty =
+            DependencyProperty.Register("ButtonText", typeof(string), typeof(MenuButton), new UIPropertyMetadata("", ButtonTextChanged));
+
+        private static void ButtonTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var mnuButton = d as MenuButton;
+            if (mnuButton != null)
+            {
+                mnuButton.buttonTxt.Text = mnuButton.ButtonText;
+            }
+        }        
 	}
 }
