@@ -2,3 +2,10 @@
 
 Mettre en avant les points importants du projet (point clé, climax)
 -> allouer plus de tps sur ces parties
+
+
+- Cheat pour ne pas reconnaitre les mouvements de la main  après un swipe
+
+- Croquis clavier
+
+- Reconnaissance vocale
