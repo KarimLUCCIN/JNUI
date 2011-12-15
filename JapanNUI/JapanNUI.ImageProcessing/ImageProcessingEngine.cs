@@ -1,6 +1,6 @@
 ﻿#define ENABLE_DEBUG_DISPLAY
-#define ENABLE_ONLY_BORDER_DISTANCE_LABELS
-//#define ENABLE_SQUARES_PRESENTER
+//#define ENABLE_ONLY_BORDER_DISTANCE_LABELS
+#define ENABLE_SQUARES_PRESENTER
 
 using System;
 using System.Collections.Generic;

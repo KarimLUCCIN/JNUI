@@ -153,6 +153,11 @@ float sum3(float3 s)
 float minimumDepthOffset = 0;
 float maximumDepth = 1;
 
+/* Les différents seuls de depth pour la Kinect */
+float thresholdNear = 0.15;
+float thresholdMid = 0.3;
+float thresholdFar = 0.6;
+
 int categorizeDepthBased(float depth, out float l_depth)
 {
 	depth = (1 - depth) - minimumDepthOffset;
@@ -161,11 +166,11 @@ int categorizeDepthBased(float depth, out float l_depth)
 
 	l_depth = depth;
 
-	if(depth <= 0.1)
+	if(depth <= thresholdNear)
 		return 0;
-	else if(depth <= 0.3)
+	else if(depth <= thresholdMid)
 		return 1;
-	else if(depth <= 0.6)
+	else if(depth <= thresholdFar)
 		return 2;
 	else
 		return 3;
