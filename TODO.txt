@@ -4,8 +4,8 @@ Mettre en avant les points importants du projet (point clé, climax)
 -> allouer plus de tps sur ces parties
 
 
-- Cheat pour ne pas reconnaitre les mouvements de la main  après un swipe
-
 - Croquis clavier
 
 - Reconnaissance vocale
+
+- Avant chaque début d'application, permettre à l'utilisateur de rescaler l'ui en lui demandant de toucher un bouton
