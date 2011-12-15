@@ -245,7 +245,7 @@ namespace KinectBrowser
                                     {
                                         var dist = new Point(absPoint.X - lastCursorPoint.X, absPoint.Y - lastCursorPoint.Y);
 
-                                        page.Zoom += (int)(dist.X + dist.Y);
+                                        page.Zoom += (int)((dist.X + dist.Y) * 0.5f);
                                     }
                                 }
 

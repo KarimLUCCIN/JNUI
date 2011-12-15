@@ -145,7 +145,7 @@ namespace KinectBrowser.D3D.Browser
             webView.LoadCompleted += new EventHandler(webView_LoadCompleted);
             webView.OpenExternalLink += new OpenExternalLinkEventHandler(webView_OpenExternalLink);
             webView.BeginNavigation += new BeginNavigationEventHandler(webView_BeginNavigation);
-            webView.TitleReceived += new TitleReceivedEventHandler(webView_TitleReceived);            
+            webView.TitleReceived += new TitleReceivedEventHandler(webView_TitleReceived);
         }
 
         void webView_TitleReceived(object sender, ReceiveTitleEventArgs e)
@@ -180,6 +180,9 @@ namespace KinectBrowser.D3D.Browser
             invalidated = true;
         }
 
+        DateTime lastZoomUpdateTime = DateTime.Now;
+        TimeSpan zoomUpdateCooldown = TimeSpan.FromMilliseconds(100);
+
         internal void RenderUpdate()
         {
             bool disposedTexture = IsTextureDisposed;
@@ -190,6 +193,13 @@ namespace KinectBrowser.D3D.Browser
 
                 if (!wasCrashed)
                 {
+                    var now = DateTime.Now;
+                    if (now - lastZoomUpdateTime > zoomUpdateCooldown)
+                    {
+                        lastZoomUpdateTime = now;
+                        webView.Zoom = zoom;
+                    }
+
                     try
                     {
                         bool dirty = webView.IsDirty;
@@ -433,25 +443,23 @@ namespace KinectBrowser.D3D.Browser
 
         #endregion
 
+        int zoom = 100;
+
         public int Zoom
         {
             get
             {
-                if (!webView.IsCrashed)
-                {
-                    return webView.Zoom;
-                }
-                else
-                    return 100;
+                return zoom;
+                //if (!webView.IsCrashed)
+                //{
+                //    return webView.Zoom;
+                //}
+                //else
+                //    return 100;
             }
             set
             {
-                if (!webView.IsCrashed)
-                {
-                    int v = Math.Max(10, Math.Min(500, value));
-
-                    webView.Zoom = v;
-                }
+                zoom = Math.Max(10, Math.Min(500, value));
             }
         }
     }
