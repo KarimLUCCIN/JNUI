@@ -18,6 +18,8 @@ using System.Windows.Interop;
 using KinectBrowser.Input.Kinect;
 using KinectBrowser.Interaction.Gestures;
 using KinectBrowser.ImageProcessing;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 
 namespace KinectBrowser
 {
@@ -105,8 +107,36 @@ namespace KinectBrowser
                     hasValidatedClickAction = false;
                     break;
                 case MenuMode.ClickPrincipal:
-                    kinectClickAction = SpacialKinectClickAction.Click;
+                    var hitResult = controlsGrid.InputHitTest(Mouse.GetPosition(controlsGrid)) as DependencyObject;
+                    if (hitResult != null)
+                    {
+                        VirtualClick(hitResult);
+                    }
+                    else
+                        kinectClickAction = SpacialKinectClickAction.Click;
                     break;
+            }
+        }
+
+        private void VirtualClick(DependencyObject hitResult)
+        {
+            var btn = hitResult as Button;
+
+            if (btn != null)
+            {
+                ButtonAutomationPeer peer = new ButtonAutomationPeer(btn);
+
+                IInvokeProvider invokeProv =
+                  peer.GetPattern(PatternInterface.Invoke)
+                  as IInvokeProvider;
+
+                invokeProv.Invoke();
+            }
+            else
+            {
+                var parent = VisualTreeHelper.GetParent(hitResult);
+                if (parent != null)
+                    VirtualClick(parent);
             }
         }
 
