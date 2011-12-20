@@ -27,6 +27,10 @@ namespace KinectBrowser
 
 				double AvgDepth;
 
+				double closestPointDepth;
+				double closestPointX;
+				double closestPointY;
+
 				unsigned long accX;
 				unsigned long accY;
 
@@ -82,6 +86,9 @@ namespace KinectBrowser
 
 				double InvertedEstimatedCursorX;
 				double InvertedEstimatedCursorY;
+
+				double ClosestPointX;
+				double ClosestPointY;
 
 				double AverageDepth;
 

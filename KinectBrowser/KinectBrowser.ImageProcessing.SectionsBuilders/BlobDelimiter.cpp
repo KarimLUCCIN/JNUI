@@ -5,6 +5,7 @@
 
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <limits.h>
 
 using namespace std;
 
@@ -386,6 +387,8 @@ namespace KinectBrowser
 								blobs[c_blob].CrossRightBottomY = line;
 
 								blobs[c_blob].haveCrossingPattern = false;
+
+								blobs[c_blob].closestPointDepth = (double)INT_MAX;
 							}
 
 							/* counting the current pixel */
@@ -394,7 +397,15 @@ namespace KinectBrowser
 							blobs[c_blob].accX += column;
 							blobs[c_blob].accY += line;
 
-							blobs[c_blob].accDepth += data[pixel(line, column)+1];
+							double localDepth = data[pixel(line, column)+1];
+							blobs[c_blob].accDepth += localDepth;
+
+							if(localDepth < blobs[c_blob].closestPointDepth)
+							{
+								blobs[c_blob].closestPointDepth = localDepth;
+								blobs[c_blob].closestPointX = column;
+								blobs[c_blob].closestPointY = line;
+							}
 
 							blobs[c_blob].MinX = min2(blobs[c_blob].MinX, column);
 							blobs[c_blob].MaxX = max2(blobs[c_blob].MaxX, column);
@@ -504,6 +515,11 @@ namespace KinectBrowser
 				}
 			}
 
+			inline float distance(double x1, double y1, double x2, double y2)
+			{
+				return sqrt(p2(x2-x1)+p2(y2-y1));
+			}
+
 			void convertBlob(ManagedBlob ^ dst, Blob * src, double primaryCenterX, double primaryCenterY, bool crossed)
 			{
 				dst->AvgCenterX = src->AvgCenterX;
@@ -534,6 +550,26 @@ namespace KinectBrowser
 					&c_x, &c_y);
 
 				dst->AverageDirection = acos(dot(c_x, c_y, 1, 0));
+
+				dst->ClosestPointX = src->closestPointX;
+				dst->ClosestPointY = src->closestPointY;
+
+				/* Si un des curseurs est très proche du point le plus proche, on remplace */
+				/*
+				Ne marche pas, au final ça dégrade la qualité des mouvements du point ...
+				
+				double closeDistance = 20;
+				if(distance(dst->ClosestPointX, dst->ClosestPointY, dst->EstimatedCursorX, dst->EstimatedCursorY) < closeDistance)
+				{
+					dst->EstimatedCursorX = dst->ClosestPointX;
+					dst->EstimatedCursorY = dst->ClosestPointY;
+				}
+				
+				if(distance(dst->ClosestPointX, dst->ClosestPointY, dst->InvertedEstimatedCursorX, dst->InvertedEstimatedCursorY) < closeDistance)
+				{
+					dst->InvertedEstimatedCursorX = dst->ClosestPointX;
+					dst->InvertedEstimatedCursorY = dst->ClosestPointY;
+				}*/
 
 				dst->Crossed = crossed;
 			}
