@@ -38,6 +38,11 @@ namespace KinectBrowser.Interaction.Gestures
             }
         }
 
+        public int GesturesCount(SimpleGesture filter)
+        {
+            return (from g in data where g.Gesture == filter select 1).Sum();
+        }
+
         public bool Enqueue(SimpleGestureKey key)
         {
             bool shouldAdd = true;

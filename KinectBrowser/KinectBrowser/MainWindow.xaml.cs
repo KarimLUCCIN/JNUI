@@ -369,7 +369,7 @@ namespace KinectBrowser
                         kinectForcedAction_CursorFocusChangeTarget = m_e.Origin;
                         kinectForcedAction = SpecialKinectForcedAction.CursorFocusChange;
                     }
-                });
+                }, System.Windows.Threading.DispatcherPriority.Render);
             }, SimpleGesture.Left, SimpleGesture.Right, SimpleGesture.Left);
 
             KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
