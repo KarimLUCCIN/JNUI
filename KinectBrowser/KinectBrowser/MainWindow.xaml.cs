@@ -339,6 +339,8 @@ namespace KinectBrowser
 
         #region Kinect Specifics
 
+        object forced_actions_lock = new object();
+
         private void RegisterKinectGestures()
         {
             //KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
@@ -362,26 +364,26 @@ namespace KinectBrowser
             KinectGesturesTracker = new Input.Kinect.KinectGesturesTracker();
             KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
             {
-                Dispatcher.Invoke((Action)delegate
+                lock (forced_actions_lock)
                 {
                     if (!cursorIsAlive)
                     {
                         kinectForcedAction_CursorFocusChangeTarget = m_e.Origin;
                         kinectForcedAction = SpecialKinectForcedAction.CursorFocusChange;
                     }
-                }, System.Windows.Threading.DispatcherPriority.Render);
+                }
             }, SimpleGesture.Left, SimpleGesture.Right, SimpleGesture.Left);
 
             KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
             {
-                Dispatcher.Invoke((Action)delegate
+                lock (forced_actions_lock)
                 {
                     if (cursorIsAlive && m_e.Origin == kinectCursorBlob)
                     {
                         kinectForcedAction_CursorFocusChangeTarget = null;
                         kinectForcedAction = SpecialKinectForcedAction.CursorFocusChange;
                     }
-                });
+                }
             }, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
         }
 
@@ -433,35 +435,38 @@ namespace KinectBrowser
 
             KinectGesturesTracker.Update(kinectBlobs);
 
-            if (kinectForcedAction != SpecialKinectForcedAction.None)
+            lock (forced_actions_lock)
             {
-                if ((DateTime.Now - lastForcedActionTime) >= forcedActionLatency)
+                if (kinectForcedAction != SpecialKinectForcedAction.None)
                 {
-                    switch (kinectForcedAction)
+                    if ((DateTime.Now - lastForcedActionTime) >= forcedActionLatency)
                     {
-                        case SpecialKinectForcedAction.CursorFocusChange:
-                            {
-                                if (!hasValidCursor)
+                        switch (kinectForcedAction)
+                        {
+                            case SpecialKinectForcedAction.CursorFocusChange:
                                 {
-                                    provider.ForceCursorAquire(kinectForcedAction_CursorFocusChangeTarget);
-                                    cursorIsAlive = true;
-                                }
-                                else
-                                {
-                                    provider.ForceCursorRelease();
-                                    cursorIsAlive = false;
-                                }
+                                    if (!hasValidCursor)
+                                    {
+                                        provider.ForceCursorAquire(kinectForcedAction_CursorFocusChangeTarget);
+                                        cursorIsAlive = true;
+                                    }
+                                    else
+                                    {
+                                        provider.ForceCursorRelease();
+                                        cursorIsAlive = false;
+                                    }
 
-                                hasValidCursor = provider.MainPosition.CurrentPoint.State == CursorState.Tracked;
+                                    hasValidCursor = provider.MainPosition.CurrentPoint.State == CursorState.Tracked;
 
-                                break;
-                            }
+                                    break;
+                                }
+                        }
                     }
+
+                    lastForcedActionTime = DateTime.Now;
+
+                    kinectForcedAction = SpecialKinectForcedAction.None;
                 }
-
-                lastForcedActionTime = DateTime.Now;
-
-                kinectForcedAction = SpecialKinectForcedAction.None;
             }
 
             if (!cursorIsAlive)
