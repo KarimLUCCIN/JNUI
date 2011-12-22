@@ -219,7 +219,12 @@ namespace KinectBrowser.D3D.DirectX
             //XE.Performance.Log("LockRect Pitch "+lockrect.Pitch.ToString());
             //XE.Performance.Log("LockRect pBits "+((uint)lockrect.pBits).ToString());
 
-            buffer.CopyTo((IntPtr)(uint)(lockrect.pBits), lockrect.Pitch, 4, false);
+            try
+            {
+                buffer.CopyTo((IntPtr)(uint)(lockrect.pBits), lockrect.Pitch, 4, false);
+            }
+            catch { }
+
             d3dt.UnlockRect(0);
 
             //Meve onto Dispose() if d3dt will be cached d3dt

@@ -219,7 +219,7 @@ namespace KinectBrowser.D3D.Browser
                 if (wasCrashed)
                 {
                     /* Something happenned ... respawn */
-                    CreateWebView(Width, Height);
+                    CreateWebView(textureWidth, textureHeight);
 
                     var url = CurrentUrl;
                     CurrentUrl = String.Empty;
