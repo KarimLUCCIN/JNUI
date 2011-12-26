@@ -421,6 +421,8 @@ namespace KinectBrowser
 
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
+            var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
+
             kinectCursorBlob = null;
 
             kinectBlobs.Clear();
@@ -495,7 +497,9 @@ namespace KinectBrowser
                 rightCursor.Visibility = System.Windows.Visibility.Hidden;
 
                 foreach (var item in contentOptionnalCanvas.Children)
-                    ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
+                    ((Ellipse)item).Visibility = System.Windows.Visibility.Visible;
+                
+                DisplayOptionnals(provider, clientOrigin);
 
                 additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
                 additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
@@ -520,7 +524,9 @@ namespace KinectBrowser
                     Canvas.SetTop(rightCursor, provider.Positions[1].CurrentPoint.Position.Y);
 
                     foreach (var item in contentOptionnalCanvas.Children)
-                        ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
+                        ((Ellipse)item).Visibility = System.Windows.Visibility.Visible;
+
+                    DisplayOptionnals(provider, clientOrigin);
 
                     additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
                     additionnalActionsUIControls.Visibility = System.Windows.Visibility.Hidden;
@@ -529,10 +535,11 @@ namespace KinectBrowser
                 }
                 else
                 {
+                    foreach (var item in contentOptionnalCanvas.Children)
+                        ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
+
                     Cursor = Cursors.Arrow;
                     leftCursor.Visibility = rightCursor.Visibility = System.Windows.Visibility.Hidden;
-
-                    var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
 
                     bool hasClickPoint = false;
 
@@ -568,24 +575,7 @@ namespace KinectBrowser
                     if (!hasClickPoint && (provider.Positions[0].CurrentPoint.State == CursorState.Default ||
                         provider.Positions[1].CurrentPoint.State == CursorState.Default))
                     {
-                        int index = 0;
-                        var lst = provider.KinectBlobsMatcher.AdditionnalBlobsCursors.ToList();
-
-                        for (index = 0; index < 4 && index < lst.Count; index++)
-                        {
-                            var ellipse = (Ellipse)contentOptionnalCanvas.Children[index];
-                            ellipse.Visibility = System.Windows.Visibility.Visible;
-
-                            var point = KinectPositionProvider.RelativePointToAbsolutePoint(lst[index], ClientArea) - clientOrigin;
-
-                            Canvas.SetLeft(ellipse, point.X);
-                            Canvas.SetTop(ellipse, point.Y);
-                        }
-
-                        for (; index < 4; index++)
-                        {
-                            ((Ellipse)contentOptionnalCanvas.Children[index]).Visibility = System.Windows.Visibility.Hidden;
-                        }
+                        DisplayOptionnals(provider, clientOrigin);
                     }
                     else
                     {
@@ -636,6 +626,29 @@ namespace KinectBrowser
                     }
                 }
             }
+        }
+
+        private Microsoft.Xna.Framework.Vector2 DisplayOptionnals(KinectProvider provider, Microsoft.Xna.Framework.Vector2 clientOrigin)
+        {
+            int index = 0;
+            var lst = provider.KinectBlobsMatcher.AdditionnalBlobsCursors.ToList();
+
+            for (index = 0; index < 4 && index < lst.Count; index++)
+            {
+                var ellipse = (Ellipse)contentOptionnalCanvas.Children[index];
+                ellipse.Visibility = System.Windows.Visibility.Visible;
+
+                var point = KinectPositionProvider.RelativePointToAbsolutePoint(lst[index], ClientArea) - clientOrigin;
+
+                Canvas.SetLeft(ellipse, point.X);
+                Canvas.SetTop(ellipse, point.Y);
+            }
+
+            for (; index < 4; index++)
+            {
+                ((Ellipse)contentOptionnalCanvas.Children[index]).Visibility = System.Windows.Visibility.Hidden;
+            }
+            return clientOrigin;
         }
 
         private static Microsoft.Xna.Framework.Vector2 XY(Microsoft.Xna.Framework.Vector3 v3)
