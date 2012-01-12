@@ -279,7 +279,7 @@
 				<SolidColorBrush Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}"/>
 			</TextBox.SelectionBrush>
 		</TextBox>
-		<ListView x:Name="listView1" Margin="8,68.92,8,56" Background="{Binding Background, ElementName=Window}" Foreground="{Binding Foreground, ElementName=Window}" SelectedIndex="-1" Style="{DynamicResource ListViewStyle1}" ItemContainerStyle="{DynamicResource ListViewItemStyle1}">
+		<ListView x:Name="listView1" Margin="8,68.92,8,56" Background="{Binding Background, ElementName=Window}" Foreground="{Binding Foreground, ElementName=Window}" SelectedIndex="-1" Style="{DynamicResource ListViewStyle1}" ItemContainerStyle="{DynamicResource ListViewItemStyle1}" FontSize="26.667">
 			<ListView.View>
 				<GridView>
 					<GridViewColumn/>
