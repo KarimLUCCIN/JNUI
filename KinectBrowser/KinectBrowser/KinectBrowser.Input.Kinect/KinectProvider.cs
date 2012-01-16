@@ -35,7 +35,7 @@ namespace KinectBrowser.Input.Kinect
             set { closestPointUpdateLatency = value; }
         }
 
-        private ImageProcessingEngine ImageProcessingEngine { get; set; }
+        public ImageProcessingEngine ImageProcessingEngine { get; private set; }
         public KinectBlobsMatcher KinectBlobsMatcher { get; private set; }
 
         public static bool HasKinects
@@ -109,7 +109,7 @@ namespace KinectBrowser.Input.Kinect
                 try
                 {
                     ImageProcessingEngine = new ImageProcessingEngine(host, 320, 240, 4);
-                    KinectBlobsMatcher = new KinectBlobsMatcher(ImageProcessingEngine, 320 >> 1, 240 >> 1);
+                    KinectBlobsMatcher = new KinectBlobsMatcher(ImageProcessingEngine, ImageProcessingEngine.DataWidth, ImageProcessingEngine.DataHeight);
                 }
                 catch
                 {

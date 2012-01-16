@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define DOWN_SAMPLE
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,16 +18,24 @@ namespace KinectBrowser.ImageProcessing
 {
     public class ImageProcessingEngine : IDisposable
     {
+#if(DOWN_SAMPLE)
+        public static int DataWidth = 320 >> 1;
+        public static int DataHeight = 240 >> 1;
+#else
+        public static int DataWidth = 320;
+        public static int DataHeight = 240;
+#endif
         private SoraEngineHost Host { get; set; }
 
         public int Width { get; private set; }
         public int Height { get; private set; }
 
-        private RenderTarget2D kinectProcessedOutput, grownRegions;
-        private Texture2D kinectDepthSource;
+        public RenderTarget2D kinectProcessedOutput;
+        public RenderTarget2D grownRegions;
+        public Texture2D kinectDepthSource;
 
         /* to detect contour direction on the detected blobs */
-        private RenderTarget2D gradDirectionDetect1, gradDirectionDetect2;
+        public RenderTarget2D gradDirectionDetect1, gradDirectionDetect2;
 
         private BordersDetect bordersDetectShader;
 
@@ -91,7 +101,11 @@ namespace KinectBrowser.ImageProcessing
             kinectDepthSource = Host.CurrentEngine.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             kinectProcessedOutput = Host.CurrentEngine.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Single, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
 
+#if(DOWN_SAMPLE)
             grownRegions = Host.CurrentEngine.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, Width >> 1, Height >> 1, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
+#else
+            grownRegions = Host.CurrentEngine.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, Width, Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
+#endif
 
             gradDirectionDetect1 = Host.CurrentEngine.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, grownRegions.Width, grownRegions.Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);
             gradDirectionDetect2 = Host.CurrentEngine.RenderTargetManager.CreateRenderTarget2D(SurfaceFormat.Color, grownRegions.Width, grownRegions.Height, 0, RenderTargetUsage.PreserveContents, DepthFormat.None);

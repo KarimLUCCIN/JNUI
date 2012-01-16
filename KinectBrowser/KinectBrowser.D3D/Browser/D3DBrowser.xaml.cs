@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define DEBUG_VIEW
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +21,7 @@ using Sora.GameEngine.GameComponents.Cameras;
 using Awesomium.Core;
 using System.ComponentModel;
 using KinectBrowser.D3D.Shaders;
+using Sora.GameEngine.GameComponents.SceneObjects;
 
 namespace KinectBrowser.D3D.Browser
 {
@@ -27,6 +30,19 @@ namespace KinectBrowser.D3D.Browser
     /// </summary>
     public partial class D3DBrowser : UserControl, INotifyPropertyChanged
     {
+#if(DEBUG_VIEW)
+        private bool debugView = true;
+#else
+        private bool debugView = false;
+#endif
+
+        public bool DebugView
+        {
+            get { return debugView; }
+            set { debugView = value; }
+        }
+
+
         bool isActive = true;
 
         /// <summary>
@@ -45,6 +61,8 @@ namespace KinectBrowser.D3D.Browser
         {
             get { return Host.RenderingScreen; }
         }
+
+        public SceneObjectTexturedQuad DebugTextureQuad { get; private set; }
 
         public D3DBrowser()
         {
@@ -75,6 +93,12 @@ namespace KinectBrowser.D3D.Browser
             TabsNode = new Node(D3DScreen.LocalContent);
 
             D3DScreen.ScreenContent.Add(TabsNode);
+
+            DebugTextureQuad = new SceneObjectTexturedQuad(D3DScreen.LocalContent);
+            DebugTextureQuad.CompositionTex = host.CurrentEngine.Renderer.CompositionTexManager.TexColorOnly;
+            DebugTextureQuad.Rotation = new Sora.GameEngine.MathUtils.RotationVector(MathHelper.Pi, 0, 0);
+
+            D3DScreen.ScreenContent.Add(DebugTextureQuad);
 
             var bEffect = new BackgroundFill_Effect(D3DScreen.LocalContent);
             bEffect.LoadContent();
@@ -247,6 +271,11 @@ namespace KinectBrowser.D3D.Browser
 
         private void MoveCameraTo(float activeRadius, float activeTabAngle)
         {
+            if (debugView)
+            {
+                activeTabAngle = MathHelper.PiOver2;
+            }
+
             var cam = D3DScreen.CurrentEngine.CameraManager.ActiveCamera;
 
             var v2Anim = new AnimationVector3(D3DScreen.CurrentEngine,
@@ -311,8 +340,13 @@ namespace KinectBrowser.D3D.Browser
 
         private void RenderUpdate()
         {
+            DebugTextureQuad.Visible = debugView;
+
             for (int i = 0; i < internalTabs.Count; i++)
             {
+                if (debugView)
+                    internalTabs[i].D3DNode.Visible = false;
+             
                 internalTabs[i].RenderUpdate();
             }
         }

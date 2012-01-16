@@ -421,6 +421,8 @@ namespace KinectBrowser
 
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
+            browser.DebugTextureQuad.Texture = provider.ImageProcessingEngine.gradDirectionDetect1;
+
             var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);
 
             kinectCursorBlob = null;

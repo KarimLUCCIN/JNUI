@@ -1,3 +1,4 @@
+#define DOWN_SAMPLE
 
 float2 halfPixel;
 
@@ -178,6 +179,7 @@ int categorizeDepthBased(float depth, out float l_depth)
 
 float4 PS_Down(VSO input) : COLOR0
 { 
+#ifdef DOWN_SAMPLE
 	float vMed = 0;
 
 	[unroll]
@@ -197,6 +199,9 @@ float4 PS_Down(VSO input) : COLOR0
 	}
 
 	vMed /= (float)(5 * 5);
+#else
+	float vMed = tex2D(depthSampler, input.TexCoord);
+#endif
 
 	/* reduced to LEVEL_NUMBERS levels */
 	float l_depth;
