@@ -1,0 +1,92 @@
+﻿<UserControl xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:ei="http://schemas.microsoft.com/expression/2010/interactions"
+	x:Class="KinectBrowser.def2"
+	x:Name="def2UserControl"
+	mc:Ignorable="d"
+	d:DesignWidth="640" d:DesignHeight="480" Width="400" Height="400">
+
+	<Grid x:Name="LayoutRoot">
+		<VisualStateManager.VisualStateGroups>
+			<VisualStateGroup x:Name="VisualStateGroup">
+				<VisualState x:Name="Closed"/>
+				<VisualState x:Name="Open">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="d">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="e">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="f">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="_2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" Storyboard.TargetName="def">
+							<EasingColorKeyFrame KeyTime="0" Value="#FFA2F9AB"/>
+						</ColorAnimationUsingKeyFrames>
+						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Storyboard.TargetName="def">
+							<EasingColorKeyFrame KeyTime="0" Value="#FF4DCE5B"/>
+						</ColorAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+			</VisualStateGroup>
+		</VisualStateManager.VisualStateGroups>
+		<Button x:Name="def" Content="def2" Margin="0" FontSize="32" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75">
+			<Button.Background>
+				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
+					<GradientStop Color="#FFF3F3F3" Offset="0"/>
+					<GradientStop Color="#FFCDCDCD" Offset="1"/>
+				</LinearGradientBrush>
+			</Button.Background>
+			<Button.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</Button.RenderTransform>
+		</Button>
+		<Button x:Name="d" Content="d" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.5,0.5" Margin="8,175.718,0,0" FontSize="32" Visibility="Hidden">
+			<Button.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</Button.RenderTransform>
+		</Button>
+		<Button x:Name="e" Content="e" RenderTransformOrigin="0.5,0.5" Margin="84,0,0,88.492" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="75" d:LayoutOverrides="VerticalAlignment" Visibility="Hidden">
+			<Button.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</Button.RenderTransform>
+		</Button>
+		<Button x:Name="f" Content="f" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="75" RenderTransformOrigin="0.5,0.5" Margin="242,0,0,88.492" FontSize="32" Visibility="Hidden">
+			<Button.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</Button.RenderTransform>
+		</Button>
+		<Button x:Name="_2" Content="2" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.5,0.5" Margin="0,175.718,8,0" FontSize="32" Visibility="Hidden">
+			<Button.RenderTransform>
+				<TransformGroup>
+					<ScaleTransform/>
+					<SkewTransform/>
+					<RotateTransform/>
+					<TranslateTransform/>
+				</TransformGroup>
+			</Button.RenderTransform>
+		</Button>
+	</Grid>
+</UserControl>

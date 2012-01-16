@@ -14,11 +14,11 @@ using System.Windows.Shapes;
 namespace KinectBrowser
 {
 	/// <summary>
-	/// Interaction logic for Keyboard.xaml
+	/// Interaction logic for KeyboardControl.xaml
 	/// </summary>
-	public partial class Keyboard : UserControl
+	public partial class KeyboardControl : UserControl
 	{
-		public Keyboard()
+		public KeyboardControl()
 		{
 			this.InitializeComponent();
 		}
