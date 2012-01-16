@@ -1,0 +1,12 @@
+Hidden Markov Model (Gesture recognition - Learning and reco sys - HTK Toolkit, Cambridge Univ)
+
+Avoir une sélection d'un certain groupe de lettre, et pouvoir faire défiler vers la droite ou vers la gauche pour obtenir le groupe de lettre suivantes/précédentes
+(Vers le haut ou le bas aussi)
+
+On peut aussi imaginer un hypercube où chaque profondeur de la main gauche donne accès à un set de lettres (limited number of steps because of accuracy)
+
+4 sets de 3 boutons sur chaque coté d'un carré avec une zone de validation au centre du carré. 
+Faire un glisser-déposer pour écrire les lettres et utiliser le système du T9 pour former les mots.
+
+-------------------------
+Next: Jan 19 Thursday 14h
