@@ -2,10 +2,10 @@
 	x:Class="KinectBrowser.KeyboardControl"
 	mc:Ignorable="d"
 	x:Name="KeyboardControl1"
-	d:DesignWidth="640" d:DesignHeight="480" Width="800" Height="600">
+	d:DesignWidth="640" d:DesignHeight="480" Width="800" Height="600" Initialized="Keyboard_initialized">
 
-	<Grid x:Name="LayoutRoot">
-		<Grid x:Name="functionKeys" Height="76.5" VerticalAlignment="Top" Background="White">
+	<Grid x:Name="LayoutRoot" Background="Black">
+		<Grid x:Name="functionKeys" Height="76.5" VerticalAlignment="Top" Background="Black">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="*"/>
@@ -13,23 +13,31 @@
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-			<Button Content="8" HorizontalAlignment="Center" VerticalAlignment="Center" Width="75" FontSize="32" FontFamily="Wingdings 3" Height="42"/>
-			<Button Content=")" Grid.Column="1" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Wingdings 3" FontSize="32" Width="75" Height="42"/>
-			<Button Content="Space" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="29.333" Width="89.6066666666667" Height="42"/>
-			<Button Content="Enter" Grid.Column="3" VerticalAlignment="Center" FontSize="29.333" Height="42" HorizontalAlignment="Center" Width="80"/>
-			<Button Content="Cancel" Grid.Column="4" FontSize="29.333" HorizontalAlignment="Center" VerticalAlignment="Center" Width="95" Height="42"/>
+			<Button Content="8" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" FontFamily="Wingdings 3"/>
+			<Button Content=")" Grid.Column="1" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Wingdings 3" FontSize="32"/>
+			<Button Content="Space" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="29.333"/>
+			<Button Content="Enter" Grid.Column="3" VerticalAlignment="Center" FontSize="29.333" HorizontalAlignment="Center"/>
+			<Button Content="Cancel" Grid.Column="4" FontSize="29.333" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 		</Grid>
 		<TextBlock x:Name="inputUser" Margin="198.5,205.5,209,273" TextWrapping="Wrap" FontSize="32" Background="White"><Run Text="TextBlock"/></TextBlock>
-		<ListView Margin="198.5,0,209,128" Height="145" VerticalAlignment="Bottom" FontSize="32"><ListView.View><GridView><GridViewColumn/></GridView></ListView.View></ListView>
-		<local:abc1 Margin="198.5,-77,201.5,277"/>
-		<local:def2 Margin="0,-51,0,251" HorizontalAlignment="Left" d:LayoutOverrides="Width"/>
-		<local:ghi3 Margin="392,-51,8,251"/>
-		<local:jkl4 Margin="40,53,360,147"/>
-		<local:mno5 Margin="360,53,40,147" VerticalAlignment="Center" Height="400"/>
-		<local:pqr6 Margin="40,205.5,360,-5.5"/>
-		<local:stu7 Margin="360,211.782,40,-11.782"/>
-		<local:vwx8 HorizontalAlignment="Left" Margin="-12,0,0,-123" d:LayoutOverrides="Width, Height" VerticalAlignment="Bottom"/>
-		<local:yz9 Margin="392,0,8,-123" d:LayoutOverrides="Height" VerticalAlignment="Bottom"/>
-		<local:symbols Margin="198.5,0,201.5,-153" d:LayoutOverrides="Height" VerticalAlignment="Bottom"/>
+		<TextBlock x:Name="possibleWord" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom" Margin="198.5,0,209,138.54" Height="134.46" FontSize="32" Background="White"/>
+		<Grid x:Name="buttonGrid" Margin="0,76.5,0,0">
+			<Grid.RowDefinitions>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+				<RowDefinition Height="*"/>
+			</Grid.RowDefinitions>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+		</Grid>
 	</Grid>
 </UserControl>

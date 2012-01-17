@@ -4,9 +4,9 @@
 	xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
-	x:Class="KinectBrowser.stu7"
-	x:Name="stu7UserControl"
-	d:DesignWidth="640" d:DesignHeight="480" Width="400" Height="400">
+	x:Class="KinectBrowser.KeyboardButtons"
+	x:Name="UserControl"
+	d:DesignWidth="640" d:DesignHeight="480">
 
 	<Grid x:Name="LayoutRoot">
 		<VisualStateManager.VisualStateGroups>
@@ -14,29 +14,29 @@
 				<VisualState x:Name="Closed"/>
 				<VisualState x:Name="Open">
 					<Storyboard>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="s">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char1">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="t">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char2">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="u">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char3">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
 						</ObjectAnimationUsingKeyFrames>
-						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="_7">
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char4">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
 						</ObjectAnimationUsingKeyFrames>
-						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Storyboard.TargetName="stu">
+						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[1].(GradientStop.Color)" Storyboard.TargetName="center">
 							<EasingColorKeyFrame KeyTime="0" Value="#FF4DCE5B"/>
 						</ColorAnimationUsingKeyFrames>
-						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" Storyboard.TargetName="stu">
+						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(GradientBrush.GradientStops)[0].(GradientStop.Color)" Storyboard.TargetName="center">
 							<EasingColorKeyFrame KeyTime="0" Value="#FFA2F9AB"/>
 						</ColorAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
-		<Button x:Name="stu" Content="stu7" Margin="0" FontSize="32" RenderTransformOrigin="0.5,0.5" VerticalAlignment="Center" HorizontalAlignment="Right" Width="90">
+		<Button x:Name="center" Content="center" Margin="0" FontSize="32" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Center" Click="onClick">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -52,7 +52,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button x:Name="s" Content="s" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.5,0.5" Margin="0,64.718,60,0" FontSize="32" Visibility="Hidden" d:LayoutOverrides="VerticalAlignment">
+		<Button x:Name="char1" Content="char1" RenderTransformOrigin="0.5,0.5" Margin="189.29,167.718,0,0" FontSize="32" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -62,7 +62,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button x:Name="t" Content="t" RenderTransformOrigin="0.5,0.5" Margin="164,0,161,215.492" FontSize="32" VerticalAlignment="Bottom" Visibility="Hidden">
+		<Button x:Name="char2" Content="char2" RenderTransformOrigin="0.5,0.5" Margin="185.29,0,0,169.992" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -72,7 +72,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button x:Name="u" Content="u" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="75" RenderTransformOrigin="0.5,0.5" Margin="164,0,0,137.492" FontSize="32" Visibility="Hidden">
+		<Button x:Name="char3" Content="char3" HorizontalAlignment="Right" VerticalAlignment="Bottom" RenderTransformOrigin="0.5,0.5" Margin="0,0,189.29,167.155" FontSize="32" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -82,7 +82,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button x:Name="_7" Content="7" HorizontalAlignment="Right" VerticalAlignment="Top" Width="75" RenderTransformOrigin="0.5,0.5" Margin="0,274.718,60,0" FontSize="32" Visibility="Hidden">
+		<Button x:Name="char4" Content="char4" HorizontalAlignment="Right" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Margin="0,167.718,185.29,0" FontSize="32" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>

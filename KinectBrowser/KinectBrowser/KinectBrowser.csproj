@@ -81,17 +81,8 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="abc1.xaml.cs">
-      <DependentUpon>abc1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="def2.xaml.cs">
-      <DependentUpon>def2.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="ghi3.xaml.cs">
-      <DependentUpon>ghi3.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="jkl4.xaml.cs">
-      <DependentUpon>jkl4.xaml</DependentUpon>
+    <Compile Include="KeyboardButtons.xaml.cs">
+      <DependentUpon>KeyboardButtons.xaml</DependentUpon>
     </Compile>
     <Compile Include="KeyboardControl.xaml.cs">
       <DependentUpon>KeyboardControl.xaml</DependentUpon>
@@ -100,12 +91,6 @@
       <DependentUpon>MenuControls.xaml</DependentUpon>
     </Compile>
     <Compile Include="MenuMode.cs" />
-    <Compile Include="mno5.xaml.cs">
-      <DependentUpon>mno5.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="pqr6.xaml.cs">
-      <DependentUpon>pqr6.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Shape.xaml.cs">
       <DependentUpon>Shape.xaml</DependentUpon>
     </Compile>
@@ -114,36 +99,12 @@
     </Compile>
     <Compile Include="SpacialKinectClickAction.cs" />
     <Compile Include="SpecialKinectForcedAction.cs" />
-    <Compile Include="stu7.xaml.cs">
-      <DependentUpon>stu7.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="symbols.xaml.cs">
-      <DependentUpon>symbols.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="vwx8.xaml.cs">
-      <DependentUpon>vwx8.xaml</DependentUpon>
-    </Compile>
     <Compile Include="WindowUtils.cs" />
-    <Compile Include="yz9.xaml.cs">
-      <DependentUpon>yz9.xaml</DependentUpon>
-    </Compile>
-    <Page Include="abc1.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Bookmark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="def2.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="ghi3.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="jkl4.xaml">
+    <Page Include="KeyboardButtons.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -170,35 +131,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="mno5.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="pqr6.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
     <Page Include="Shape.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
     <Page Include="MenuButton.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="stu7.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="symbols.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="vwx8.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
-    <Page Include="yz9.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
