@@ -5,10 +5,19 @@
 	xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
 	mc:Ignorable="d"
 	x:Class="KinectBrowser.KeyboardButtons"
-	x:Name="UserControl"
-	d:DesignWidth="640" d:DesignHeight="480">
+	x:Name="UserControl" Height="150" Width="150">
 
 	<Grid x:Name="LayoutRoot">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+			<ColumnDefinition Width="*"/>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
+		</Grid.RowDefinitions>
 		<VisualStateManager.VisualStateGroups>
 			<VisualStateGroup x:Name="VisualStateGroup">
                 <VisualState x:Name="Closed" />
@@ -36,7 +45,7 @@
                 </VisualState>
             </VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
-		<Button x:Name="center" Content="center" Margin="0" FontSize="32" RenderTransformOrigin="0.5,0.5" HorizontalAlignment="Center" VerticalAlignment="Center" Click="onClick">
+		<Button x:Name="center" Content="center" Margin="0" FontSize="32" RenderTransformOrigin="1.574,1.633" Click="onClick" Grid.Column="1" Grid.Row="1" d:LayoutOverrides="Width, Height">
 			<Button.Background>
 				<LinearGradientBrush EndPoint="0,1" StartPoint="0,0">
 					<GradientStop Color="#FFF3F3F3" Offset="0"/>
@@ -52,7 +61,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button x:Name="char1" Content="char1" RenderTransformOrigin="0.5,0.5" Margin="189.29,167.718,0,0" FontSize="32" VerticalAlignment="Top" HorizontalAlignment="Left" Visibility="Hidden">
+		<Button x:Name="char1" Content="char1" Grid.Column="0" Grid.Row="0" RenderTransformOrigin="0.5,0.5" Margin="76.8,80.718,0,0" FontSize="32" VerticalAlignment="Top" HorizontalAlignment="Left">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -62,7 +71,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button x:Name="char2" Content="char2" RenderTransformOrigin="0.5,0.5" Margin="185.29,0,0,169.992" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Bottom" d:LayoutOverrides="VerticalAlignment" Visibility="Hidden">
+		<Button x:Name="char2" Content="char2" Grid.Column="0" Grid.Row="2" RenderTransformOrigin="0.5,0.5" Margin="72.8,0,0,75.492" FontSize="32" HorizontalAlignment="Left" VerticalAlignment="Bottom">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -72,7 +81,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button x:Name="char3" Content="char3" HorizontalAlignment="Right" VerticalAlignment="Bottom" RenderTransformOrigin="0.5,0.5" Margin="0,0,189.29,167.155" FontSize="32" Visibility="Hidden">
+		<Button x:Name="char3" Content="char3" Grid.Column="2" Grid.Row="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" RenderTransformOrigin="0.5,0.5" Margin="0,0,84.29,72.655" FontSize="32">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -82,7 +91,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button x:Name="char4" Content="char4" HorizontalAlignment="Right" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Margin="0,167.718,185.29,0" FontSize="32" Visibility="Hidden">
+		<Button x:Name="char4" Content="char4" Grid.Column="2" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Top" RenderTransformOrigin="0.5,0.5" Margin="0,80.718,80.29,0" FontSize="32">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
