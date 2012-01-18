@@ -177,10 +177,15 @@ namespace KinectBrowser.Input.Kinect
         private double ReScale(double v, double range)
         {
             var normalized_v = v / range;
-            var c = ((normalized_v) - 0.5) * 2 + 0.5;
-            var result = (Math.Sin((c < 0 ? 0 : (c > 1 ? 1 : c)) * MathHelper.PiOver2) * range);
+            var directed_v = 1 / (1 + Math.Exp(normalized_v * 8 - 4));
+            return directed_v * range;
 
-            return result;
+//#warning vérifier qu'on ne clamp rien ici (avec la kinect ... je l'ai pas là et j'ai la flemme)
+//            var normalized_v = v / range; //[0 : 1]
+//            var c = ((normalized_v) - 0.5) * 2 + 0.5; //[-0.5 : 0.5] => [-1 : 1] => [-0.5 : 1.5]
+//            var result = (Math.Sin((c < 0 ? 0 : (c > 1 ? 1 : c)) * MathHelper.PiOver2) * range);
+
+//            return result;
         }
 
         private void ReScale(ManagedBlob i_blob)
