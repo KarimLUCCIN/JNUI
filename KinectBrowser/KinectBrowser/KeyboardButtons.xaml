@@ -7,7 +7,7 @@
 	x:Class="KinectBrowser.KeyboardButtons"
 	x:Name="UserControl">
 
-	<Grid x:Name="LayoutRoot">
+	<Grid x:Name="LayoutRoot" Background="#01000000">
 		<Grid.ColumnDefinitions>
 			<ColumnDefinition Width="*"/>
 			<ColumnDefinition Width="*"/>

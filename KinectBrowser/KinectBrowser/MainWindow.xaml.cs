@@ -68,6 +68,8 @@ namespace KinectBrowser
             //browser.NewTab("file://C|/Users/Audrey/Downloads/html/Latin%20Union%20-%20Wikipedia,%20the%20free%20encyclopedia.htm");
 
             InteractionsCore.Core.Loop += new EventHandler(Core_Loop);
+
+            InitializeKeyboardActions();
         }
 
         private void DemoOpenURI(string p)
@@ -120,6 +122,9 @@ namespace KinectBrowser
 
         private void VirtualClick(DependencyObject hitResult)
         {
+            if (hitResult == null)
+                return;
+
             var btn = hitResult as Button;
 
             if (btn != null)
@@ -339,6 +344,16 @@ namespace KinectBrowser
 
         #region Virtual Keyboard Management
 
+        private void InitializeKeyboardActions()
+        {
+            virtualKeyboard.btnCancel.Click += new RoutedEventHandler(btnCancel_Click);
+        }
+
+        void btnCancel_Click(object sender, RoutedEventArgs e)
+        {
+            EndKeyboard();
+        }
+
         private bool isKeyboardActive = false;
 
         public bool IsKeyboardActive
@@ -381,8 +396,14 @@ namespace KinectBrowser
             {
                 currentKeyboardButtonsHost.CloseMenu();
                 currentKeyboardButtonsHost = null;
+                currentKeyboardButton = null;
             }
         }
+
+        Button currentKeyboardButton = null;
+        DateTime lastButtonChangeTime = DateTime.Now;
+
+        TimeSpan keyboardClickLatency = TimeSpan.FromMilliseconds(600);
 
         private void KeyboardCursorMoveHandler(Microsoft.Xna.Framework.Vector3 pos)
         {
@@ -412,6 +433,20 @@ namespace KinectBrowser
                 if (btnHost != null)
                 {
                     EnterKeyboardButtonsHost(btnHost);
+                }
+
+                if (currentKeyboardButton != btn)
+                {
+                    currentKeyboardButton = btn;
+                    lastButtonChangeTime = DateTime.Now;
+                }
+                else
+                {
+                    if (currentKeyboardButton != null && DateTime.Now - lastButtonChangeTime >= keyboardClickLatency)
+                    {
+                        VirtualClick(btn);
+                        lastButtonChangeTime = DateTime.Now;
+                    }
                 }
             }
         }
@@ -675,6 +710,7 @@ namespace KinectBrowser
                 if (isKeyboardActive)
                 {
                     additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
+                    additionnalActionsUIControls.Opacity = 0;
 
                     KeyboardCursorMoveHandler(provider.MainPosition.CurrentPoint.Position);
                 }

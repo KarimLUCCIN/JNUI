@@ -2,9 +2,10 @@
 	x:Class="KinectBrowser.KeyboardControl"
 	mc:Ignorable="d"
 	x:Name="KeyboardControl1"
-	d:DesignWidth="640" d:DesignHeight="480" Width="800" Height="600" Initialized="Keyboard_initialized">
+    Background="#33000000"
+    d:DesignWidth="640" d:DesignHeight="480" Width="800" Height="600" Initialized="Keyboard_initialized">
 
-	<Grid x:Name="LayoutRoot" Background="Black">
+	<Grid x:Name="LayoutRoot" Background="#01000000">
 		<Grid x:Name="functionKeys" Height="76.5" VerticalAlignment="Top" Background="Black">
 			<Grid.ColumnDefinitions>
 				<ColumnDefinition Width="*"/>
@@ -13,14 +14,24 @@
 				<ColumnDefinition Width="*"/>
 				<ColumnDefinition Width="*"/>
 			</Grid.ColumnDefinitions>
-			<Button Content="8" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" FontFamily="Wingdings 3"/>
-			<Button Content=")" Grid.Column="1" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Wingdings 3" FontSize="32"/>
-			<Button Content="Space" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="29.333"/>
-			<Button Content="Enter" Grid.Column="3" VerticalAlignment="Center" FontSize="29.333" HorizontalAlignment="Center"/>
-			<Button Content="Cancel" Grid.Column="4" FontSize="29.333" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			<Button Content="8" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="32" FontFamily="Wingdings 3" x:Name="btnDelete"/>
+			<Button Content=")" Grid.Column="1" Margin="0" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Wingdings 3" FontSize="32" x:Name="btnLineBreak"/>
+			<Button Content="Space" Grid.Column="2" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="29.333" x:Name="btnSpace"/>
+			<Button Content="Enter" Grid.Column="3" VerticalAlignment="Center" FontSize="29.333" HorizontalAlignment="Center" x:Name="btnEnter"/>
+			<Button Content="Cancel" Grid.Column="4" FontSize="29.333" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="btnCancel"/>
 		</Grid>
-		<TextBlock x:Name="inputUser" Margin="198.5,205.5,209,273" TextWrapping="Wrap" FontSize="32" Background="White"><Run Text="TextBlock"/></TextBlock>
-		<TextBlock x:Name="possibleWord" TextWrapping="Wrap" Text="TextBlock" VerticalAlignment="Bottom" Margin="198.5,0,209,138.54" Height="134.46" FontSize="32" Background="White"/>
+        <Border CornerRadius="4" Background="White" BorderBrush="Black" BorderThickness="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" Height="260" Margin="0,70,0,0">
+            <Grid Margin="4">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="100" />
+                    <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <TextBlock x:Name="inputUser" Grid.Row="0" TextWrapping="Wrap" FontSize="32" Background="White" Text="Some Text"/>
+                <TextBlock x:Name="possibleWord" Grid.Row="1" TextWrapping="Wrap" Text="Some words" FontSize="32" Background="White"/>
+                <Rectangle Fill="Black" VerticalAlignment="Top" Height="2" Grid.Row="1"/>
+            </Grid>
+        </Border>
 		<Grid x:Name="buttonGrid" Margin="0,76.5,0,0">
 			<Grid.RowDefinitions>
 				<RowDefinition Height="*"/>
