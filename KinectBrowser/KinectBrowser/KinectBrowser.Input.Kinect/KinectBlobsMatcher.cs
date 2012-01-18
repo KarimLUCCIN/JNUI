@@ -178,7 +178,7 @@ namespace KinectBrowser.Input.Kinect
         {
             var normalized_v = v / range;
             var directed_v = 1 / (1 + Math.Exp(normalized_v * 8 - 4));
-            return directed_v * range;
+            return (1 - directed_v) * range;
 
 //#warning vérifier qu'on ne clamp rien ici (avec la kinect ... je l'ai pas là et j'ai la flemme)
 //            var normalized_v = v / range; //[0 : 1]
