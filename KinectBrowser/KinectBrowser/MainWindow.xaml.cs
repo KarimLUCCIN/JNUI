@@ -371,8 +371,7 @@ namespace KinectBrowser
                     LeaveKeyboardButtonsHost();
 
                 currentKeyboardButtonsHost = buttonsHost;
-
-                VisualStateManager.GoToElementState(currentKeyboardButtonsHost, "Open", true);
+                currentKeyboardButtonsHost.OpenMenu();
             }
         }
 
@@ -380,7 +379,7 @@ namespace KinectBrowser
         {
             if(currentKeyboardButtonsHost != null)
             {
-                VisualStateManager.GoToElementState(currentKeyboardButtonsHost, "Closed", true);
+                currentKeyboardButtonsHost.CloseMenu();
                 currentKeyboardButtonsHost = null;
             }
         }
