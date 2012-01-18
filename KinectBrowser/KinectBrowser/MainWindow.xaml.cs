@@ -59,7 +59,7 @@ namespace KinectBrowser
             browser.Attach(SoraEngine);
             browser.CustomInput = true;
 
-            //browser.NewTab("http://www.wikipedia.com");
+            browser.NewTab("http://www.wikipedia.com");
             //browser.NewTab("http://www.youtube.com");
             browser.NewTab("http://www.google.com");
 
@@ -145,7 +145,7 @@ namespace KinectBrowser
             switch (additionnalActionsUIControls.MenuMode)
             {
                 case MenuMode.ZoomPrincipal:
-                    /* ? */
+                    BeginKeyboard();
                     break;
                 case MenuMode.ClickPrincipal:
                     if (browser.ActivePage != null)
@@ -333,6 +333,88 @@ namespace KinectBrowser
                     }
                 }
             });
+        }
+
+        #endregion
+
+        #region Virtual Keyboard Management
+
+        private bool isKeyboardActive = false;
+
+        public bool IsKeyboardActive
+        {
+            get { return isKeyboardActive; }
+            set { isKeyboardActive = value; }
+        }
+                
+        private void BeginKeyboard()
+        {
+            hasValidatedClickAction = false;
+            virtualKeyboard.Visibility = System.Windows.Visibility.Visible;
+            isKeyboardActive = true;
+        }
+
+        private void EndKeyboard()
+        {
+            LeaveKeyboardButtonsHost();
+            virtualKeyboard.Visibility = System.Windows.Visibility.Collapsed;
+            isKeyboardActive = false;
+        }
+
+        KeyboardButtons currentKeyboardButtonsHost = null;
+
+        private void EnterKeyboardButtonsHost(KeyboardButtons buttonsHost)
+        {
+            if (buttonsHost != null && buttonsHost != currentKeyboardButtonsHost)
+            {
+                if (currentKeyboardButtonsHost != null)
+                    LeaveKeyboardButtonsHost();
+
+                currentKeyboardButtonsHost = buttonsHost;
+
+                VisualStateManager.GoToElementState(currentKeyboardButtonsHost, "Open", true);
+            }
+        }
+
+        private void LeaveKeyboardButtonsHost()
+        {
+            if(currentKeyboardButtonsHost != null)
+            {
+                VisualStateManager.GoToElementState(currentKeyboardButtonsHost, "Closed", true);
+                currentKeyboardButtonsHost = null;
+            }
+        }
+
+        private void KeyboardCursorMoveHandler(Microsoft.Xna.Framework.Vector3 pos)
+        {
+            /* On cherche ce qui se trouve sous la souris */
+            var hitResult = virtualKeyboard.InputHitTest(Mouse.GetPosition(virtualKeyboard)) as DependencyObject;
+            if (hitResult != null)
+            {
+                KeyboardButtons btnHost = null;
+                Button btn = null;
+
+                while (hitResult != null && (btnHost == null || btn == null))
+                {
+                    if (btnHost == null)
+                        btnHost = hitResult as KeyboardButtons;
+
+                    /* on est arrivé au contrôle */
+                    if (btnHost != null)
+                        break;
+
+                    /* Peut être un bouton ? */
+                    if (btn == null)
+                        btn = hitResult as Button;
+
+                    hitResult = hitResult is Run ? null : VisualTreeHelper.GetParent(hitResult);
+                }
+
+                if (btnHost != null)
+                {
+                    EnterKeyboardButtonsHost(btnHost);
+                }
+            }
         }
 
         #endregion
@@ -591,45 +673,56 @@ namespace KinectBrowser
 
                 isNewClick = isNewClick && additionnalActionsUI.Visibility == System.Windows.Visibility.Visible;
 
-                if (additionnalActionsUI.Visibility == System.Windows.Visibility.Visible)
-                    additionnalActionsUIControls.Opacity = hasValidatedClickAction ? 0.2 : 1;
-
-                if (isNewClick)
+                if (isKeyboardActive)
                 {
-                    additionnalActionsUIControls.MenuMode = MenuMode.ClickPrincipal;
+                    additionnalActionsUI.Visibility = System.Windows.Visibility.Hidden;
 
-                    KinectLeftClickBegin(provider, provider.MainPosition.CurrentPoint.Position);
-                    isWaitingForClickAction = false;
-                    hasValidatedClickAction = false;
+                    KeyboardCursorMoveHandler(provider.MainPosition.CurrentPoint.Position);
                 }
-                else if (additionnalActionsUI.Visibility == System.Windows.Visibility.Visible)
+                else
                 {
-                    if (!isWaitingForClickAction)
+
+                    if (additionnalActionsUI.Visibility == System.Windows.Visibility.Visible)
+                        additionnalActionsUIControls.Opacity = hasValidatedClickAction ? 0.2 : 1;
+
+                    if (isNewClick)
                     {
+                        additionnalActionsUIControls.MenuMode = MenuMode.ClickPrincipal;
+
+                        KinectLeftClickBegin(provider, provider.MainPosition.CurrentPoint.Position);
+                        isWaitingForClickAction = false;
                         hasValidatedClickAction = false;
-                        isWaitingForClickAction = true;
-                        waitinForClickActionTime = DateTime.Now;
                     }
-                    else
+                    else if (additionnalActionsUI.Visibility == System.Windows.Visibility.Visible)
                     {
-                        var now = DateTime.Now;
-
-                        if ((now - waitinForClickActionTime) >= waitingForClickActionLatency)
+                        if (!isWaitingForClickAction)
                         {
-                            HandleLeftMenuAction(kinectClickGesturePoint.Position, kinectClickLeftBeginPosition);
-
-                            HandleRightMenuAction(provider.MainPosition.CurrentPoint.Position, kinectClickRightBeginPosition);
+                            hasValidatedClickAction = false;
+                            isWaitingForClickAction = true;
+                            waitinForClickActionTime = DateTime.Now;
                         }
                         else
                         {
-                            kinectClickLeftBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
-                            kinectClickRightBeginPosition = XY(provider.MainPosition.CurrentPoint.Position);
+                            var now = DateTime.Now;
+
+                            if ((now - waitinForClickActionTime) >= waitingForClickActionLatency)
+                            {
+                                HandleLeftMenuAction(kinectClickGesturePoint.Position, kinectClickLeftBeginPosition);
+
+                                HandleRightMenuAction(provider.MainPosition.CurrentPoint.Position, kinectClickRightBeginPosition);
+                            }
+                            else
+                            {
+                                kinectClickLeftBeginPosition = new Microsoft.Xna.Framework.Vector2(kinectClickGesturePoint.Position.X, kinectClickGesturePoint.Position.Y);
+                                kinectClickRightBeginPosition = XY(provider.MainPosition.CurrentPoint.Position);
+                            }
                         }
                     }
+
                 }
             }
         }
-
+        
         private Microsoft.Xna.Framework.Vector2 DisplayOptionnals(KinectProvider provider, Microsoft.Xna.Framework.Vector2 clientOrigin)
         {
             int index = 0;

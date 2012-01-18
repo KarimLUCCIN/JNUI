@@ -48,7 +48,7 @@ namespace KinectBrowser
                     {
                         upButton.ButtonText = "Zoom";
                         rightButton.ButtonText = "Next Tab";
-                        downButton.ButtonText = "?";
+                        downButton.ButtonText = "Keyboard";
                         leftButton.ButtonText = "Previous Tab";
 
                         break;
