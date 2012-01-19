@@ -3,6 +3,7 @@
 	mc:Ignorable="d"
 	x:Name="KeyboardControl1"
     Background="#33000000"
+             xmlns:ctrls="clr-namespace:KinectBrowser.Controls"
     d:DesignWidth="640" d:DesignHeight="480" Width="800" Height="600" Initialized="Keyboard_initialized">
 
 	<Grid x:Name="LayoutRoot" Background="#01000000">
@@ -32,23 +33,7 @@
                 <Rectangle Fill="Black" VerticalAlignment="Top" Height="2" Grid.Row="1"/>
             </Grid>
         </Border>
-		<Grid x:Name="buttonGrid" Margin="0,76.5,0,0">
-			<Grid.RowDefinitions>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="*"/>
-				<RowDefinition Height="*"/>
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="*"/>
-				<ColumnDefinition Width="*"/>
-			</Grid.ColumnDefinitions>
-		</Grid>
-	</Grid>
+        <ctrls:CircularPanel x:Name="buttonGrid" Margin="0,76.5,0,0" ChildSize="100" HorizontalFactor="1.7">
+        </ctrls:CircularPanel>
+    </Grid>
 </UserControl>

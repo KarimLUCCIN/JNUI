@@ -8,7 +8,28 @@ using System.Windows;
 namespace KinectBrowser.Controls
 {
     public class CircularPanel : Panel
-    {
+    {        
+        public double VerticalFactor
+        {
+            get { return (double)GetValue(VerticalFactorProperty); }
+            set { SetValue(VerticalFactorProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for VerticalFactor.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty VerticalFactorProperty =
+            DependencyProperty.Register("VerticalFactor", typeof(double), typeof(CircularPanel), new UIPropertyMetadata(1.0, ChildSizeChangedCallback));
+        
+        public double HorizontalFactor
+        {
+            get { return (double)GetValue(HorizontalFactorProperty); }
+            set { SetValue(HorizontalFactorProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for HorizontalFactor.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty HorizontalFactorProperty =
+            DependencyProperty.Register("HorizontalFactor", typeof(double), typeof(CircularPanel), new UIPropertyMetadata(1.0, ChildSizeChangedCallback));
+               
+
         public double ChildSize
         {
             get { return (double)GetValue(childWidthProperty); }
@@ -71,7 +92,7 @@ namespace KinectBrowser.Controls
 
                 for (int i = 0; i < Children.Count; i++)
                 {
-                    var newCenter = new Point(Math.Cos(angle) * radius + center.Width, Math.Sin(angle) * radius + center.Height);
+                    var newCenter = new Point(Math.Cos(angle) * radius * HorizontalFactor + center.Width, Math.Sin(angle) * radius * VerticalFactor + center.Height);
 
                     Children[i].Arrange(new Rect(newCenter.X - ChildSize / 2.0, newCenter.Y - ChildSize / 2.0, ChildSize, ChildSize));
 
