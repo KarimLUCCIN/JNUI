@@ -177,7 +177,10 @@ namespace KinectBrowser.Input.Kinect
         private double ReScale(double v, double range)
         {
             var normalized_v = v / range;
-            var directed_v = 1 / (1 + Math.Exp(normalized_v * 8 - 4));
+            
+            var directed_v = (1 / (1 + Math.Exp(normalized_v * 8 - 4))) * 1.05 - 0.025;
+            directed_v = directed_v < 0 ? 0 : (directed_v > 1 ? 1 : directed_v);
+
             return (1 - directed_v) * range;
 
 //#warning vérifier qu'on ne clamp rien ici (avec la kinect ... je l'ai pas là et j'ai la flemme)
