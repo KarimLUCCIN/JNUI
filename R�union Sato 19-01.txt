@@ -1,0 +1,11 @@
+- Change the color of letters (hover effect)
+- Aggrandir les lettres pour même les faire dépasser afin d'agrandir la zone de saisie
+- Essayer de reconnaître la forme d'une main pour vérifier que le blob traqué soit le bon lorsque ça se séparre (trouver un truc pour identifier les shape en 2D, qui soit fast enough)
+- SIFT Scale Invarient Feature Transformation (Descriptor of Local Feature Information)
+- SURF
+
+xd=pixel(x,y)
+moment(x) = (1/R) somme des xd
+moment^k(x) = (1/R) somme des (xd - moment(x))^k
+
+Lorsque deux blobs sont trop prêts, traquer celui qui a le moment le plus proche
