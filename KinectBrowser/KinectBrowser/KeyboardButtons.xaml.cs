@@ -22,7 +22,7 @@ namespace KinectBrowser
 		{
             this.InitializeComponent();
 
-            VisualStateManager.GoToState(this, "Open", true);
+            VisualStateManager.GoToState(this, "Closed", true);
 		}
 		
 		public KeyboardButtons(String s) {
@@ -35,7 +35,7 @@ namespace KinectBrowser
 			char3.Content = s[2];
             char4.Content = s[3];
 
-            VisualStateManager.GoToState(this, "Open", true);			
+            VisualStateManager.GoToState(this, "Closed", true);			
 		}
 
         private bool closed = true;
