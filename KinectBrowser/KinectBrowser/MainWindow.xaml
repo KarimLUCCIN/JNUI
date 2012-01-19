@@ -281,5 +281,6 @@
             <Ellipse Width="48" Height="48" Margin="-24" Fill="#10000000"/>
             <Ellipse Width="48" Height="48" Margin="-24" Fill="#10000000"/>
         </Canvas>
+        <local:KeyboardControl Margin="0"/>
     </Grid>
 </Window>
