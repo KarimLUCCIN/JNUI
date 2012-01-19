@@ -1,0 +1,17 @@
+﻿<Window x:Class="CircularPanelTest.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525" xmlns:k_browser="clr-namespace:KinectBrowser.Controls;assembly=KinectBrowser">
+    <Grid>
+        <k_browser:CircularPanel ChildSize="60">
+            <Rectangle Fill="Blue"/>
+            <Rectangle Fill="Blue"/>
+            <Rectangle Fill="Blue"/>
+            <Rectangle Fill="Blue"/>
+            <Rectangle Fill="Blue"/>
+            <Rectangle Fill="Blue"/>
+            <Rectangle Fill="Blue"/>
+            <Rectangle Fill="Blue"/>
+        </k_browser:CircularPanel>
+    </Grid>
+</Window>
