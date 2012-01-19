@@ -258,8 +258,8 @@
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
-		<Button Margin="0" x:Name="center" Content="center" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" ToolTip="" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
-		<Button x:Name="char4" Content="char4" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" ToolTip="" Background="Black" Grid.Column="2" Width="45" Height="45" Margin="-11.667,0,0,-11.667" Visibility="Hidden">
+		<Button Margin="0" x:Name="center" Content="center" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
+		<Button x:Name="char4" Content="char4" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.Column="2" Width="45" Height="45" Margin="-11.667,0,0,-11.667" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -269,7 +269,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button Margin="-11.667,-11.667,0,0" x:Name="char3" Content="char3" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" ToolTip="" Background="Black" Grid.Column="2" Grid.Row="2" Width="45" Height="45" Visibility="Hidden">
+		<Button Margin="-11.667,-11.667,0,0" x:Name="char3" Content="char3" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.Column="2" Grid.Row="2" Width="45" Height="45" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -279,7 +279,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button Margin="0,-11.667,-11.668,0" x:Name="char2" Content="char2" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" ToolTip="" Background="Black" Grid.Row="2" Width="45" Height="45" Visibility="Hidden">
+		<Button Margin="0,-11.667,-11.668,0" x:Name="char2" Content="char2" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.Row="2" Width="45" Height="45" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -289,7 +289,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button Margin="0,0,-11.667,-11.667" x:Name="char1" Content="char1" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" ToolTip="" Background="Black" Width="45" Height="45" Visibility="Hidden">
+		<Button Margin="0,0,-11.667,-11.667" x:Name="char1" Content="char1" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Width="45" Height="45" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
