@@ -173,6 +173,22 @@
 								<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
 								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="21"/>
 							</DoubleAnimationUsingKeyFrames>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char4">
+								<DiscreteObjectKeyFrame KeyTime="0" Value="char4"/>
+								<DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="4"/>
+							</ObjectAnimationUsingKeyFrames>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char3">
+								<DiscreteObjectKeyFrame KeyTime="0" Value="char3"/>
+								<DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="3"/>
+							</ObjectAnimationUsingKeyFrames>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char2">
+								<DiscreteObjectKeyFrame KeyTime="0" Value="char2"/>
+								<DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="2"/>
+							</ObjectAnimationUsingKeyFrames>
+							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char1">
+								<DiscreteObjectKeyFrame KeyTime="0" Value="char1"/>
+								<DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="1"/>
+							</ObjectAnimationUsingKeyFrames>
 						</Storyboard>
 					</VisualTransition>
 				</VisualStateGroup.Transitions>
