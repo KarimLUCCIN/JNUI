@@ -1,4 +1,6 @@
-﻿using System;
+﻿#define USE_MOMENTS_FOR_TRACKING
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +29,7 @@ namespace KinectBrowser.ImageProcessing
             public int Age { get; set; }
 
             internal int waitingCycles = 0;
+            internal double trackedMoment = 0;
 
             public int WaitingCycles
             {
@@ -94,7 +97,7 @@ namespace KinectBrowser.ImageProcessing
             set { maxWaitingCycles = value; }
         }
 
-        private double maxBlobsDistance = 50;
+        private double maxBlobsDistance = double.MaxValue;
 
         public double MaxBlobsDistance
         {
@@ -154,7 +157,11 @@ namespace KinectBrowser.ImageProcessing
 
                 foreach (var actual in TrackedBlobs)
                 {
+#if(USE_MOMENTS_FOR_TRACKING)
+                    i_blob.score = Math.Abs(i_blob.blob.Mu[1, 1] - actual.trackedMoment);
+#else
                     i_blob.score = Math.Min(i_blob.score, Distance(i_blob.blob.AvgCenterX, i_blob.blob.AvgCenterY, actual.Current.AvgCenterX, actual.Current.AvgCenterY));
+#endif
                 }
 
                 if (i_blob.score > maxBlobsDistance)
@@ -206,6 +213,11 @@ namespace KinectBrowser.ImageProcessing
                             invert = true;
                         }
 
+#if(USE_MOMENTS_FOR_TRACKING)
+                        /* Moment ? */
+                        d = Math.Abs(i_blob.blob.Mu[1, 1] - actual.trackedMoment);
+#endif
+
                         if (d < score)
                         {
                             closest = actual;
@@ -222,6 +234,8 @@ namespace KinectBrowser.ImageProcessing
                     closest.attached = true;
                     closest.waitingCycles = 0;
                     closest.InvertedCursor = closestIsInverted;
+
+                    closest.trackedMoment = i_blob.blob.Mu[2, 2];
 
                     i_blob.used = true;
                 }
