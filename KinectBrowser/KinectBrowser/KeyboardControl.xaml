@@ -71,7 +71,7 @@
 					</VisualStateGroup>
 				</VisualStateManager.VisualStateGroups>
 				<Rectangle Fill="{TemplateBinding Background}" Margin="-33.5,-4.417,-43.5,-6.583" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10"/>
-				<ContentPresenter x:Name="contentPresenter" VerticalAlignment="Stretch" Width="Auto" Margin="-21,0,-33.5,0" RenderTransformOrigin="0.379,0.561"/>
+				<ContentPresenter x:Name="contentPresenter" Width="Auto" Margin="-21,0,-33.5,0" RenderTransformOrigin="0.379,0.561" HorizontalAlignment="Stretch"/>
 			</Grid>
 		</ControlTemplate>
 	</UserControl.Resources>
@@ -139,8 +139,8 @@
         <Border CornerRadius="4" Background="White" BorderBrush="Black" BorderThickness="1" Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Width="400" Height="260" Margin="0,70,0,0">
             <Grid Margin="4">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="100" />
-                    <RowDefinition Height="*" />
+                	<RowDefinition Height="100" />
+                	<RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
                 <TextBlock x:Name="inputUser" Grid.Row="0" TextWrapping="Wrap" FontSize="32" Background="White" Text="Some Text"/>
