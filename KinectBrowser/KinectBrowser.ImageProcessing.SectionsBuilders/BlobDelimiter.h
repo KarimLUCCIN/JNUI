@@ -1,5 +1,10 @@
 #pragma once
 
+/*
+	Image Moments
+	http://en.wikipedia.org/wiki/Image_moments
+*/
+
 using namespace System::Collections::Generic;
 
 namespace KinectBrowser
@@ -68,6 +73,9 @@ namespace KinectBrowser
 				double crossSecondAngle;
 
 				int PixelCount;
+
+				/* Utilisé pour les calculs des moments */
+				double Moments[2][2];
 			};
 
 			public ref struct ManagedBlob
@@ -98,6 +106,10 @@ namespace KinectBrowser
 				int PixelCount;
 
 				bool Crossed;
+
+				/* Utilisé pour les calculs des moments */
+				array<double,2> ^ Moments;
+				array<double,2> ^ Mu;
 
 				/* Le blob qui est actuellement croisé avec celui-ci */
 				ManagedBlob^ CrossedTarget;
@@ -163,6 +175,20 @@ namespace KinectBrowser
 					res->Crossed = Crossed;
 					res->CrossedTarget = CrossedTarget;
 
+					res->Moments = gcnew array<double,2>(2, 2);
+					res->Mu = gcnew array<double,2>(3, 3);
+
+					for(int i = 0;i<=2;i++)
+					{
+						for(int j = 0;j<=2;j++)
+						{
+							if(i < 2 && j < 2)
+								res->Moments[i,j] = Moments[i,j];
+
+							res->Mu[i,j] = Mu[i,j];
+						}
+					}
+
 					return res;
 				}
 			};
@@ -180,9 +206,15 @@ namespace KinectBrowser
 				/* Used when resolving blobs ids after the scan */
 				int * blobIdsCorrespondanceData;
 				unsigned char * processingIntermediateOutput;
+
+				/*
+				Les k parmi n, pour k et n variants de 0 à 4 (précalculé pour aller plus vite après)
+				*/
+				int ** binomialCoeffs;
 			private:
 				Blob * blobs;
 
+				void convertBlob(ManagedBlob ^ dst, Blob * src, double primaryCenterX, double primaryCenterY, bool crossed);
 				int convertBlobs(int blobCount);
 			public:
 				property array<ManagedBlob^>^ Blobs
@@ -208,6 +240,7 @@ namespace KinectBrowser
 				/* Return the number of blobs identified, accessed via GetBlobData */
 				int BuildBlobs(unsigned char* data, unsigned char * grads);
 			};
+
 		}
 	}
 }
