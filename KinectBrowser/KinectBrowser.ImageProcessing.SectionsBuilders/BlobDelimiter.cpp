@@ -353,6 +353,45 @@ namespace KinectBrowser
 					return 3;
 			}
 
+			/* de 0 à 10, à la puissance 0 à 10. Sinon ça passe sur le pow classique*/
+			double ** powTable = NULL;
+#define Q_POW_MAX_TABLE 1024
+
+			inline double q_pow(int nb, int power)
+			{
+				if(nb < Q_POW_MAX_TABLE && power < Q_POW_MAX_TABLE)
+				{
+					if(powTable == NULL)
+					{
+						powTable = new double * [Q_POW_MAX_TABLE];
+
+						for(int p = 0;p<Q_POW_MAX_TABLE;p++)
+						{
+							powTable[p] = new double [Q_POW_MAX_TABLE];
+
+							for(int q = 0;q<Q_POW_MAX_TABLE;q++)
+							{
+								powTable[p][q] = pow((double)p, (double)q);
+							}
+						}
+					}
+
+					return powTable[nb][power];
+				}
+				else
+					return pow((double)nb, (double)power);
+			}
+
+			inline double momentsIntegrate(int line, int column, int pixel, int p, int q)
+			{
+				return q_pow((double)column, (double)p) * q_pow((double)line, (double)q) * pixel;
+			}
+
+			inline void momentsIntegrateOnBlob( Blob * blobs, int c_blob, int line, int column, int pixelValue, int p, int q) 
+			{
+				blobs[c_blob].Moments[p][q] = momentsIntegrate(line, column, pixelValue, p, q);
+			}
+
 			void match(Blob * blobs, int * blobIdsCorrespondanceData, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
 			{	
 				memset(blobs, 0, sizeof(Blob) * (blobsCount+1)); //lines * columns);
@@ -389,9 +428,28 @@ namespace KinectBrowser
 								blobs[c_blob].haveCrossingPattern = false;
 
 								blobs[c_blob].closestPointDepth = (double)INT_MAX;
+
+								for(int p = 0;p<2;p++)
+								{
+									for(int q = 0;q<2;q++)
+									{
+										blobs[c_blob].Moments[p][q] = 0;
+									}
+								}
 							}
 
-							/* counting the current pixel */
+							/* Progression du calcul du moment */
+							int pixelValue = pixelAt(data, line, column);
+
+							for(int p = 0;p<2;p++)
+							{
+								for(int q = 0;q<2;q++)
+								{
+									momentsIntegrateOnBlob(blobs, c_blob, line, column, pixelValue, p, q);
+								}
+							}
+							
+							/* Counting the current pixel */
 							blobs[c_blob].PixelCount++;
 
 							blobs[c_blob].accX += column;
@@ -478,6 +536,45 @@ namespace KinectBrowser
 #pragma managed(pop)
 #endif
 
+#pragma region Binomial Coeffs computation
+
+			double Factorial(double nValue)
+			{
+				if(nValue == 0)
+					return 1;
+				else if(nValue == 1)
+					return 1;
+				else if(nValue == 2)
+					return 2;
+				else if(nValue == 3)
+					return 6;
+				else
+				{
+					double result = nValue;
+					double result_next;
+					double pc = nValue;
+					do
+					{
+						result_next = result*(pc-1);
+						result = result_next;
+						pc--;
+					}while(pc>2);
+					nValue = result;
+					return nValue;
+				}
+			}
+
+			double EvaluateBinomialCoefficient(double nValue, double nValue2)
+			{
+				double result;
+				if(nValue2 == 1)return nValue;
+				result = (Factorial(nValue))/(Factorial(nValue2)*Factorial((nValue - nValue2)));
+				nValue2 = result;
+				return nValue2;
+			}
+
+#pragma endregion Binomial Coeffs computation
+
 			BlobDelimiter::BlobDelimiter(int lines, int rows, int stride)
 			{
 				this->lines = lines;
@@ -490,7 +587,22 @@ namespace KinectBrowser
 				m_blobs = gcnew array<ManagedBlob^>(lines * rows);
 
 				for(int i = 0;i<lines * rows;i++)
+				{
 					m_blobs[i] = gcnew ManagedBlob();
+					m_blobs[i]->Moments = gcnew array<double,2>(2, 2);
+					m_blobs[i]->Mu = gcnew array<double,2>(3, 3);
+				}
+
+				binomialCoeffs = new int *[4];
+
+				for(int k = 0;k<4;k++)
+				{
+					binomialCoeffs[k] = new int[4];
+					for(int n = 0;n<4;n++)
+					{
+						binomialCoeffs[k][n] = EvaluateBinomialCoefficient(k, n);
+					}
+				}
 			}
 
 			BlobDelimiter::~BlobDelimiter(void)
@@ -520,8 +632,40 @@ namespace KinectBrowser
 				return sqrt(p2(x2-x1)+p2(y2-y1));
 			}
 
-			void convertBlob(ManagedBlob ^ dst, Blob * src, double primaryCenterX, double primaryCenterY, bool crossed)
+			void BlobDelimiter::convertBlob(ManagedBlob ^ dst, Blob * src, double primaryCenterX, double primaryCenterY, bool crossed)
 			{
+				/* Moments */
+				for(int p = 0;p<2;p++)
+				{
+					for(int q = 0;q<2;q++)
+					{
+						dst->Moments[p,q] = src->Moments[p][q];
+					}
+				}
+
+				if(src->PixelCount > 0 && src->Moments[0][0] > 0)
+				{
+					double x_bar = src->Moments[1][0] / src->Moments[0][0];
+					double y_bar = src->Moments[0][1] / src->Moments[0][0];
+
+					for(int p = 0;p<=2;p++)
+					{
+						for(int q = 0;q<=2;q++)
+						{
+							dst->Mu[p,q] = 0;
+
+							for(int m = 0;m<=p;m++)
+							{
+								for(int n = 0;n<=q;n++)
+								{
+									dst->Mu[p,q] += binomialCoeffs[m][p] * binomialCoeffs[n][q] * pow(-x_bar, p - m) * pow(-y_bar, q - n) * src->Moments[m][n];
+								}
+							}
+						}
+					}
+				}
+
+				/* Propriétés */
 				dst->AvgCenterX = src->AvgCenterX;
 				dst->AvgCenterY = src->AvgCenterY;
 
@@ -531,6 +675,22 @@ namespace KinectBrowser
 				dst->MaxY = src->MaxY;
 
 				dst->PixelCount = src->PixelCount;
+
+				//if(dst->Mu[0,0] != 0)
+				//{
+				//	double up20 = dst->Mu[2,0] / dst->Mu[0,0];
+				//	double up02 = dst->Mu[0,2] / dst->Mu[0,0];
+				//	double up11 = dst->Mu[1,1] / dst->Mu[0,0];
+
+				//	if(up11 != 0)
+				//	{
+				//		dst->AverageDirection = 0.5 * atan2(2 * up11, up20 - up02) + M_PI_2;
+				//	}
+				//	else
+				//		dst->AverageDirection = src->averageDirection;
+				//}
+				//else
+				//	dst->AverageDirection = src->averageDirection;
 
 				dst->AverageDirection = src->averageDirection;
 				dst->PrincipalDirection = src->principalDirection;
