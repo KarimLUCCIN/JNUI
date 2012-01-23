@@ -80,7 +80,30 @@
 						</VisualState>
 					</VisualStateGroup>
 				</VisualStateManager.VisualStateGroups>
-				<Ellipse x:Name="ellipse" Fill="Black" Stroke="White" StrokeThickness="2"/>
+				<Ellipse x:Name="ellipse" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" Fill="{TemplateBinding Background}"/>
+				<ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+			</Grid>
+		</ControlTemplate>
+		<ControlTemplate x:Key="HoverTemplate" TargetType="{x:Type Button}">
+			<Grid x:Name="main_grid">
+				<VisualStateManager.VisualStateGroups>
+					<VisualStateGroup x:Name="CommonStates">
+						<VisualState x:Name="Normal"/>
+						<VisualState x:Name="MouseOver"/>
+						<VisualState x:Name="Pressed"/>
+						<VisualState x:Name="Disabled">
+							<Storyboard>
+								<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="contentPresenter">
+									<EasingDoubleKeyFrame KeyTime="0" Value="0.5"/>
+								</DoubleAnimationUsingKeyFrames>
+								<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="ellipse">
+									<EasingDoubleKeyFrame KeyTime="0" Value="0.5"/>
+								</DoubleAnimationUsingKeyFrames>
+							</Storyboard>
+						</VisualState>
+					</VisualStateGroup>
+				</VisualStateManager.VisualStateGroups>
+				<Ellipse x:Name="ellipse" Stroke="White" StrokeThickness="2" Fill="#FF137C14"/>
 				<ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 			</Grid>
 		</ControlTemplate>
@@ -102,8 +125,8 @@
 				<VisualStateGroup.Transitions>
 					<VisualTransition From="Closed" GeneratedDuration="0" To="Open">
 						<Storyboard>
-							<DoubleAnimation Duration="0:0:0.2" To="-33.5" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char1"/>
-							<DoubleAnimation Duration="0:0:0.2" To="-33" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1"/>
+							<DoubleAnimation Duration="0:0:0.2" To="-33.166" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char1"/>
+							<DoubleAnimation Duration="0:0:0.2" To="-34.166" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1"/>
 							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="center">
 								<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
 							</ObjectAnimationUsingKeyFrames>
@@ -139,11 +162,11 @@
 							</Int32AnimationUsingKeyFrames>
 							<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char2">
 								<EasingDoubleKeyFrame KeyTime="0" Value="-0.5"/>
-								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="22"/>
+								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="-33"/>
 							</DoubleAnimationUsingKeyFrames>
 							<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char2">
 								<EasingDoubleKeyFrame KeyTime="0" Value="11.5"/>
-								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="-21.5"/>
+								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="33.5"/>
 							</DoubleAnimationUsingKeyFrames>
 							<Int32AnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Row)" Storyboard.TargetName="char3">
 								<EasingInt32KeyFrame KeyTime="0" Value="1"/>
@@ -153,11 +176,11 @@
 							</Int32AnimationUsingKeyFrames>
 							<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char3">
 								<EasingDoubleKeyFrame KeyTime="0" Value="11"/>
-								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="-22"/>
+								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="33.5"/>
 							</DoubleAnimationUsingKeyFrames>
 							<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char3">
 								<EasingDoubleKeyFrame KeyTime="0" Value="11.5"/>
-								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="33"/>
+								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="33.25"/>
 							</DoubleAnimationUsingKeyFrames>
 							<Int32AnimationUsingKeyFrames Storyboard.TargetProperty="(Grid.Row)" Storyboard.TargetName="char4">
 								<EasingInt32KeyFrame KeyTime="0" Value="1"/>
@@ -167,26 +190,26 @@
 							</Int32AnimationUsingKeyFrames>
 							<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char4">
 								<EasingDoubleKeyFrame KeyTime="0" Value="11"/>
-								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="32"/>
+								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="33.25"/>
 							</DoubleAnimationUsingKeyFrames>
 							<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char4">
 								<EasingDoubleKeyFrame KeyTime="0" Value="0"/>
-								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="21"/>
+								<EasingDoubleKeyFrame KeyTime="0:0:0.2" Value="-33"/>
 							</DoubleAnimationUsingKeyFrames>
 							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char4">
-								<DiscreteObjectKeyFrame KeyTime="0" Value="char4"/>
+								<DiscreteObjectKeyFrame KeyTime="0" Value=""/>
 								<DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="4"/>
 							</ObjectAnimationUsingKeyFrames>
 							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char3">
-								<DiscreteObjectKeyFrame KeyTime="0" Value="char3"/>
+								<DiscreteObjectKeyFrame KeyTime="0" Value=""/>
 								<DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="3"/>
 							</ObjectAnimationUsingKeyFrames>
 							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char2">
-								<DiscreteObjectKeyFrame KeyTime="0" Value="char2"/>
+								<DiscreteObjectKeyFrame KeyTime="0" Value=""/>
 								<DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="2"/>
 							</ObjectAnimationUsingKeyFrames>
 							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char1">
-								<DiscreteObjectKeyFrame KeyTime="0" Value="char1"/>
+								<DiscreteObjectKeyFrame KeyTime="0" Value=""/>
 								<DiscreteObjectKeyFrame KeyTime="0:0:0.2" Value="1"/>
 							</ObjectAnimationUsingKeyFrames>
 						</Storyboard>
@@ -245,6 +268,12 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ToolTipService.ToolTip)" Storyboard.TargetName="char4">
 							<DiscreteObjectKeyFrame KeyTime="0" Value=""/>
 						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="center">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char3">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="3"/>
+						</ObjectAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>
 				<VisualState x:Name="Open">
@@ -253,10 +282,10 @@
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
 						</ObjectAnimationUsingKeyFrames>
 						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char1">
-							<EasingDoubleKeyFrame KeyTime="0" Value="-1"/>
+							<EasingDoubleKeyFrame KeyTime="0" Value="0.167"/>
 						</DoubleAnimationUsingKeyFrames>
 						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1">
-							<EasingDoubleKeyFrame KeyTime="0" Value="0.5"/>
+							<EasingDoubleKeyFrame KeyTime="0" Value="-0.166"/>
 						</DoubleAnimationUsingKeyFrames>
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char1">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
@@ -270,12 +299,142 @@
 						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char4">
 							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
 						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="2"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char3">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="3"/>
+						</ObjectAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+				<VisualState x:Name="TopLeft">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="center">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char1">
+							<EasingDoubleKeyFrame KeyTime="0" Value="0.167"/>
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1">
+							<EasingDoubleKeyFrame KeyTime="0" Value="-0.166"/>
+						</DoubleAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char1">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char3">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char4">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="2"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="char1">
+							<EasingColorKeyFrame KeyTime="0" Value="#FF2C7E0F"/>
+						</ColorAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+				<VisualState x:Name="BottomLeft">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="center">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char1">
+							<EasingDoubleKeyFrame KeyTime="0" Value="0.167"/>
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1">
+							<EasingDoubleKeyFrame KeyTime="0" Value="-0.166"/>
+						</DoubleAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char1">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char3">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char4">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="2"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="char2">
+							<EasingColorKeyFrame KeyTime="0" Value="#FF2C7E0F"/>
+						</ColorAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+				<VisualState x:Name="BottomRight">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="center">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char1">
+							<EasingDoubleKeyFrame KeyTime="0" Value="0.167"/>
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1">
+							<EasingDoubleKeyFrame KeyTime="0" Value="-0.166"/>
+						</DoubleAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char1">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char3">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char4">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="2"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="char3">
+							<EasingColorKeyFrame KeyTime="0" Value="#FF2C7E0F"/>
+						</ColorAnimationUsingKeyFrames>
+					</Storyboard>
+				</VisualState>
+				<VisualState x:Name="TopRight">
+					<Storyboard>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="center">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char1">
+							<EasingDoubleKeyFrame KeyTime="0" Value="0.167"/>
+						</DoubleAnimationUsingKeyFrames>
+						<DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1">
+							<EasingDoubleKeyFrame KeyTime="0" Value="-0.166"/>
+						</DoubleAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char1">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char3">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="char4">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Visible}"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(ContentControl.Content)" Storyboard.TargetName="char2">
+							<DiscreteObjectKeyFrame KeyTime="0" Value="2"/>
+						</ObjectAnimationUsingKeyFrames>
+						<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Panel.Background).(SolidColorBrush.Color)" Storyboard.TargetName="char4">
+							<EasingColorKeyFrame KeyTime="0" Value="#FF2C7E0F"/>
+						</ColorAnimationUsingKeyFrames>
 					</Storyboard>
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
-		<Button Margin="0" x:Name="center" Content="center" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
-		<Button x:Name="char4" Content="char4" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.Column="2" Width="45" Height="45" Margin="-11.667,0,0,-11.667" Visibility="Hidden">
+		<Button Margin="0" x:Name="center" Content="center" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Visible"/>
+		<Button x:Name="char4" Content="4" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="32" BorderThickness="0" Background="Black" Grid.Column="2" Width="45" Height="45" Margin="-11.667,0,0,-11.667" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -285,7 +444,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button Margin="-11.667,-11.667,0,0" x:Name="char3" Content="char3" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.Column="2" Grid.Row="2" Width="45" Height="45" Visibility="Hidden">
+		<Button Margin="-11.667,-11.667,0,0" x:Name="char3" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="32" BorderThickness="0" Background="Black" Grid.Column="2" Grid.Row="2" Width="45" Height="45" Visibility="Hidden" Content="3">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -295,7 +454,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button Margin="0,-11.667,-11.668,0" x:Name="char2" Content="char2" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.Row="2" Width="45" Height="45" Visibility="Hidden">
+		<Button Margin="0,-11.667,-11.668,0" x:Name="char2" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="32" BorderThickness="0" Background="Black" Grid.Row="2" Width="45" Height="45" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
@@ -305,7 +464,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button Margin="0,0,-11.667,-11.667" x:Name="char1" Content="char1" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Width="45" Height="45" Visibility="Hidden">
+		<Button Margin="0,0,-11.667,-11.667" x:Name="char1" Content="1" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="32" BorderThickness="0" Background="Black" Width="45" Height="45" Visibility="Hidden">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>

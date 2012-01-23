@@ -346,10 +346,10 @@ namespace KinectBrowser
 
         private void InitializeKeyboardActions()
         {
-            virtualKeyboard.btnCancel.Click += new RoutedEventHandler(btnCancel_Click);
+            virtualKeyboard.cancel.Click += new RoutedEventHandler(cancel_Click);
         }
 
-        void btnCancel_Click(object sender, RoutedEventArgs e)
+        void cancel_Click(object sender, RoutedEventArgs e)
         {
             EndKeyboard();
         }
