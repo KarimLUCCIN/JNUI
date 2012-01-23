@@ -389,7 +389,7 @@ namespace KinectBrowser
 
 			inline void momentsIntegrateOnBlob( Blob * blobs, int c_blob, int line, int column, int pixelValue, int p, int q) 
 			{
-				blobs[c_blob].Moments[p][q] = momentsIntegrate(line, column, pixelValue, p, q);
+				blobs[c_blob].Moments[p][q] += momentsIntegrate(line, column, pixelValue, p, q);
 			}
 
 			void match(Blob * blobs, int * blobIdsCorrespondanceData, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
@@ -439,13 +439,11 @@ namespace KinectBrowser
 							}
 
 							/* Progression du calcul du moment */
-							int pixelValue = pixelAt(data, line, column);
-
 							for(int p = 0;p<2;p++)
 							{
 								for(int q = 0;q<2;q++)
 								{
-									momentsIntegrateOnBlob(blobs, c_blob, line, column, pixelValue, p, q);
+									momentsIntegrateOnBlob(blobs, c_blob, line, column, 1, p, q);
 								}
 							}
 							
@@ -564,13 +562,18 @@ namespace KinectBrowser
 				}
 			}
 
-			double EvaluateBinomialCoefficient(double nValue, double nValue2)
+			double EvaluateBinomialCoefficient(double k, double n)
 			{
-				double result;
-				if(nValue2 == 1)return nValue;
-				result = (Factorial(nValue))/(Factorial(nValue2)*Factorial((nValue - nValue2)));
-				nValue2 = result;
-				return nValue2;
+				if(k < 0 || k > n)
+					return 0;
+				else
+				{
+					double sup = 1;
+					for(int i = n;i>=n-k+1;i--)
+						sup *=i;
+
+					return sup / Factorial(k);
+				}
 			}
 
 #pragma endregion Binomial Coeffs computation
