@@ -28,9 +28,9 @@ namespace KinectBrowser
 
 #define pixel(line, column) (line) * (columns * stride) + (column) * stride
 
-//#define pixelAt(data, line, column) data[pixel((line), (column))] | data[pixel((line), (column))+1] << 8 | data[pixel((line), (column))+2] << 16
+			//#define pixelAt(data, line, column) data[pixel((line), (column))] | data[pixel((line), (column))+1] << 8 | data[pixel((line), (column))+2] << 16
 #define pixelAt(data, line, column) *((int*)&data[pixel((line), (column))]) & 0x00FFFFFF
-//#define pixelSet(data, line, column, value) data[pixel(line, column)] = (value); data[pixel(line,column)+1] = (value) >> 8; data[pixel(line, column)+2] = (value) >> 16
+			//#define pixelSet(data, line, column, value) data[pixel(line, column)] = (value); data[pixel(line,column)+1] = (value) >> 8; data[pixel(line, column)+2] = (value) >> 16
 #define pixelSet(data, line, column, value) *((int*)&data[pixel((line), (column))]) = value
 
 			inline int getBlobAt(unsigned char* data, int line, int column, int columns, int stride)
@@ -182,10 +182,10 @@ namespace KinectBrowser
 			int scanLineToPixel(int column, int startY, int endY, unsigned char* data, int lines, int columns, int stride)
 			{
 				/*
-					Scan la ligne et renvoi le premier Y trouvé différent de 0 à partir de startY et jusqu'à endY.
-					Renvoi -1 si aucun pixel non nul n'a été trouvé.
+				Scan la ligne et renvoi le premier Y trouvé différent de 0 à partir de startY et jusqu'à endY.
+				Renvoi -1 si aucun pixel non nul n'a été trouvé.
 
-					La recherche se fait de bas en haut.
+				La recherche se fait de bas en haut.
 				*/
 
 				for(int i = startY;i>=endY;i--)
@@ -230,7 +230,7 @@ namespace KinectBrowser
 
 							if(j != BLOB_DIRECTION_DIAG)
 								leftOnlyScore += globalWeights[j] * blobs[i].accBorderType[j];
-							
+
 							if(j != BLOB_DIRECTION_INVDIAG)
 								rightOnlyScore += globalWeights[j] * blobs[i].accBorderType[j];
 
@@ -240,7 +240,7 @@ namespace KinectBrowser
 								maxDirection = j;
 							}
 						}
-						
+
 						double avgDiagAngle = 0;
 						double avgDiagInvAngle = 0;
 
@@ -263,7 +263,7 @@ namespace KinectBrowser
 						}
 
 						double mainAngle;
-						
+
 						double avgAngle, avgSecondAngle;
 
 						if(blobs[i].accBorderType[BLOB_DIRECTION_DIAG] > blobs[i].accBorderType[BLOB_DIRECTION_INVDIAG])
@@ -281,10 +281,10 @@ namespace KinectBrowser
 
 						blobs[i].principalDirection = mainAngle;
 						blobs[i].averageDirection = avgAngle;
-						
-						
+
+
 						/* Vérifier si deux mains se croisent */
-						
+
 						/* Step 1 : Vérifier que BottomLeft & BottomRight sont bien les extrémités de la BBox */
 						bool areCornersRepresentativeOfSeparatedArms =
 							abs(blobs[i].CrossLeftBottomX - blobs[i].MinX) < 10 &&
@@ -400,6 +400,12 @@ namespace KinectBrowser
 				blobs[c_blob].Moments[p][q] += momentsIntegrate(line, column, pixelValue, p, q);
 			}
 
+/*
+	On se base sur la profondeur minimale
+	obtenue pour le blob pour éliminer les pixels qui sont trop loins
+*/
+#define BLOB_DEPTH_EXTEND 40
+
 			void match(Blob * blobs, int * blobIdsCorrespondanceData, double * blobsIdsMinimumDepths, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
 			{	
 				memset(blobs, 0, sizeof(Blob) * (blobsCount+1)); //lines * columns);
@@ -416,115 +422,127 @@ namespace KinectBrowser
 						{
 							int c_blob = blobIdsCorrespondanceData[blob];
 
-							if(blobs[c_blob].PixelCount <= 0)
+							double localDepth = data[pixel(line, column)+1];
+
+							double minimumBlobDepth = blobsIdsMinimumDepths[c_blob];
+
+							if(localDepth <= minimumBlobDepth + BLOB_DEPTH_EXTEND)
 							{
-								/* init */
-								blobs[c_blob].MinX = columns;
-								blobs[c_blob].MaxX = 0;
-								blobs[c_blob].MinY = lines;
-								blobs[c_blob].MaxY = 0;
+								if(blobs[c_blob].PixelCount <= 0)
+								{
+									/* init */
+									blobs[c_blob].MinX = columns;
+									blobs[c_blob].MaxX = 0;
+									blobs[c_blob].MinY = lines;
+									blobs[c_blob].MaxY = 0;
 
-								blobs[c_blob].accX = 0;
-								blobs[c_blob].accY = 0;
+									blobs[c_blob].accX = 0;
+									blobs[c_blob].accY = 0;
 
-								blobs[c_blob].CrossLeftBottomX = column;
-								blobs[c_blob].CrossLeftBottomY = line;
+									blobs[c_blob].CrossLeftBottomX = column;
+									blobs[c_blob].CrossLeftBottomY = line;
 
-								blobs[c_blob].CrossRightBottomX = column;
-								blobs[c_blob].CrossRightBottomY = line;
+									blobs[c_blob].CrossRightBottomX = column;
+									blobs[c_blob].CrossRightBottomY = line;
 
-								blobs[c_blob].haveCrossingPattern = false;
+									blobs[c_blob].haveCrossingPattern = false;
 
-								blobs[c_blob].closestPointDepth = (double)INT_MAX;
+									blobs[c_blob].closestPointDepth = (double)INT_MAX;
 
+									for(int p = 0;p<2;p++)
+									{
+										for(int q = 0;q<2;q++)
+										{
+											blobs[c_blob].Moments[p][q] = 0;
+										}
+									}
+								}
+
+								/* Progression du calcul du moment */
 								for(int p = 0;p<2;p++)
 								{
 									for(int q = 0;q<2;q++)
 									{
-										blobs[c_blob].Moments[p][q] = 0;
+										momentsIntegrateOnBlob(blobs, c_blob, line, column, 1, p, q);
 									}
 								}
-							}
 
-							/* Progression du calcul du moment */
-							for(int p = 0;p<2;p++)
-							{
-								for(int q = 0;q<2;q++)
+								/* Counting the current pixel */
+								blobs[c_blob].PixelCount++;
+
+								blobs[c_blob].accX += column;
+								blobs[c_blob].accY += line;
+
+								blobs[c_blob].accDepth += localDepth;
+
+								if(localDepth < blobs[c_blob].closestPointDepth)
 								{
-									momentsIntegrateOnBlob(blobs, c_blob, line, column, 1, p, q);
-								}
-							}
-							
-							/* Counting the current pixel */
-							blobs[c_blob].PixelCount++;
-
-							blobs[c_blob].accX += column;
-							blobs[c_blob].accY += line;
-
-							double localDepth = data[pixel(line, column)+1];
-							blobs[c_blob].accDepth += localDepth;
-
-							if(localDepth < blobs[c_blob].closestPointDepth)
-							{
-								blobs[c_blob].closestPointDepth = localDepth;
-								blobs[c_blob].closestPointX = column;
-								blobs[c_blob].closestPointY = line;
-							}
-
-							blobs[c_blob].MinX = min2(blobs[c_blob].MinX, column);
-							blobs[c_blob].MaxX = max2(blobs[c_blob].MaxX, column);
-
-							blobs[c_blob].MinY = min2(blobs[c_blob].MinY, line);
-							blobs[c_blob].MaxY = max2(blobs[c_blob].MaxY, line);
-
-							/* Bottom right & left edges (to detected crossing arms) */
-							if((line > blobs[c_blob].CrossLeftBottomY && (blobs[c_blob].CrossLeftBottomX - column > 0)) ||
-								((line > blobs[c_blob].CrossLeftBottomY + 10) && (blobs[c_blob].CrossLeftBottomX - column) > -10 ))
-							{
-								blobs[c_blob].CrossLeftBottomX = column;
-								blobs[c_blob].CrossLeftBottomY = line;
-							}
-
-							if((line > blobs[c_blob].CrossRightBottomY && (column - blobs[c_blob].CrossRightBottomX > 0)) ||
-								((line > blobs[c_blob].CrossLeftBottomY + 10) && (column - blobs[c_blob].CrossRightBottomX) > -10))
-							{
-								blobs[c_blob].CrossRightBottomX = column;
-								blobs[c_blob].CrossRightBottomY = line;
-							}
-
-							/* Direction */
-							double d_v = grads[pixel((line), (column))+0] / 255.0;
-							double d_h = grads[pixel((line), (column))+1] / 255.0;
-							double d_d = grads[pixel((line), (column))+2] / 255.0;
-							double d_id = grads[pixel((line), (column))+3] / 255.0;
-
-							int max_i = indexOfMax(d_v, d_h, d_d, d_id);
-
-							if(grads[pixel((line), (column))+max_i] > 0)
-							{
-								if(max_i == BLOB_DIRECTION_INVDIAG)
-								{
-									blobs[c_blob].accXleft += column;
-									blobs[c_blob].accYleft += line;
-									blobs[c_blob].pointCountLeft++;
+									blobs[c_blob].closestPointDepth = localDepth;
+									blobs[c_blob].closestPointX = column;
+									blobs[c_blob].closestPointY = line;
 								}
 
-								if(max_i == BLOB_DIRECTION_DIAG)
+								blobs[c_blob].MinX = min2(blobs[c_blob].MinX, column);
+								blobs[c_blob].MaxX = max2(blobs[c_blob].MaxX, column);
+
+								blobs[c_blob].MinY = min2(blobs[c_blob].MinY, line);
+								blobs[c_blob].MaxY = max2(blobs[c_blob].MaxY, line);
+
+								/* Bottom right & left edges (to detected crossing arms) */
+								if((line > blobs[c_blob].CrossLeftBottomY && (blobs[c_blob].CrossLeftBottomX - column > 0)) ||
+									((line > blobs[c_blob].CrossLeftBottomY + 10) && (blobs[c_blob].CrossLeftBottomX - column) > -10 ))
 								{
-									blobs[c_blob].accXright += column;
-									blobs[c_blob].accYright += line;
-									blobs[c_blob].pointCountRight++;
+									blobs[c_blob].CrossLeftBottomX = column;
+									blobs[c_blob].CrossLeftBottomY = line;
 								}
 
-								blobs[c_blob].accBorderType[BLOB_DIRECTION_VERTICAL] += d_v;
-								blobs[c_blob].accBorderType[BLOB_DIRECTION_HORIZONTAL] += d_h;
-								blobs[c_blob].accBorderType[BLOB_DIRECTION_DIAG] += d_d;
-								blobs[c_blob].accBorderType[BLOB_DIRECTION_INVDIAG] += d_id;
-							}
+								if((line > blobs[c_blob].CrossRightBottomY && (column - blobs[c_blob].CrossRightBottomX > 0)) ||
+									((line > blobs[c_blob].CrossLeftBottomY + 10) && (column - blobs[c_blob].CrossRightBottomX) > -10))
+								{
+									blobs[c_blob].CrossRightBottomX = column;
+									blobs[c_blob].CrossRightBottomY = line;
+								}
+
+								/* Direction */
+								double d_v = grads[pixel((line), (column))+0] / 255.0;
+								double d_h = grads[pixel((line), (column))+1] / 255.0;
+								double d_d = grads[pixel((line), (column))+2] / 255.0;
+								double d_id = grads[pixel((line), (column))+3] / 255.0;
+
+								int max_i = indexOfMax(d_v, d_h, d_d, d_id);
+
+								if(grads[pixel((line), (column))+max_i] > 0)
+								{
+									if(max_i == BLOB_DIRECTION_INVDIAG)
+									{
+										blobs[c_blob].accXleft += column;
+										blobs[c_blob].accYleft += line;
+										blobs[c_blob].pointCountLeft++;
+									}
+
+									if(max_i == BLOB_DIRECTION_DIAG)
+									{
+										blobs[c_blob].accXright += column;
+										blobs[c_blob].accYright += line;
+										blobs[c_blob].pointCountRight++;
+									}
+
+									blobs[c_blob].accBorderType[BLOB_DIRECTION_VERTICAL] += d_v;
+									blobs[c_blob].accBorderType[BLOB_DIRECTION_HORIZONTAL] += d_h;
+									blobs[c_blob].accBorderType[BLOB_DIRECTION_DIAG] += d_d;
+									blobs[c_blob].accBorderType[BLOB_DIRECTION_INVDIAG] += d_id;
+								}
 
 #ifdef MATCH_OUTPUT_DEBUG_INFO
-							pixelSet(data, line, column, c_blob * 150);
+								pixelSet(data, line, column, c_blob * 150);
 #endif
+							}
+							else
+							{
+#ifdef MATCH_OUTPUT_DEBUG_INFO
+								pixelSet(data, line, column, 0);
+#endif
+							}
 						}
 						else
 						{
@@ -730,18 +748,18 @@ namespace KinectBrowser
 				/* Si un des curseurs est très proche du point le plus proche, on remplace */
 				/*
 				Ne marche pas, au final ça dégrade la qualité des mouvements du point ...
-				
+
 				double closeDistance = 20;
 				if(distance(dst->ClosestPointX, dst->ClosestPointY, dst->EstimatedCursorX, dst->EstimatedCursorY) < closeDistance)
 				{
-					dst->EstimatedCursorX = dst->ClosestPointX;
-					dst->EstimatedCursorY = dst->ClosestPointY;
+				dst->EstimatedCursorX = dst->ClosestPointX;
+				dst->EstimatedCursorY = dst->ClosestPointY;
 				}
-				
+
 				if(distance(dst->ClosestPointX, dst->ClosestPointY, dst->InvertedEstimatedCursorX, dst->InvertedEstimatedCursorY) < closeDistance)
 				{
-					dst->InvertedEstimatedCursorX = dst->ClosestPointX;
-					dst->InvertedEstimatedCursorY = dst->ClosestPointY;
+				dst->InvertedEstimatedCursorX = dst->ClosestPointX;
+				dst->InvertedEstimatedCursorY = dst->ClosestPointY;
 				}*/
 
 				dst->Crossed = crossed;
