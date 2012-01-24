@@ -441,6 +441,9 @@ namespace KinectBrowser.ImageProcessing
                 }
                 Host.CurrentEngine.RenderTargetManager.Pop();
 
+#warning Image saving disabled
+
+#if(IGNORE)
                 PrintDebugImage("blobs-4", grownRegions);
 
                 using (var stream = new FileStream(ResolveDebugOutputFileName("stats-final") + ".txt", FileMode.Create))
@@ -478,6 +481,7 @@ namespace KinectBrowser.ImageProcessing
                         }
                     }
                 }
+#endif
             }
 
             return blobCount;
