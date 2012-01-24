@@ -653,6 +653,11 @@ namespace KinectBrowser
                 }
                 else
                 {
+                    if (provider.MainBlob != null)
+                    {
+                        provider.MainBlob.IsHighPriority = true;
+                    }
+
                     foreach (var item in contentOptionnalCanvas.Children)
                         ((Ellipse)item).Visibility = System.Windows.Visibility.Hidden;
 

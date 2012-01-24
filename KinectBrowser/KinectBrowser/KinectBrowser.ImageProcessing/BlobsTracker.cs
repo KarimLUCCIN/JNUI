@@ -20,6 +20,11 @@ namespace KinectBrowser.ImageProcessing
 
         public class TrackedBlob
         {
+            public TrackedBlob()
+            {
+                IsHighPriority = false;
+            }
+
             public Status Status { get; internal set; }
 
             public ManagedBlob Current { get; internal set; }
@@ -57,6 +62,8 @@ namespace KinectBrowser.ImageProcessing
             {
                 get { return Current == null ? false : Current.Crossed; }
             }
+
+            public bool IsHighPriority { get; set; }
         }
 
         internal class TrackedBlobIntermediate
@@ -120,6 +127,8 @@ namespace KinectBrowser.ImageProcessing
                 return null;
         }
 
+        float highPriorityMultiplier = 0.6f;
+
         public void Update(IEnumerable<ManagedBlob> blobs)
         {
             /* Préparation */
@@ -155,6 +164,10 @@ namespace KinectBrowser.ImageProcessing
                 foreach (var actual in TrackedBlobs)
                 {
                     i_blob.score = Math.Min(i_blob.score, Distance(i_blob.blob.AvgCenterX, i_blob.blob.AvgCenterY, actual.Current.AvgCenterX, actual.Current.AvgCenterY));
+
+                    /* On augmente le score des blobs prioritaires (en le diminant ...) */
+                    if (actual.IsHighPriority)
+                        i_blob.score *= highPriorityMultiplier; 
                 }
 
                 if (i_blob.score > maxBlobsDistance)
@@ -205,6 +218,9 @@ namespace KinectBrowser.ImageProcessing
                             d = invertedDistance;
                             invert = true;
                         }
+
+                        if (actual.IsHighPriority)
+                            d *= highPriorityMultiplier;
 
                         if (d < score)
                         {
