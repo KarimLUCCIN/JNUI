@@ -66,7 +66,13 @@
 				<VisualStateManager.VisualStateGroups>
 					<VisualStateGroup x:Name="CommonStates">
 						<VisualState x:Name="Normal"/>
-						<VisualState x:Name="MouseOver"/>
+						<VisualState x:Name="MouseOver">
+							<Storyboard>
+								<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="ellipse">
+									<EasingColorKeyFrame KeyTime="0" Value="#FF2C7E0F"/>
+								</ColorAnimationUsingKeyFrames>
+							</Storyboard>
+						</VisualState>
 						<VisualState x:Name="Pressed"/>
 						<VisualState x:Name="Disabled">
 							<Storyboard>
@@ -80,7 +86,7 @@
 						</VisualState>
 					</VisualStateGroup>
 				</VisualStateManager.VisualStateGroups>
-				<Ellipse x:Name="ellipse" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="1" Fill="{TemplateBinding Background}"/>
+				<Ellipse x:Name="ellipse" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="1" Fill="Black"/>
 				<ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Stretch" Margin="10.75,-14.084,-26,-23"/>
 			</Grid>
 		</ControlTemplate>
