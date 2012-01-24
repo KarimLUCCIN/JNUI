@@ -188,6 +188,8 @@ namespace KinectBrowser.ImageProcessing
         {
 #if(DEBUG)
             bool printDebugOutput = Host.CurrentEngine.InputManager.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F12);
+
+            bool drawDebugOutput = printDebugOutput || Host.CurrentEngine.InputManager.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F10);
 #endif
 
             processingTimeWatch.Reset();
@@ -290,7 +292,7 @@ namespace KinectBrowser.ImageProcessing
                     //#warning FUCKING SLOW
                     //var contours = contourBuilder.Process(kinectDepthDataBytes, 320, 240);
                     grownRegions.GetData(grownBordersData);
-                    ProcessBlobs(printDebugOutput, grownBordersData, gradDirectionDetect1Data);
+                    ProcessBlobs(printDebugOutput || drawDebugOutput, grownBordersData, gradDirectionDetect1Data);
 
                     //grownBorders.GetData(grownBordersData);
 

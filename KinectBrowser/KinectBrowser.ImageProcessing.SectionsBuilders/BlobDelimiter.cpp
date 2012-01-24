@@ -75,7 +75,10 @@ namespace KinectBrowser
 					return res;
 			}
 
-			void processData(int * blobIdsCorrespondanceData, unsigned char* data, unsigned char* processingIntermediateOutput, int lines, int columns, int stride, int * nonNullPixels, int * maxBlobs)
+#define min2(a,b) ((a) < (b)) ? (a) : (b)
+#define max2(a,b) ((a) > (b)) ? (a) : (b)
+
+			void processData(int * blobIdsCorrespondanceData, double * blobsIdsMinimumDepths, unsigned char* data, unsigned char* processingIntermediateOutput, int lines, int columns, int stride, int * nonNullPixels, int * maxBlobs)
 			{
 				(*nonNullPixels) = 0;
 
@@ -91,6 +94,8 @@ namespace KinectBrowser
 
 						if(current != 0)
 						{
+							double localDepth = data[pixel(line, column)+1];
+
 							(*nonNullPixels)++;
 
 							int west = column > 0 ? pixelAt(processingIntermediateOutput, line, column - 1) : 0;
@@ -113,6 +118,8 @@ namespace KinectBrowser
 								}
 
 								label = smallestLabel;
+
+								blobsIdsMinimumDepths[label] = min2(localDepth, blobsIdsMinimumDepths[label]);
 							}
 							else
 							{
@@ -120,6 +127,7 @@ namespace KinectBrowser
 								label = current_blob_id;
 
 								blobIdsCorrespondanceData[label] = label;
+								blobsIdsMinimumDepths[label] = localDepth;
 							}
 
 							pixelSet(processingIntermediateOutput, line, column, label);
@@ -132,10 +140,7 @@ namespace KinectBrowser
 				(*maxBlobs) = current_blob_id;
 			}
 
-#define min2(a,b) ((a) < (b)) ? (a) : (b)
-#define max2(a,b) ((a) > (b)) ? (a) : (b)
-
-			void minimizeIds(int * blobIdsCorrespondanceData, int blobCount)
+			void minimizeIds(int * blobIdsCorrespondanceData, double * blobsIdsMinimumDepths, int blobCount)
 			{
 				int id, newvalue;
 
@@ -148,7 +153,10 @@ namespace KinectBrowser
 						newvalue = blobIdsCorrespondanceData[id];
 
 						if(newvalue != id)
+						{
+							blobsIdsMinimumDepths[newvalue] = min2(blobsIdsMinimumDepths[newvalue], blobsIdsMinimumDepths[id]);
 							id = newvalue;
+						}
 						else
 							break;
 					}
@@ -392,11 +400,11 @@ namespace KinectBrowser
 				blobs[c_blob].Moments[p][q] += momentsIntegrate(line, column, pixelValue, p, q);
 			}
 
-			void match(Blob * blobs, int * blobIdsCorrespondanceData, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
+			void match(Blob * blobs, int * blobIdsCorrespondanceData, double * blobsIdsMinimumDepths, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
 			{	
 				memset(blobs, 0, sizeof(Blob) * (blobsCount+1)); //lines * columns);
 
-				minimizeIds(blobIdsCorrespondanceData, blobsCount);
+				minimizeIds(blobIdsCorrespondanceData, blobsIdsMinimumDepths, blobsCount);
 
 				for(int line = 0;line < lines;line++)
 				{
@@ -585,6 +593,7 @@ namespace KinectBrowser
 				this->stride = stride;
 
 				blobIdsCorrespondanceData = new int [lines * rows];
+				blobsIdsMinimumDepths = new double [lines * rows];
 				processingIntermediateOutput = new unsigned char [lines * rows * stride];
 				blobs = new Blob [lines * rows];
 				m_blobs = gcnew array<ManagedBlob^>(lines * rows);
@@ -611,6 +620,7 @@ namespace KinectBrowser
 			BlobDelimiter::~BlobDelimiter(void)
 			{
 				delete blobIdsCorrespondanceData;
+				delete blobsIdsMinimumDepths;
 				delete m_blobs;
 			}
 
@@ -792,9 +802,9 @@ namespace KinectBrowser
 
 				memset(blobIdsCorrespondanceData, 0, sizeof(int) * lines * rows);
 
-				processData(blobIdsCorrespondanceData, data, processingIntermediateOutput, lines, rows, stride, &nonNull, &maxBlobs);
+				processData(blobIdsCorrespondanceData, blobsIdsMinimumDepths, data, processingIntermediateOutput, lines, rows, stride, &nonNull, &maxBlobs);
 
-				match(blobs, blobIdsCorrespondanceData, data, grads, processingIntermediateOutput, lines, rows, stride, maxBlobs);
+				match(blobs, blobIdsCorrespondanceData, blobsIdsMinimumDepths, data, grads, processingIntermediateOutput, lines, rows, stride, maxBlobs);
 
 				return convertBlobs(maxBlobs);
 			}

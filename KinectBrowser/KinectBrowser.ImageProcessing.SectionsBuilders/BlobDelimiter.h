@@ -205,6 +205,11 @@ namespace KinectBrowser
 
 				/* Used when resolving blobs ids after the scan */
 				int * blobIdsCorrespondanceData;
+				/* 
+					Collecte la profondeur minimale pendant la construction des blobs histoire de pouvoir l'utiliser cache
+					lors de la réduction
+				*/
+				double * blobsIdsMinimumDepths;
 				unsigned char * processingIntermediateOutput;
 
 				/*
