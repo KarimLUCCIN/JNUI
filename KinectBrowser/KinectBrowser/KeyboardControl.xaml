@@ -59,7 +59,13 @@
 				<VisualStateManager.VisualStateGroups>
 					<VisualStateGroup x:Name="CommonStates">
 						<VisualState x:Name="Normal"/>
-						<VisualState x:Name="MouseOver"/>
+						<VisualState x:Name="MouseOver">
+							<Storyboard>
+								<ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle">
+									<EasingColorKeyFrame KeyTime="0" Value="#FF2C7E0F"/>
+								</ColorAnimationUsingKeyFrames>
+							</Storyboard>
+						</VisualState>
 						<VisualState x:Name="Pressed"/>
 						<VisualState x:Name="Disabled">
 							<Storyboard>
@@ -70,7 +76,7 @@
 						</VisualState>
 					</VisualStateGroup>
 				</VisualStateManager.VisualStateGroups>
-				<Rectangle Fill="{TemplateBinding Background}" Margin="-33.5,-4.417,-43.5,-6.583" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10"/>
+				<Rectangle x:Name="rectangle" Margin="-33.5,-4.417,-43.5,-6.583" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="2" VerticalAlignment="Stretch" RadiusX="10" RadiusY="10" Fill="Black"/>
 				<ContentPresenter x:Name="contentPresenter" Width="Auto" Margin="-21,0,-33.5,0" RenderTransformOrigin="0.379,0.561" HorizontalAlignment="Stretch"/>
 			</Grid>
 		</ControlTemplate>

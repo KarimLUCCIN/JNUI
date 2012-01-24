@@ -81,7 +81,7 @@
 					</VisualStateGroup>
 				</VisualStateManager.VisualStateGroups>
 				<Ellipse x:Name="ellipse" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="1" Fill="{TemplateBinding Background}"/>
-				<ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Stretch" Width="Auto" Margin="8,-13.334,0,0"/>
+				<ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Stretch" Margin="10.75,-14.084,-26,-23"/>
 			</Grid>
 		</ControlTemplate>
 		<ControlTemplate x:Key="HoverTemplate" TargetType="{x:Type Button}">
@@ -149,7 +149,7 @@
 					<VisualTransition From="Closed" GeneratedDuration="0" To="Open">
 						<Storyboard>
 							<DoubleAnimation Duration="0:0:0.2" To="-33.166" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.X)" Storyboard.TargetName="char1" From="-6.5"/>
-							<DoubleAnimation Duration="0:0:0.2" To="-34.166" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1" From="-6"/>
+							<DoubleAnimation Duration="0:0:0.2" To="-33.416" Storyboard.TargetProperty="(UIElement.RenderTransform).(TransformGroup.Children)[3].(TranslateTransform.Y)" Storyboard.TargetName="char1" From="-6"/>
 							<ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="center">
 								<DiscreteObjectKeyFrame KeyTime="0" Value="{x:Static Visibility.Hidden}"/>
 							</ObjectAnimationUsingKeyFrames>
