@@ -306,6 +306,15 @@ namespace KinectBrowser.Input.Kinect
             KinectBlobsMatcher.LeftHandBlob.MBlob = null;
             KinectBlobsMatcher.RightHandBlob.MBlob = null;
         }
+
+        /// <summary>
+        /// Tout blob répondant aux conditions du click mais
+        /// étant plus agé que cette date sera ignoré.
+        /// 
+        /// Il sert afin d'éviter que les objets fixes ne soient considérés
+        /// comme un click ...
+        /// </summary>
+        DateTime minimumClickBlobCreationDate = DateTime.Now;
         
         public IPositionProvider MainPosition
         {
@@ -356,22 +365,24 @@ namespace KinectBrowser.Input.Kinect
                     {
                         var forbiddenBlob = (mainPosition == leftHandProvider) ? KinectBlobsMatcher.LeftHandBlob.MBlob : KinectBlobsMatcher.RightHandBlob.MBlob;
 
-                        var candidate = (from blob in KinectBlobsMatcher.AdditionnalBlobs
+                        var candidates = (from blob in KinectBlobsMatcher.AdditionnalBlobs
                                          where blob != forbiddenBlob
                                          select blob).ToList();
 
                         /* on ajoute aussi le blob non utilisé pour l'autre main */
                         if (mainPosition == leftHandProvider && KinectBlobsMatcher.RightHandBlob.MBlob != null)
-                            candidate.Add(KinectBlobsMatcher.RightHandBlob.MBlob);
+                            candidates.Add(KinectBlobsMatcher.RightHandBlob.MBlob);
                         else if (mainPosition == rightHandProvider && KinectBlobsMatcher.LeftHandBlob.MBlob != null)
-                            candidate.Add(KinectBlobsMatcher.LeftHandBlob.MBlob);
+                            candidates.Add(KinectBlobsMatcher.LeftHandBlob.MBlob);
 
-
-                        candidate.Sort((a, b) => a.Age.CompareTo(b.Age));
+                        candidates.Sort((a, b) => a.Age.CompareTo(b.Age));
 
                         /* on prend le plus jeune, mais on attend le prochain tour pour cliquer */
-                        if (candidate.Count > 0)
-                            clickBlob = candidate[0];
+                        clickBlob = (from candidate in candidates where candidate.CreationTime > minimumClickBlobCreationDate select candidate).FirstOrDefault();
+
+                        /* on met à jour l'age minimal du blob de click */
+                        if (clickBlob != null)
+                            minimumClickBlobCreationDate = clickBlob.CreationTime;
                     }
                 }
 

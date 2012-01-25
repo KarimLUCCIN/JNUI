@@ -23,6 +23,7 @@ namespace KinectBrowser.ImageProcessing
             public TrackedBlob()
             {
                 IsHighPriority = false;
+                CreationTime = DateTime.Now;
             }
 
             public Status Status { get; internal set; }
@@ -30,6 +31,8 @@ namespace KinectBrowser.ImageProcessing
             public ManagedBlob Current { get; internal set; }
 
             public int Age { get; set; }
+
+            public DateTime CreationTime;
 
             internal int waitingCycles = 0;
 
