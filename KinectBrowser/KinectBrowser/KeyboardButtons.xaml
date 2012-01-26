@@ -87,7 +87,7 @@
 					</VisualStateGroup>
 				</VisualStateManager.VisualStateGroups>
 				<Ellipse x:Name="ellipse" Stroke="{TemplateBinding BorderBrush}" StrokeThickness="1" Fill="Black"/>
-				<ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Stretch" Margin="10.75,-14.084,-26,-23"/>
+				<ContentPresenter x:Name="contentPresenter" HorizontalAlignment="Center" Margin="0,-16.084,0,0" VerticalAlignment="Center" Height="63.083"/>
 			</Grid>
 		</ControlTemplate>
 		<ControlTemplate x:Key="HoverTemplate" TargetType="{x:Type Button}">
@@ -445,7 +445,7 @@
 				</TransformGroup>
 			</Button.RenderTransform>
 		</Button>
-		<Button Margin="0,0,-13.667,-13.667" x:Name="char1" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Width="47" Height="47" Visibility="Hidden">
+		<Button Margin="0,0,-13.667,-13.667" x:Name="char1" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Width="47" Height="47">
 			<Button.RenderTransform>
 				<TransformGroup>
 					<ScaleTransform/>
