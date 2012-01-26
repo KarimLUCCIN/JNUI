@@ -149,7 +149,7 @@
                 	<RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <TextBlock x:Name="inputUser" Grid.Row="0" TextWrapping="Wrap" FontSize="32" Background="White" Text="Some Text"/>
+                <TextBlock x:Name="inputUser" Grid.Row="0" TextWrapping="Wrap" FontSize="32" Background="White"/>
                 <TextBlock x:Name="possibleWord" Grid.Row="1" TextWrapping="Wrap" Text="Some words" FontSize="32" Background="White"/>
                 <Rectangle Fill="Black" VerticalAlignment="Top" Height="2" Grid.Row="1"/>
             </Grid>

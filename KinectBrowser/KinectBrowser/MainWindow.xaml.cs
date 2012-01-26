@@ -20,6 +20,7 @@ using KinectBrowser.Interaction.Gestures;
 using KinectBrowser.ImageProcessing;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using KinectBrowser.Controls;
 
 namespace KinectBrowser
 {
@@ -334,6 +335,9 @@ namespace KinectBrowser
 
                             lastLeftButtonClickedState = leftClicked;
                             lastRightButtonClickedState = rightClicked;
+
+                            if (kinectClickAction == SpacialKinectClickAction.Click)
+                                kinectClickAction = SpacialKinectClickAction.None;
                         }
                     }
                 }
@@ -367,6 +371,7 @@ namespace KinectBrowser
             hasValidatedClickAction = false;
             virtualKeyboard.Visibility = System.Windows.Visibility.Visible;
             isKeyboardActive = true;
+            virtualKeyboard.inputUser.Text = String.Empty;
         }
 
         private void EndKeyboard()
@@ -444,8 +449,24 @@ namespace KinectBrowser
                 {
                     if (currentKeyboardButton != null && DateTime.Now - lastButtonChangeTime >= keyboardClickLatency)
                     {
-                        VirtualClick(btn);
-                        lastButtonChangeTime = DateTime.Now;
+                        var txtInput = btn as TextInputButton;
+
+                        if (txtInput == null || txtInput.Content == null)
+                        {
+                            VirtualClick(btn);
+
+                            lastButtonChangeTime = DateTime.Now;
+                        }
+                        else
+                        {
+                            /* délais plus long */
+                            if (DateTime.Now - lastButtonChangeTime >= TimeSpan.FromMilliseconds(keyboardClickLatency.Milliseconds * 1.5f))
+                            {
+                                virtualKeyboard.inputUser.Text += (txtInput.Content).ToString();
+
+                                lastButtonChangeTime = DateTime.Now;
+                            }
+                        }
                     }
                 }
             }
@@ -537,6 +558,10 @@ namespace KinectBrowser
 
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
+            if (kinectClickAction == SpacialKinectClickAction.Click)
+            {
+
+            }
             browser.DebugTextureQuad.Texture = provider.ImageProcessingEngine.grownRegions;
 
             var clientOrigin = new Microsoft.Xna.Framework.Vector2(ClientArea.X, ClientArea.Y);

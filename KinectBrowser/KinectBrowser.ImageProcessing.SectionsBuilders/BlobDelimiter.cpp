@@ -9,9 +9,15 @@
 
 using namespace std;
 
-#define MANAGED_DEBUG
+//#define MANAGED_DEBUG
 
 //#define MATCH_OUTPUT_DEBUG_INFO
+
+/*
+	On se base sur la profondeur minimale
+	obtenue pour le blob pour éliminer les pixels qui sont trop loins
+*/
+#define BLOB_DEPTH_EXTEND 60
 
 namespace KinectBrowser
 {
@@ -399,12 +405,6 @@ namespace KinectBrowser
 			{
 				blobs[c_blob].Moments[p][q] += momentsIntegrate(line, column, pixelValue, p, q);
 			}
-
-/*
-	On se base sur la profondeur minimale
-	obtenue pour le blob pour éliminer les pixels qui sont trop loins
-*/
-#define BLOB_DEPTH_EXTEND 40
 
 			void match(Blob * blobs, int * blobIdsCorrespondanceData, double * blobsIdsMinimumDepths, unsigned char* data, unsigned char * grads, unsigned char * processingIntermediateOutput, int lines, int columns, int stride, int blobsCount)
 			{	

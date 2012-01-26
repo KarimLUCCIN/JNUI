@@ -184,12 +184,17 @@ namespace KinectBrowser.ImageProcessing
             return path;
         }
 
+        bool displayBlobsDefinition = false;
+
         public void Process(byte[] kinectDepthDataBytes, float minDepth, float maxDepth)
         {
 #if(DEBUG)
             bool printDebugOutput = Host.CurrentEngine.InputManager.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F12);
 
-            bool drawDebugOutput = printDebugOutput || Host.CurrentEngine.InputManager.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.F10);
+            if (Host.CurrentEngine.InputManager.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F10))
+                displayBlobsDefinition = !displayBlobsDefinition;
+
+            bool drawDebugOutput = printDebugOutput || displayBlobsDefinition;
 #endif
 
             processingTimeWatch.Reset();

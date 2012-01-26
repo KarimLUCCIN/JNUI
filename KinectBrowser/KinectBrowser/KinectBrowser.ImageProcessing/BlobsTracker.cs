@@ -26,7 +26,28 @@ namespace KinectBrowser.ImageProcessing
                 CreationTime = DateTime.Now;
             }
 
-            public Status Status { get; internal set; }
+            Status status = Status.Waiting;
+
+            public Status Status
+            {
+                get
+                {
+                    if (status == BlobsTracker.Status.Tracking)
+                    {
+                        if (Current == null ||
+                            double.IsNaN(Current.EstimatedCursorX) ||
+                            double.IsNaN(Current.EstimatedCursorY) ||
+                            double.IsNaN(Current.InvertedEstimatedCursorX) ||
+                            double.IsNaN(Current.InvertedEstimatedCursorY))
+                        {
+                            status = BlobsTracker.Status.Lost;
+                        }
+                    }
+
+                    return status;
+                }
+                internal set { status = value; }
+            }
 
             public ManagedBlob Current { get; internal set; }
 
