@@ -146,6 +146,8 @@ namespace KinectBrowser.D3D.Browser
             webView.OpenExternalLink += new OpenExternalLinkEventHandler(webView_OpenExternalLink);
             webView.BeginNavigation += new BeginNavigationEventHandler(webView_BeginNavigation);
             webView.TitleReceived += new TitleReceivedEventHandler(webView_TitleReceived);
+
+            webView.ActivateIME(true);
         }
 
         void webView_TitleReceived(object sender, ReceiveTitleEventArgs e)
@@ -460,6 +462,14 @@ namespace KinectBrowser.D3D.Browser
             set
             {
                 zoom = Math.Max(10, Math.Min(500, value));
+            }
+        }
+
+        public void SendText(string textInput)
+        {
+            if(!String.IsNullOrEmpty(textInput) && !webView.IsCrashed)
+            {
+                webView.ConfirmIMEComposition(textInput);
             }
         }
     }

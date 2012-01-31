@@ -71,6 +71,7 @@ namespace KinectBrowser.D3D.Browser
             var wConfig = new WebCoreConfig();
             wConfig.LogLevel = LogLevel.Verbose;
             wConfig.LogPath = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + "\\web.log";
+            wConfig.EnableVisualStyles = false;
             WebCore.Initialize(wConfig);
 
             InitializeComponent();

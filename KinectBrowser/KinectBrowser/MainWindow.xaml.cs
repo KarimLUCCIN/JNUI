@@ -336,8 +336,8 @@ namespace KinectBrowser
                             lastLeftButtonClickedState = leftClicked;
                             lastRightButtonClickedState = rightClicked;
 
-                            if (kinectClickAction == SpacialKinectClickAction.Click)
-                                kinectClickAction = SpacialKinectClickAction.None;
+                            //if (kinectClickAction == SpacialKinectClickAction.Click)
+                            //    kinectClickAction = SpacialKinectClickAction.None;
                         }
                     }
                 }
@@ -351,6 +351,29 @@ namespace KinectBrowser
         private void InitializeKeyboardActions()
         {
             virtualKeyboard.cancel.Click += new RoutedEventHandler(cancel_Click);
+            virtualKeyboard.lineBreak.Click += delegate { virtualKeyboard.inputUser.Text += "\n"; };
+            virtualKeyboard.back.Click += delegate
+            {
+                if (!String.IsNullOrEmpty(virtualKeyboard.inputUser.Text))
+                    virtualKeyboard.inputUser.Text = virtualKeyboard.inputUser.Text.Substring(0, virtualKeyboard.inputUser.Text.Length - 1);
+            };
+            virtualKeyboard.space.Click += delegate { virtualKeyboard.inputUser.Text += " "; };
+            virtualKeyboard.enter.Click +=new RoutedEventHandler(enter_Click);
+        }
+
+        void enter_Click(object sender, RoutedEventArgs e)
+        {
+            var textInput = virtualKeyboard.inputUser.Text;
+            virtualKeyboard.inputUser.Text = String.Empty;
+
+            EndKeyboard();
+
+            var page = browser.ActivePage;
+
+            if (page != null)
+            {
+                page.SendText(textInput);
+            }
         }
 
         void cancel_Click(object sender, RoutedEventArgs e)
