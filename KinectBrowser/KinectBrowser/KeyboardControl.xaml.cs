@@ -18,6 +18,7 @@ namespace KinectBrowser
 	/// </summary>
 	public partial class KeyboardControl : UserControl
 	{
+		SpellingError error;
 		public KeyboardControl()
 		{
 			this.InitializeComponent();
@@ -54,6 +55,32 @@ namespace KinectBrowser
 			
 			KeyboardButtons symb = new KeyboardButtons(".*/0");
 			this.buttonGrid.Children.Add(symb);
+		}
+
+		private void inputUser_Initialized(object sender, System.EventArgs e)
+		{
+			inputUser.SpellCheck.IsEnabled = true;
+			inputUser.SpellCheck.SpellingReform = SpellingReform.PreAndPostreform;
+		}
+
+		private void inputUser_Changed(object sender, System.Windows.Controls.TextChangedEventArgs e)
+		{
+			int caretPos = inputUser.CaretIndex;
+			listBox.Items.Clear();
+			if(caretPos > 0) {
+				error = inputUser.GetSpellingError(caretPos - 1);
+				if (error != null)   {
+					
+					foreach (string suggession in error.Suggestions) {
+						listBox.Items.Add(suggession);
+					}
+				}
+			}
+		}
+		
+		private void correctSelected(object sender, System.Windows.Input.MouseButtonEventArgs e)
+		{
+			error.Correct(listBox.SelectedItem.ToString());
 		}
 	}
 }

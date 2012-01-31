@@ -271,7 +271,7 @@
             <local:MenuControls Width="180" Height="180" Margin="-90" x:Name="additionnalActionsUIControls"/>
         </Canvas>
         
-        <local:KeyboardControl x:Name="virtualKeyboard" Visibility="Collapsed">
+        <local:KeyboardControl x:Name="virtualKeyboard" Visibility="Visible">
             
         </local:KeyboardControl>
         
