@@ -43,15 +43,47 @@ namespace KinectBrowser.D3D
             Host = host;
         }
 
+        FixedCamera cam;
+
         protected override void LoadScreenContent()
         {
             base.LoadScreenContent();
 
-            CameraManager.LoadAndSetActiveCamera(DefaultCamera = new FixedCamera(CurrentEngine) { NearPlane = 0.1f, FarPlane = 100f, Position = new Vector3(0, 0, -1), Target = new Vector3(0,0,0) });
+            cam = new FixedCamera(CurrentEngine) { NearPlane = 0.1f, FarPlane = 100f, Position = new Vector3(0, 0, -1), Target = new Vector3(0,0,0) };
+            //cam = new FixedOrthographicCamera(CurrentEngine) { ProjectionHeight = 3 * 0.785f, ProjectionWidth = 2 * 1.33f * 0.8f, NearPlane = 0.1f, FarPlane = 100f, Position = new Vector3(0, 0, -1), Target = new Vector3(0, 0, 0) };
+
+            CameraManager.LoadAndSetActiveCamera(DefaultCamera = cam);
 
             screenContent = new Node(LocalContent);
 
             CurrentEngine.SceneManager.Root.Add(screenContent);
         }
+
+        //public override void Update(GameTime gameTime, bool canGetFocusInput, bool hasMainScreen)
+        //{
+        //    base.Update(gameTime, canGetFocusInput, hasMainScreen);
+
+        //    CurrentEngine.InputManager.Update(gameTime);
+        //    if (CurrentEngine.InputManager.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Up))
+        //    {
+        //        cam.ProjectionHeight += 0.001f;
+        //        cam.UpdateProjection();
+        //    }
+        //    if (CurrentEngine.InputManager.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Down))
+        //    {
+        //        cam.ProjectionHeight -= 0.001f;
+        //        cam.UpdateProjection();
+        //    }
+        //    if (CurrentEngine.InputManager.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Left))
+        //    {
+        //        cam.ProjectionWidth -= 0.001f;
+        //        cam.UpdateProjection();
+        //    }
+        //    if (CurrentEngine.InputManager.IsKeyPressed(Microsoft.Xna.Framework.Input.Keys.Right))
+        //    {
+        //        cam.ProjectionWidth += 0.001f;
+        //        cam.UpdateProjection();
+        //    }
+        //}
     }
 }

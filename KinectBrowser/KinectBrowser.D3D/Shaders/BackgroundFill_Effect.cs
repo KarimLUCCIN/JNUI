@@ -31,9 +31,9 @@ namespace KinectBrowser.D3D.Shaders
 
         Vector2 halfPixel;
 
-        public override void LoadContent()
+        protected override void LoadResources()
         {
-            base.LoadContent();
+            base.LoadResources();
 
             halfPixel = new Vector2(0.5f / CurrentEngine.Width, 0.5f / CurrentEngine.Height);
 

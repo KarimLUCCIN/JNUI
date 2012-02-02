@@ -116,8 +116,8 @@ namespace KinectBrowser.D3D.Browser
 
             var margin = InternalMarginX * 2;
 
-            textureWidth = width + margin;
-            textureHeight = height + margin;
+            textureWidth = width + margin - 3;
+            textureHeight = height + margin - 3;
 
             CreateWebView(textureWidth, textureHeight);
 
@@ -133,6 +133,8 @@ namespace KinectBrowser.D3D.Browser
             quadBack.Texture = AssociatedTexture;
             quadBack.CompositionTex = D3DEngine.Renderer.CompositionTexManager.TexColorOnly;
             quadBack.Rotation = new Sora.GameEngine.MathUtils.RotationVector((float)(Math.PI), 0, 0);
+
+            //quadBack.Scale = quadFront.Scale = new Microsoft.Xna.Framework.Vector3(1.1f);
 
             D3DNode.Add(quadFront);
             D3DNode.Add(quadBack);

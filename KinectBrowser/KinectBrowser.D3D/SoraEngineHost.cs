@@ -74,6 +74,7 @@ namespace KinectBrowser.D3D
             CurrentEngine.Renderer.EnableMotionBlur = false;
             CurrentEngine.Renderer.EnableShadow = false;
             CurrentEngine.Renderer.EnableToonShading = false;
+            CurrentEngine.Renderer.EnableFXAA = false;
 
             CurrentEngine.ScreenManager.AddScreen(RenderingScreen = new SoraEngineScreen(this));
 
@@ -126,6 +127,15 @@ namespace KinectBrowser.D3D
                 soraEngine.RenderToImage(drawAccumulator);
 
                 drawAccumulator = TimeSpan.Zero;
+
+                //if (false)
+                //{
+                //    using (var stream = new FileStream(@"h:\lol2.png", FileMode.Create))
+                //    {
+                //        var rt = ((OffscreenEngineWpf)soraEngine).CompositionRT;
+                //        rt.SaveAsPng(stream, rt.Width, rt.Height);
+                //    }
+                //}
             }
 
             renderingWatch.Restart();
