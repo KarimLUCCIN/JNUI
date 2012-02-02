@@ -451,8 +451,9 @@ namespace KinectBrowser
             {
                 KeyboardButtons btnHost = null;
                 Button btn = null;
+                ListBoxItem sugItem = null;
 
-                while (hitResult != null && (btnHost == null || btn == null))
+                while (hitResult != null && (btnHost == null || btn == null || sugItem == null))
                 {
                     if (btnHost == null)
                         btnHost = hitResult as KeyboardButtons;
@@ -464,6 +465,10 @@ namespace KinectBrowser
                     /* Peut être un bouton ? */
                     if (btn == null)
                         btn = hitResult as Button;
+
+                    /* Item pour les suggestions */
+                    if (sugItem == null)
+                        sugItem = hitResult as ListBoxItem;
 
                     hitResult = hitResult is Run ? null : VisualTreeHelper.GetParent(hitResult);
                 }
@@ -480,7 +485,13 @@ namespace KinectBrowser
                 }
                 else
                 {
-                    if (currentKeyboardButton != null && DateTime.Now - lastButtonChangeTime >= keyboardClickLatency)
+                    if (sugItem != null && DateTime.Now - lastButtonChangeTime >= TimeSpan.FromSeconds(keyboardClickLatency.TotalSeconds * 6))
+                    {
+                        virtualKeyboard.inputUser.Text = sugItem.Content.ToString();
+
+                        lastButtonChangeTime = DateTime.Now;
+                    }
+                    else if (currentKeyboardButton != null && DateTime.Now - lastButtonChangeTime >= keyboardClickLatency)
                     {
                         var txtInput = btn as TextInputButton;
 
