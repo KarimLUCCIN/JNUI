@@ -355,9 +355,18 @@ namespace KinectBrowser
             virtualKeyboard.back.Click += delegate
             {
                 if (!String.IsNullOrEmpty(virtualKeyboard.inputUser.Text))
+                {
                     virtualKeyboard.inputUser.Text = virtualKeyboard.inputUser.Text.Substring(0, virtualKeyboard.inputUser.Text.Length - 1);
+
+                    virtualKeyboard.UpdateSuggestions();
+                }
             };
-            virtualKeyboard.space.Click += delegate { virtualKeyboard.inputUser.Text += " "; };
+            virtualKeyboard.space.Click += delegate
+            {
+                virtualKeyboard.inputUser.Text += " ";
+
+                virtualKeyboard.UpdateSuggestions();
+            };
             virtualKeyboard.enter.Click +=new RoutedEventHandler(enter_Click);
         }
 
@@ -395,6 +404,7 @@ namespace KinectBrowser
             virtualKeyboard.Visibility = System.Windows.Visibility.Visible;
             isKeyboardActive = true;
             virtualKeyboard.inputUser.Text = String.Empty;
+            virtualKeyboard.ClearSuggestions();
         }
 
         private void EndKeyboard()
@@ -486,6 +496,11 @@ namespace KinectBrowser
                             if (DateTime.Now - lastButtonChangeTime >= TimeSpan.FromMilliseconds(keyboardClickLatency.Milliseconds * 1.5f))
                             {
                                 virtualKeyboard.inputUser.Text += (txtInput.Content).ToString();
+
+                                if (!String.IsNullOrEmpty(virtualKeyboard.inputUser.Text))
+                                {
+                                    virtualKeyboard.UpdateSuggestions();
+                                }
 
                                 lastButtonChangeTime = DateTime.Now;
                             }

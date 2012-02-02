@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
@@ -65,22 +66,40 @@ namespace KinectBrowser
 
 		private void inputUser_Changed(object sender, System.Windows.Controls.TextChangedEventArgs e)
 		{
-			int caretPos = inputUser.CaretIndex;
-			listBox.Items.Clear();
-			if(caretPos > 0) {
-				error = inputUser.GetSpellingError(caretPos - 1);
-				if (error != null)   {
-					
-					foreach (string suggession in error.Suggestions) {
-						listBox.Items.Add(suggession);
-					}
-				}
-			}
+            UpdateSuggestions();
 		}
+
+        public void UpdateSuggestions()
+        {
+            int caretPos = inputUser.CaretIndex;
+            
+            listBox.Items.Clear();
+
+            if (!String.IsNullOrEmpty(inputUser.Text))
+            {
+                error = inputUser.GetSpellingError(0);
+                if (error != null)
+                {
+                    var corrections = from sug in error.Suggestions orderby LevenshteinDistance.Compute(inputUser.Text, sug) select sug;
+                    int loc = 0;
+                    var limited_corrections = corrections.TakeWhile(str => { if (loc >= 4) return false; loc++; return true; });
+
+                    foreach (string suggession in limited_corrections)
+                    {
+                        listBox.Items.Add(suggession);
+                    }
+                }
+            }
+        }
 		
 		private void correctSelected(object sender, System.Windows.Input.MouseButtonEventArgs e)
 		{
 			error.Correct(listBox.SelectedItem.ToString());
 		}
-	}
+
+        public void ClearSuggestions()
+        {
+            listBox.Items.Clear();
+        }
+    }
 }
