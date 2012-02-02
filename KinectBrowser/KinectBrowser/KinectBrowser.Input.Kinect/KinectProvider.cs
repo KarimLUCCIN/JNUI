@@ -378,7 +378,7 @@ namespace KinectBrowser.Input.Kinect
                         candidates.Sort((a, b) => a.Age.CompareTo(b.Age));
 
                         /* on prend le plus jeune, mais on attend le prochain tour pour cliquer */
-                        clickBlob = (from candidate in candidates where candidate.CreationTime > minimumClickBlobCreationDate select candidate).FirstOrDefault();
+                        clickBlob = candidates.FirstOrDefault(); // (from candidate in candidates where candidate.CreationTime > minimumClickBlobCreationDate select candidate).FirstOrDefault();
 
                         /* on met à jour l'age minimal du blob de click */
                         if (clickBlob != null)

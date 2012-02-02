@@ -110,6 +110,11 @@ namespace KinectBrowser.D3D.Browser
             bEffect.LoadContent();
 
             D3DScreen.CurrentEngine.Renderer.CustomClearEffect = bEffect;
+
+            //Composer = new Composer_Effect(D3DScreen.LocalContent);
+            //Composer.LoadContent();
+
+            //D3DScreen.ScreenContent.Add(Composer);
         }
 
         void CompositionTarget_Rendering(object sender, EventArgs e)
