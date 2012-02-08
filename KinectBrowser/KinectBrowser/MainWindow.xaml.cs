@@ -420,6 +420,18 @@ namespace KinectBrowser
         {
             if (buttonsHost != null && buttonsHost != currentKeyboardButtonsHost)
             {
+                var parent = buttonsHost.Parent as Panel;
+
+                if (parent != null)
+                {
+                    foreach (var child in parent.Children)
+                    {
+                        Panel.SetZIndex((UIElement)child, 0);
+                    }
+
+                    Panel.SetZIndex(buttonsHost, 1);
+                }
+
                 if (currentKeyboardButtonsHost != null)
                     LeaveKeyboardButtonsHost();
 
