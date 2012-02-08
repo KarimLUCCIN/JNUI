@@ -253,10 +253,11 @@
 				</VisualState>
 			</VisualStateGroup>
 		</VisualStateManager.VisualStateGroups>
+        
 		<Button Margin="0" x:Name="center" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource CenterButtonTemplate}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="29.333" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3"/>
-		<Button Margin="0" x:Name="char4" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden"/>
-		<Button Margin="0" x:Name="char3" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden"/>
-		<Button Margin="0" x:Name="char2" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden"/>
-		<Button Margin="0" x:Name="char1" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden"/>
+        <local:TextInputButton Margin="0" x:Name="char4" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden"/>
+        <local:TextInputButton Margin="0" x:Name="char3" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden"/>
+        <local:TextInputButton Margin="0" x:Name="char2" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden"/>
+        <local:TextInputButton Margin="0" x:Name="char1" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Grid.RowSpan="3" Grid.ColumnSpan="3" Visibility="Hidden"/>
 	</Grid>
 </UserControl>
