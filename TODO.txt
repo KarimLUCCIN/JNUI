@@ -13,3 +13,23 @@ Mettre en avant les points importants du projet (point clé, climax)
 - Reconnaissance vocale
 
 - Avant chaque début d'application, permettre à l'utilisateur de rescaler l'ui en lui demandant de toucher un bouton
+
+
+---------------------
+
+- Agrandir le mini menu pour qu'on puisse le voir de plus loin
+
+Evaluation what we've done:
+- Speed of processing
+- Usability of the UI
+* Buttons Keyboard, Keyboard (Le machin T9 qu'on avait pas fini)
+* Mesurer le temps que l'on prend pour input une sentence
+* ça serait bien de pouvoir évaluer le exhaustiveness des users en demandant à des gens de tester
+* Mesurer l'erreur du curseur en fonction de la position où on est vis à vis de la position où on voudrais être
+* Vitesse du schmilblick sur d'autres systèmes
+* Comparer au squelette à la même distance (genre jfais un blob qui track le squelette et je regarde comment ça fait)
+
+
+------
+Final presentation in middle/end of march
+15-20 mn
