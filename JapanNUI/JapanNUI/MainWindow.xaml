@@ -11,6 +11,9 @@
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Image Name="debugDepthImage" Stretch="Fill" />
+        
+        
+        
         <Canvas Name="clientCanvas" Grid.Row="0">
             <Image Name="defaultCursor" Width="24" Height="24" Margin="-12" DataContext="{Binding ElementName=mainWindow}">
                 <Image.Style>

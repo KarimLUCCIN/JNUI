@@ -243,6 +243,14 @@ namespace KinectBrowser
                 {
                     browser.IsActive = true;
 
+                    if (SoraEngine.CurrentEngine.InputManager.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F10))
+                    {
+                        SwitchMeasurementMode();
+                    }
+
+                    if (currentMeasurementMode != MeasurementMode.None)
+                        MeasurementModeUpdate();
+
                     var provider = InteractionsManager.CurrentProvider;
 
                     if (provider != null)
@@ -342,6 +350,78 @@ namespace KinectBrowser
                     }
                 }
             });
+        }
+
+        #endregion
+
+        #region Measurements
+
+        public enum MeasurementMode
+        {
+            None,
+            Precision,
+
+            Max=Precision
+        }
+
+        MeasurementMode currentMeasurementMode = MeasurementMode.None;
+
+        public void ResetMeasurementControlsVisibility()
+        {
+            measurementsPrecisionControl.Visibility = System.Windows.Visibility.Hidden;
+            browser.Visibility = System.Windows.Visibility.Visible;
+        }
+
+        private void MeasurementModeUpdate()
+        {
+            switch (currentMeasurementMode)
+            {
+                default:
+                case MeasurementMode.None:
+                    break;
+                case MeasurementMode.Precision:
+                    {
+                        if (!measurementsPrecisionControl.Update())
+                            SwitchMeasurementMode(MeasurementMode.None);
+
+                        break;
+                    }
+            }
+        }
+
+        private void SwitchMeasurementMode(MeasurementMode? mode = null)
+        {
+            switch (currentMeasurementMode)
+            {
+                default:
+                case MeasurementMode.None:
+                    break;
+                case MeasurementMode.Precision:
+                    {
+                        measurementsPrecisionControl.ReportResults();
+                        break;
+                    }
+            }
+
+            ResetMeasurementControlsVisibility();
+
+            currentMeasurementMode = mode == null ? (MeasurementMode)(((int)currentMeasurementMode + 1) % ((int)MeasurementMode.Max + 1)) : mode.Value;
+
+            switch (currentMeasurementMode)
+            {
+                default:
+                case MeasurementMode.None:
+                    break;
+                case MeasurementMode.Precision:
+                    {
+                        browser.Visibility = System.Windows.Visibility.Hidden;
+                        measurementsPrecisionControl.Visibility = System.Windows.Visibility.Visible;
+
+                        measurementsPrecisionControl.Begin();
+
+                        break;
+                    }
+            }
         }
 
         #endregion

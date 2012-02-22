@@ -89,6 +89,9 @@
       <DependentUpon>KeyboardControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="LevenshteinDistance.cs" />
+    <Compile Include="Measurements\PrecisionMeasurement.xaml.cs">
+      <DependentUpon>PrecisionMeasurement.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MenuControls.xaml.cs">
       <DependentUpon>MenuControls.xaml</DependentUpon>
     </Compile>
@@ -130,6 +133,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Measurements\PrecisionMeasurement.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MenuControls.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

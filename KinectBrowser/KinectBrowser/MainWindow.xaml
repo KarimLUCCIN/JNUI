@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="MainWindow" Height="840" Width="1240" WindowStartupLocation="CenterScreen" WindowStyle="None"
         Background="Black"
+        xmlns:measurements="clr-namespace:KinectBrowser.Measurements"
         xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:KinectBrowser" mc:Ignorable="d"
 		xmlns:interop="clr-namespace:System.Windows.Interop;assembly=PresentationCore" Loaded="Window_Loaded" ResizeMode="NoResize" xmlns:d3d="clr-namespace:KinectBrowser.D3D.Browser;assembly=KinectBrowser.D3D" Cursor="None">
 		    
@@ -230,6 +231,8 @@
 	
 	<Grid x:Name="rootGrid">
         <d3d:D3DBrowser x:Name="browser" Margin="0,0,0,36"/>
+
+        <measurements:PrecisionMeasurement x:Name="measurementsPrecisionControl" Margin="0,0,0,36" Visibility="Hidden"/>
         
         <TextBlock Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Right" x:Name="statisticsLabel"/>
         
