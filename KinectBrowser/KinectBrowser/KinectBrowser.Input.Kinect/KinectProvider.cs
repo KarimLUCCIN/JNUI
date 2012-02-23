@@ -366,7 +366,7 @@ namespace KinectBrowser.Input.Kinect
                         var forbiddenBlob = (mainPosition == leftHandProvider) ? KinectBlobsMatcher.LeftHandBlob.MBlob : KinectBlobsMatcher.RightHandBlob.MBlob;
 
                         var candidates = (from blob in KinectBlobsMatcher.AdditionnalBlobs
-                                         where blob != forbiddenBlob
+                                         where ((blob != forbiddenBlob) && (blob.Current.PixelCount >= 1024))
                                          select blob).ToList();
 
                         /* on ajoute aussi le blob non utilisé pour l'autre main */

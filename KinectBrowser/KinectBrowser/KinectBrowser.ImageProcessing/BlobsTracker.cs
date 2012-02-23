@@ -82,6 +82,17 @@ namespace KinectBrowser.ImageProcessing
                 }
             }
 
+            public Vector2 LinearCursor
+            {
+                get
+                {
+                    return Current == null ? Vector2.Zero :
+                        (InvertedCursor
+                            ? new Vector2((float)Current.LinearInvertedEstimatedCursorX, (float)Current.LinearInvertedEstimatedCursorY)
+                            : new Vector2((float)Current.LinearEstimatedCursorX, (float)Current.LinearEstimatedCursorY));
+                }
+            }
+
             public bool Crossed
             {
                 get { return Current == null ? false : Current.Crossed; }

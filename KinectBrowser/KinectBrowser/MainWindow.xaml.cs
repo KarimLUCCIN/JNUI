@@ -243,7 +243,7 @@ namespace KinectBrowser
                 {
                     browser.IsActive = true;
 
-                    if (SoraEngine.CurrentEngine.InputManager.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F10))
+                    if (SoraEngine.CurrentEngine.InputManager.IsNewKeyPress(Microsoft.Xna.Framework.Input.Keys.F6))
                     {
                         SwitchMeasurementMode();
                     }
@@ -662,17 +662,17 @@ namespace KinectBrowser
                 }
             }, SimpleGesture.Left, SimpleGesture.Right, SimpleGesture.Left);
 
-            KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
-            {
-                lock (forced_actions_lock)
-                {
-                    if (cursorIsAlive && m_e.Origin == kinectCursorBlob)
-                    {
-                        kinectForcedAction_CursorFocusChangeTarget = null;
-                        kinectForcedAction = SpecialKinectForcedAction.CursorFocusChange;
-                    }
-                }
-            }, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
+            //KinectGesturesTracker.RecordSingleRecognizedGesture((RecognizedGestureEventHandler)delegate(object m_sender, RecognizedGestureEventArgs m_e)
+            //{
+            //    lock (forced_actions_lock)
+            //    {
+            //        if (cursorIsAlive && m_e.Origin == kinectCursorBlob)
+            //        {
+            //            kinectForcedAction_CursorFocusChangeTarget = null;
+            //            kinectForcedAction = SpecialKinectForcedAction.CursorFocusChange;
+            //        }
+            //    }
+            //}, SimpleGesture.Left, SimpleGesture.Top, SimpleGesture.Right, SimpleGesture.Bottom);
         }
 
         private int BrowserMargin
@@ -858,7 +858,7 @@ namespace KinectBrowser
                         /* Sinon, on peut se manger des NaN vu que la position du blob n'est pas défnie */
                         if (provider.ClickBlob.Status == ImageProcessing.BlobsTracker.Status.Tracking)
                         {
-                            var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.Cursor *
+                            var point = KinectPositionProvider.RelativePointToAbsolutePoint(provider.ClickBlob.LinearCursor *
                                 new Microsoft.Xna.Framework.Vector2(1 / provider.KinectBlobsMatcher.DataWidth, 1 / provider.KinectBlobsMatcher.DataHeight), ClientArea) - clientOrigin;
                             
                             kinectClickGesturePoint.UpdatePosition(new Microsoft.Xna.Framework.Vector3(point, 0), CursorState.Tracked);
@@ -923,6 +923,7 @@ namespace KinectBrowser
 
                             if ((now - waitinForClickActionTime) >= waitingForClickActionLatency)
                             {
+                                //HandleLeftMenuAction(kinectClickGesturePoint.Position, kinectClickLeftBeginPosition);
                                 HandleLeftMenuAction(kinectClickGesturePoint.Position, kinectClickLeftBeginPosition);
 
                                 HandleRightMenuAction(provider.MainPosition.CurrentPoint.Position, kinectClickRightBeginPosition);

@@ -95,6 +95,16 @@ namespace KinectBrowser
 				double InvertedEstimatedCursorX;
 				double InvertedEstimatedCursorY;
 
+				/*
+				* Les Linear sont remplis par ReScale de KinectBlobsMatcher ...
+				* parce que ça me saoulait de le faire dans le C++ ...
+				*/
+				double LinearEstimatedCursorX;
+				double LinearEstimatedCursorY;
+
+				double LinearInvertedEstimatedCursorX;
+				double LinearInvertedEstimatedCursorY;
+
 				double ClosestPointX;
 				double ClosestPointY;
 
@@ -161,6 +171,12 @@ namespace KinectBrowser
 
 					res->InvertedEstimatedCursorX = InvertedEstimatedCursorX;
 					res->InvertedEstimatedCursorY = InvertedEstimatedCursorY;
+
+					res->LinearEstimatedCursorX = LinearEstimatedCursorX;
+					res->LinearEstimatedCursorY = LinearEstimatedCursorY;
+
+					res->LinearInvertedEstimatedCursorX = LinearInvertedEstimatedCursorX;
+					res->LinearInvertedEstimatedCursorY = LinearInvertedEstimatedCursorY;
 
 					res->AverageDepth = AverageDepth;
 

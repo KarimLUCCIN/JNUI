@@ -193,6 +193,11 @@ namespace KinectBrowser.Input.Kinect
 
         private void ReScale(ManagedBlob i_blob)
         {
+            i_blob.LinearEstimatedCursorX = i_blob.EstimatedCursorX;
+            i_blob.LinearEstimatedCursorY = i_blob.EstimatedCursorY;
+            i_blob.LinearInvertedEstimatedCursorX = i_blob.InvertedEstimatedCursorX;
+            i_blob.LinearInvertedEstimatedCursorY = i_blob.InvertedEstimatedCursorY;
+
             i_blob.EstimatedCursorX = ReScale(i_blob.EstimatedCursorX, DataWidth);
             i_blob.EstimatedCursorY = ReScale(i_blob.EstimatedCursorY, DataHeight);
 
