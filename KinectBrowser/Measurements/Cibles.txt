@@ -1,0 +1,9 @@
+Pour une cible de 32x32
+
+Kinect
+Temps : 02.272 s
+Précision : 14.760626 px
+
+Souris
+Temps : 00.729 s
+Précision : 7.4757 px

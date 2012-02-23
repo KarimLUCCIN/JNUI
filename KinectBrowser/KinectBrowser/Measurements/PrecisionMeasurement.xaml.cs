@@ -113,7 +113,7 @@ namespace KinectBrowser.Measurements
                         if (DistanceFromTestZoneCenter < RadiusFromHeightAndWidth(32, 32))
                         {
                             cursorTarget.Fill = Brushes.Yellow;
-                            totalWaitForZoneEnterTime = DateTime.Now - LastModeChangeDate;
+                            totalWaitForZoneEnterTime += DateTime.Now - LastModeChangeDate;
                             Mode = TestMode.WaitForZoneRest;
                         }
 
@@ -121,7 +121,7 @@ namespace KinectBrowser.Measurements
                     }
                 case TestMode.WaitForZoneRest:
                     {
-                        restTotalErrorFromCenter = DistanceFromTestZoneCenter;
+                        restTotalErrorFromCenter += DistanceFromTestZoneCenter;
                         restTotalStepCount++;
 
                         if (DateTime.Now - LastModeChangeDate >= restWaitTime)

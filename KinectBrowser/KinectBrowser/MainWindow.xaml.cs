@@ -389,8 +389,18 @@ namespace KinectBrowser
             }
         }
 
+        DateTime lastMeasureModeChange = DateTime.Now;
+        TimeSpan measurementTimeSwitch = TimeSpan.FromSeconds(1.5);
+
         private void SwitchMeasurementMode(MeasurementMode? mode = null)
         {
+            if (DateTime.Now - lastMeasureModeChange < measurementTimeSwitch)
+                return;
+            else
+            {
+                lastMeasureModeChange = DateTime.Now;
+            }
+
             switch (currentMeasurementMode)
             {
                 default:
