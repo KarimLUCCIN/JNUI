@@ -280,7 +280,7 @@
 		<!--<local:KeyboardControl x:Name="virtualKeyboard" Visibility="Hidden"/>-->
 		
         <!--  Clavier T9 -->
-		<local:KeyboardT9 x:Name="virtualKeyboard" Visibility="Visible"/>
+		<local:KeyboardT9 x:Name="virtualKeyboard" Visibility="Hidden"/>
         
         <Canvas x:Name="skeletonCanvas" Visibility="Hidden">
             <Ellipse x:Name="skeletonLeft" Width="48" Height="48" Margin="-24" Fill="#10FF0000"/>

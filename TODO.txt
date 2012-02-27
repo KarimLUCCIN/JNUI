@@ -1,3 +1,8 @@
+Revoir le clavier de Kévin (il lag)
+Augmenter le temps pour l'appui des touches
+Afficher le premier mot par défaut et pas juste les chiffres
+
+
 http://en.wikipedia.org/wiki/Image_moments
 
 
