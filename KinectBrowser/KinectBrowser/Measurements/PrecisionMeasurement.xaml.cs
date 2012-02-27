@@ -66,6 +66,8 @@ namespace KinectBrowser.Measurements
         Random rd = new Random(DateTime.Now.Millisecond);
 
         TimeSpan totalWaitForZoneEnterTime = TimeSpan.Zero;
+        TimeSpan totalTimePassedInsideTheZone = TimeSpan.Zero;
+        TimeSpan totalZoneTestTime = TimeSpan.Zero;
 
         double totalDistanceTraveledForEnter = 0;
 
@@ -96,9 +98,16 @@ namespace KinectBrowser.Measurements
         }
 
         TimeSpan restWaitTime = TimeSpan.FromSeconds(2);
+
+        DateTime lastUpdateTime = DateTime.Now;
         
         public bool Update()
         {
+            if(lastUpdateTime > LastModeChangeDate)
+                lastUpdateTime = LastModeChangeDate;
+
+            var elapsed = DateTime.Now - lastUpdateTime;
+
             switch (Mode)
             {
                 default:
@@ -121,6 +130,11 @@ namespace KinectBrowser.Measurements
                     }
                 case TestMode.WaitForZoneRest:
                     {
+                        if (DistanceFromTestZoneCenter < RadiusFromHeightAndWidth(32, 32))
+                            totalTimePassedInsideTheZone += elapsed;
+
+                        totalZoneTestTime += elapsed;
+
                         restTotalErrorFromCenter += DistanceFromTestZoneCenter;
                         restTotalStepCount++;
 
@@ -134,6 +148,8 @@ namespace KinectBrowser.Measurements
                 case TestMode.Finished:
                     break;
             }
+
+            lastUpdateTime = DateTime.Now;
 
             if (currentTestIndex < maxTestIndex)
             {
@@ -166,9 +182,10 @@ namespace KinectBrowser.Measurements
         {
             if (currentTestIndex > 0)
             {
-                MessageBox.Show(String.Format("Temps moyen pour arriver : {0}\nErreur moyenne : {1}",
+                MessageBox.Show(String.Format("Temps moyen pour arriver : {0}\nErreur moyenne : {1}\nPourcentage du temps passé dans la zone : {2}",
                     TimeSpan.FromSeconds(totalWaitForZoneEnterTime.TotalSeconds / (double)maxTestIndex),
-                    restTotalErrorFromCenter / (double)restTotalStepCount), "Résultats");
+                    restTotalErrorFromCenter / (double)restTotalStepCount,
+                    100 * (totalTimePassedInsideTheZone.TotalSeconds / totalZoneTestTime.TotalSeconds)), "Résultats");
             }
         }
 
