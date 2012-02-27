@@ -82,6 +82,12 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Controls\CircularPanel.cs" />
+    <Compile Include="KeyboardButtonsT9.xaml.cs">
+      <DependentUpon>KeyboardButtonsT9.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="KeyboardT9.xaml.cs">
+      <DependentUpon>KeyboardT9.xaml</DependentUpon>
+    </Compile>
     <Compile Include="KeyboardButtons.xaml.cs">
       <DependentUpon>KeyboardButtons.xaml</DependentUpon>
     </Compile>
@@ -105,8 +111,19 @@
     <Compile Include="SpacialKinectClickAction.cs" />
     <Compile Include="SpecialKinectForcedAction.cs" />
     <Compile Include="Controls\TextInputButton.cs" />
+    <Compile Include="T9Keyboard\PropertyChangedExtensions.cs" />
+    <Compile Include="T9Keyboard\T9Encoder.cs" />
+    <Compile Include="T9Keyboard\T9ViewModel.cs" />
     <Compile Include="WindowUtils.cs" />
     <Page Include="Bookmark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="KeyboardButtonsT9.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="KeyboardT9.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -174,6 +191,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Words.txt" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\KinectBrowser.D3D\KinectBrowser.D3D.csproj">
