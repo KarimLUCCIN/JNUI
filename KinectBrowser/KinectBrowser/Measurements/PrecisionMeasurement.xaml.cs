@@ -11,6 +11,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.IO;
+using System.Reflection;
 
 namespace KinectBrowser.Measurements
 {
@@ -65,9 +67,25 @@ namespace KinectBrowser.Measurements
 
         Random rd = new Random(DateTime.Now.Millisecond);
 
+        /// <summary>
+        /// Le temps passé en attente du fait de rentrer dans la zone
+        /// </summary>
         TimeSpan totalWaitForZoneEnterTime = TimeSpan.Zero;
+
+        /// <summary>
+        /// Le temps passé à l'intérieur de la zone en mode rest
+        /// </summary>
         TimeSpan totalTimePassedInsideTheZone = TimeSpan.Zero;
+
+        /// <summary>
+        /// Le temps total passé en mode rest
+        /// </summary>
         TimeSpan totalZoneTestTime = TimeSpan.Zero;
+
+        /// <summary>
+        /// La distance totale parcourue en mode rest à partir du moment où on rentre dans la zone
+        /// </summary>
+        double totalZoneStabilityDistance = 0;
 
         double totalDistanceTraveledForEnter = 0;
 
@@ -81,6 +99,11 @@ namespace KinectBrowser.Measurements
         {
             var m = a - b;
             return m * m;
+        }
+
+        private static double dist(ref Point a, ref Point b)
+        {
+            return Math.Sqrt(pow2dist(a.X, b.X) + pow2dist(a.Y, b.Y));
         }
 
         public double DistanceFromTestZoneCenter
@@ -100,9 +123,18 @@ namespace KinectBrowser.Measurements
         TimeSpan restWaitTime = TimeSpan.FromSeconds(2);
 
         DateTime lastUpdateTime = DateTime.Now;
+
+        Point lastMousePoint = new Point(0, 0);
+
+        public double ZoneSize
+        {
+            get { return cursorTarget.Width / 2.0; }
+        }
         
         public bool Update()
         {
+            var mousePos = Mouse.GetPosition(this);
+
             if(lastUpdateTime > LastModeChangeDate)
                 lastUpdateTime = LastModeChangeDate;
 
@@ -119,7 +151,7 @@ namespace KinectBrowser.Measurements
                     }
                 case TestMode.WaitForZoneEnter:
                     {
-                        if (DistanceFromTestZoneCenter < RadiusFromHeightAndWidth(32, 32))
+                        if (DistanceFromTestZoneCenter < RadiusFromHeightAndWidth(ZoneSize, ZoneSize))
                         {
                             cursorTarget.Fill = Brushes.Yellow;
                             totalWaitForZoneEnterTime += DateTime.Now - LastModeChangeDate;
@@ -130,13 +162,15 @@ namespace KinectBrowser.Measurements
                     }
                 case TestMode.WaitForZoneRest:
                     {
-                        if (DistanceFromTestZoneCenter < RadiusFromHeightAndWidth(32, 32))
+                        if (DistanceFromTestZoneCenter < RadiusFromHeightAndWidth(ZoneSize, ZoneSize))
                             totalTimePassedInsideTheZone += elapsed;
 
                         totalZoneTestTime += elapsed;
 
                         restTotalErrorFromCenter += DistanceFromTestZoneCenter;
                         restTotalStepCount++;
+
+                        totalZoneStabilityDistance += dist(ref mousePos, ref lastMousePoint);
 
                         if (DateTime.Now - LastModeChangeDate >= restWaitTime)
                         {
@@ -150,6 +184,7 @@ namespace KinectBrowser.Measurements
             }
 
             lastUpdateTime = DateTime.Now;
+            lastMousePoint = mousePos;
 
             if (currentTestIndex < maxTestIndex)
             {
@@ -182,10 +217,24 @@ namespace KinectBrowser.Measurements
         {
             if (currentTestIndex > 0)
             {
-                MessageBox.Show(String.Format("Temps moyen pour arriver : {0}\nErreur moyenne : {1}\nPourcentage du temps passé dans la zone : {2}",
+                string resultsString = String.Format("Temps moyen pour arriver : {0}\nErreur moyenne : {1}\nPourcentage du temps passé dans la zone : {2}\nDistance parcourue en rest (stabilité) : {3}",
                     TimeSpan.FromSeconds(totalWaitForZoneEnterTime.TotalSeconds / (double)maxTestIndex),
                     restTotalErrorFromCenter / (double)restTotalStepCount,
-                    100 * (totalTimePassedInsideTheZone.TotalSeconds / totalZoneTestTime.TotalSeconds)), "Résultats");
+                    100 * (totalTimePassedInsideTheZone.TotalSeconds / totalZoneTestTime.TotalSeconds),
+                    totalZoneStabilityDistance);
+
+                using (var stream = new FileStream(System.IO.Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\mesures.txt", FileMode.Append))
+                {
+                    using (var writer = new StreamWriter(stream))
+                    {
+                        writer.WriteLine(String.Format("Mode : {0}", KinectBrowser.Input.Kinect.KinectProvider.HasKinects ? "Kinect" : "Mouse"));
+                        writer.WriteLine(String.Format("Zone Size : {0}", ZoneSize));
+                        writer.WriteLine(resultsString);
+                        writer.WriteLine("\n------------------------\n\n");
+                    }
+                }
+
+                MessageBox.Show(resultsString, "Résultats");
             }
         }
 
