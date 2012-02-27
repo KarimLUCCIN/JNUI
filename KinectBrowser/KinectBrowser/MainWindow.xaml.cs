@@ -709,6 +709,25 @@ namespace KinectBrowser
 
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
+            skeletonCanvas.Visibility = System.Windows.Visibility.Visible;
+
+            skeletonLeft.Visibility = provider.LeftSkeleton != null ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+            skeletonRight.Visibility = provider.RightSkeleton != null ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+
+            skeletonLeft.Fill = skeletonRight.Fill = Brushes.Red;
+            skeletonLeft.Width = skeletonRight.Width = skeletonLeft.Height = skeletonRight.Height = 32;
+
+            if (skeletonLeft.Visibility == System.Windows.Visibility.Visible)
+            {
+                Canvas.SetLeft(skeletonLeft, provider.LeftSkeleton.Value.X);
+                Canvas.SetTop(skeletonLeft, provider.LeftSkeleton.Value.Y);
+            }
+            if (skeletonRight.Visibility == System.Windows.Visibility.Visible)
+            {
+                Canvas.SetLeft(skeletonRight, provider.RightSkeleton.Value.X);
+                Canvas.SetTop(skeletonRight, provider.RightSkeleton.Value.Y);
+            }
+
             if (kinectClickAction == SpacialKinectClickAction.Click)
             {
 

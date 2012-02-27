@@ -86,13 +86,14 @@ namespace KinectBrowser.Input.Kinect
                     throw new InvalidOperationException("Failed to open stream. Please make sure to specify a supported image type and resolution.");
                 }
 #else
-                nui.Initialize(RuntimeOptions.UseDepthAndPlayerIndex);// | RuntimeOptions.UseSkeletalTracking | RuntimeOptions.UseColor);
+                nui.Initialize(RuntimeOptions.UseDepthAndPlayerIndex | RuntimeOptions.UseSkeletalTracking);// | RuntimeOptions.UseColor);
 
                 nui.DepthStream.Open(ImageStreamType.Depth, 2, ImageResolution.Resolution320x240, ImageType.DepthAndPlayerIndex);
 #endif
 
 
                 nui.DepthFrameReady += new EventHandler<ImageFrameReadyEventArgs>(nui_DepthFrameReady);
+                nui.SkeletonFrameReady += new EventHandler<SkeletonFrameReadyEventArgs>(nui_SkeletonFrameReady);
 
                 leftHandProvider = new KinectPositionProvider("left", this);
                 rightHandProvider = new KinectPositionProvider("right", this);
@@ -119,6 +120,90 @@ namespace KinectBrowser.Input.Kinect
                 }
             }
         }
+
+        #region Skeleton
+
+        private Joint? SelectHand(SkeletonData firstSq, JointID id)
+        {
+            return (from Joint j in firstSq.Joints
+                    where (j.ID == id)
+                    select new Nullable<Joint>(j)).FirstOrDefault();
+        }
+
+        private Vector2 getDisplayPosition(Joint joint)
+        {
+            float depthX, depthY;
+            nui.SkeletonEngine.SkeletonToDepthImage(joint.Position, out depthX, out depthY);
+            depthX = depthX * 320; //convert to 320, 240 space
+            depthY = depthY * 240; //convert to 320, 240 space
+            int colorX, colorY;
+            ImageViewArea iv = new ImageViewArea();
+            // only ImageResolution.Resolution640x480 is supported at this point
+            nui.NuiCamera.GetColorPixelCoordinatesFromDepthPixel(ImageResolution.Resolution640x480, iv, (int)depthX, (int)depthY, (short)0, out colorX, out colorY);
+
+            // map back to skeleton.Width & skeleton.Height
+            return new Vector2((colorX / 640.0f) * Client.ClientArea.Width, (colorY / 480.0f) * Client.ClientArea.Height);
+        }
+
+        public Vector2? LeftSkeleton { get; set; }
+        public Vector2? RightSkeleton { get; set; }
+
+        void nui_SkeletonFrameReady(object sender, SkeletonFrameReadyEventArgs e)
+        {
+            SkeletonFrame skeletonFrame = e.SkeletonFrame;
+
+            bool hasUpdate = false;
+
+            bool hasLeft = false;
+            bool hasRight = false;
+
+            Vector2 leftHandPoint = Vector2.Zero;
+            Vector2 rightHandPoint = Vector2.Zero;
+
+            foreach (SkeletonData data in skeletonFrame.Skeletons)
+            {
+                if (SkeletonTrackingState.Tracked == data.TrackingState)
+                {
+                    bool b = false;
+
+                    var firstSq = data;
+
+                    var leftHand = SelectHand(firstSq, JointID.HandLeft);
+
+                    if (leftHand != null && leftHand.HasValue)
+                    {
+                        hasLeft = true;
+
+                        leftHandPoint = getDisplayPosition(leftHand.Value);
+
+                        hasUpdate = true;
+
+                        b = true;
+                    }
+
+                    var rightHand = SelectHand(firstSq, JointID.HandRight);
+
+                    if (rightHand != null && rightHand.HasValue)
+                    {
+                        hasRight = true;
+
+                        rightHandPoint = getDisplayPosition(rightHand.Value);
+
+                        hasUpdate = true;
+
+                        b = true;
+                    }
+
+                    if (b)
+                        break;
+                }
+            }
+
+            LeftSkeleton = hasLeft ? (Vector2?)leftHandPoint : null;
+            RightSkeleton = hasRight ? (Vector2?)rightHandPoint : null;
+        }
+
+        #endregion
 
         public void Shutdown()
         {

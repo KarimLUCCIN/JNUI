@@ -282,6 +282,11 @@
         <!--  Clavier T9 -->
 		<local:KeyboardT9 x:Name="virtualKeyboard" Visibility="Visible"/>
         
+        <Canvas x:Name="skeletonCanvas" Visibility="Hidden">
+            <Ellipse x:Name="skeletonLeft" Width="48" Height="48" Margin="-24" Fill="#10FF0000"/>
+            <Ellipse x:Name="skeletonRight" Width="48" Height="48" Margin="-24" Fill="#10FF0000"/>
+        </Canvas>
+
         <Canvas x:Name="contentOptionnalCanvas">
             <Ellipse Width="48" Height="48" Margin="-24" Fill="#10000000"/>
             <Ellipse Width="48" Height="48" Margin="-24" Fill="#10000000"/>
