@@ -33,8 +33,8 @@ namespace KinectBrowser
             InitializeComponent();
 
             this.viewModel = new T9ViewModel();
-            this.viewModel.MinimumAutoCompleteTreshold = 3;
-            this.viewModel.MaximumAutoCompleteTreshold = 5;
+            this.viewModel.MinimumAutoCompleteTreshold = 1;
+            this.viewModel.MaximumAutoCompleteTreshold = 10;
             this.DataContext = this.viewModel;
 			this.viewModel.IsAutoComplete = true;
         }
