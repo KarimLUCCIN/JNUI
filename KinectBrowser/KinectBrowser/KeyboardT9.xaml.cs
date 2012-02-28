@@ -24,6 +24,7 @@ namespace KinectBrowser
         /// MVVM ViewModel.
         /// </summary>
         private T9Keyboard.T9ViewModel viewModel;
+		public string inputUserCode;
 
         /// <summary>
         /// Initializes a new instance of the MainWindow class.
@@ -33,7 +34,7 @@ namespace KinectBrowser
             InitializeComponent();
 
             this.viewModel = new T9ViewModel();
-            this.viewModel.MinimumAutoCompleteTreshold = 1;
+            this.viewModel.MinimumAutoCompleteTreshold = 3;
             this.viewModel.MaximumAutoCompleteTreshold = 10;
             this.DataContext = this.viewModel;
 			this.viewModel.IsAutoComplete = true;
@@ -46,7 +47,18 @@ namespace KinectBrowser
         /// <param name="e">Event arguments.</param>
         private void DigitButton_Click(object sender, RoutedEventArgs e)
         {
-            this.inputUser.Text += (sender as Control).Tag;
+            this.inputUserCode += (sender as Control).TabIndex;
+			this.viewModel.EncodedText = this.inputUserCode;
+			
+			if (this.CandidatesListBox.Items.Count == 0 )
+            {
+                this.inputUser.Text += (sender as Control).Tag;
+            }
+			else 
+			{
+				this.inputUser.Text = this.CandidatesListBox.Items[0].ToString();
+				this.inputUserCode =  this.viewModel.EncodeString(this.CandidatesListBox.Items[0].ToString());
+			}
         }
 
         /// <summary>
@@ -61,8 +73,30 @@ namespace KinectBrowser
                 return;
             }
 
-            this.inputUser.Text = this.viewModel.EncodeString(this.CandidatesListBox.SelectedValue.ToString());
-        }
+            //this.inputUser.Text = this.viewModel.EncodeString(this.CandidatesListBox.SelectedValue.ToString());
+        	this.inputUser.Text = this.CandidatesListBox.SelectedValue.ToString();
+			this.inputUserCode = this.viewModel.EncodeString(this.CandidatesListBox.SelectedValue.ToString());
+		}
+		
+		
+        private void backButton_Click(object sender, System.Windows.RoutedEventArgs e)
+        {
+			updateCandidates();
+		}
+		
+		private void updateCandidates()
+		{
+			if(this.inputUserCode.Length > 0) 
+			{
+				this.inputUserCode = this.inputUserCode.Substring(0, this.inputUserCode.Length -1);
+				this.viewModel.EncodedText = this.inputUserCode;
+			
+				if(inputUserCode.Length < 3 && this.CandidatesListBox.Items.Count > 0)
+				{
+					this.viewModel.clearCandidates();
+				}
+			}
+		}
 		
 		private void Keyboard_initialized(object sender, System.EventArgs e)
 		{	

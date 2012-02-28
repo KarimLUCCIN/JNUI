@@ -121,7 +121,7 @@
 					</TransformGroup>
 				</Button.RenderTransform>
 			</Button>
-			<Button x:Name="back" Grid.Column="1" Content=")" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Width="45" Height="45" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Wingdings 3">
+			<Button x:Name="back" Grid.Column="1" Content=")" Style="{DynamicResource ButtonStyle1}" Template="{DynamicResource RoundButton}" Foreground="White" BorderBrush="#FFFFFDFD" RenderTransformOrigin="0.5,0.5" FontSize="48" BorderThickness="0" Background="Black" Width="45" Height="45" HorizontalAlignment="Center" VerticalAlignment="Center" FontFamily="Wingdings 3" Click="backButton_Click">
 				<Button.RenderTransform>
 					<TransformGroup>
 						<ScaleTransform/>
@@ -173,7 +173,6 @@
 			</Grid.ColumnDefinitions>
 			<TextBox
 				x:Name="inputUser"
-				Text="{Binding EncodedText, UpdateSourceTrigger=PropertyChanged}"
 				HorizontalAlignment="Right"
 				Margin="0,36,40.5,-61"
 				Grid.Row="0" Grid.Column="0" Width="314.75" FontSize="29.333" />
@@ -190,8 +189,8 @@
 				</Grid.ColumnDefinitions>
 				<Button
 					Click="DigitButton_Click"
-					Tag="2"
-					Grid.Row="0" Grid.Column="1" FontSize="32" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}">
+					Tag="a"
+					Grid.Row="0" Grid.Column="1" FontSize="32" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" TabIndex="2">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >
@@ -206,8 +205,8 @@
 				</Button>
 				<Button
 					Click="DigitButton_Click"
-					Tag="3"
-					Grid.Row="0" Grid.Column="2" FontSize="32" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}">
+					Tag="d"
+					Grid.Row="0" Grid.Column="2" FontSize="32" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" TabIndex="3">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >
@@ -223,7 +222,7 @@
 				</Button>
 				<Button
 					Click="DigitButton_Click"
-					Tag="4" Grid.Row="1" Grid.Column="0" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}">
+					Tag="g" Grid.Row="1" Grid.Column="0" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" TabIndex="4">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >
@@ -238,7 +237,7 @@
 				</Button>
 				<Button
 					Click="DigitButton_Click"
-					Tag="5" Grid.Row="1" Grid.Column="1" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}">
+					Tag="j" Grid.Row="1" Grid.Column="1" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" TabIndex="5">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >
@@ -253,7 +252,7 @@
 				</Button>
 				<Button
 					Click="DigitButton_Click"
-					Tag="6" Grid.Row="1" Grid.Column="2" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}">
+					Tag="m" Grid.Row="1" Grid.Column="2" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" TabIndex="6">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >
@@ -268,7 +267,7 @@
 				</Button>
 				<Button
 					Click="DigitButton_Click"
-					Tag="7" Grid.Row="2" Grid.Column="0" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}">
+					Tag="p" Grid.Row="2" Grid.Column="0" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" TabIndex="7">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >
@@ -283,7 +282,7 @@
 				</Button>
 				<Button
 					Click="DigitButton_Click"
-					Tag="8" Grid.Row="2" Grid.Column="1" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}">
+					Tag="t" Grid.Row="2" Grid.Column="1" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" TabIndex="8">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >
@@ -298,7 +297,7 @@
 				</Button>
 				<Button
 					Click="DigitButton_Click"
-					Tag="9" Grid.Row="2" Grid.Column="2" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}">
+					Tag="w" Grid.Row="2" Grid.Column="2" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" TabIndex="9">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >
@@ -312,7 +311,7 @@
 					</StackPanel>
 				</Button>
 				<Button
-					Grid.Row="0" Grid.Column="0" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" IsEnabled="False" Opacity="0.5">
+					Grid.Row="0" Grid.Column="0" Width="120" Height="130" Template="{DynamicResource ButtonControlT9}" IsEnabled="False" Opacity="0.5" TabIndex="1" Tag=".">
 					<StackPanel
 						HorizontalAlignment="Center" VerticalAlignment="Center"
                         >

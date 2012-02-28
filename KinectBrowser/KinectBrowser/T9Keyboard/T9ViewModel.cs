@@ -158,6 +158,12 @@
                 this.UpdateState();
             }
         }
+		
+		public void clearCandidates()
+		{
+			this.candidates.Clear();
+            this.UpdateState();
+		}
 
         /// <summary>
         /// Gets or sets the minimum length for triggering autocompletion.
