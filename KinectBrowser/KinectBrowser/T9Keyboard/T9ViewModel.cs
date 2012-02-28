@@ -3,6 +3,9 @@
     using System.Collections.Generic;
     using System.ComponentModel;
     using System.IO;
+    using System;
+    using System.Windows;
+    using System.Diagnostics;
 
     /// <summary>
     /// ViewModel States.
@@ -62,7 +65,22 @@
         {
             this.encoder = new T9Encoder();
 
-            string[] words = File.ReadAllLines("../KinectBrowser/english-words");
+            string[] words = new string[0];
+
+            try
+            {
+                words = File.ReadAllLines("../KinectBrowser/english-words");
+            }
+            catch (Exception ex)
+            {
+                var prop = DesignerProperties.IsInDesignModeProperty;
+                var isInDesignMode = (bool)DependencyPropertyDescriptor.FromProperty(prop, typeof(FrameworkElement)).Metadata.DefaultValue;
+
+                Debug.WriteLine(ex);
+
+                if (!isInDesignMode)
+                    MessageBox.Show("Coulnd't load dictionary:\n" + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
 			
 			foreach (string s in words) 
 			{
