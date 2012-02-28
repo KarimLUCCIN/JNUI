@@ -304,8 +304,20 @@ namespace KinectBrowser.Input.Kinect
                 PlanarImage Image = e.ImageFrame.Image;
                 byte[] convertedDepthFrame = convertDepthFrame(Image.Bits);
 
-                leftHandProvider.Update(KinectBlobsMatcher.LeftHandBlob.MBlob, new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition.X, KinectBlobsMatcher.LeftHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.LeftHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
-                rightHandProvider.Update(KinectBlobsMatcher.RightHandBlob.MBlob, new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition.X, KinectBlobsMatcher.RightHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
+                if (RightSkeleton != null)
+                {
+#warning TO TEST
+                    /*
+                     * On force la main droite à être à la position du squelette de la kinect
+                     */
+                    leftHandProvider.Update(KinectBlobsMatcher.LeftHandBlob.MBlob, new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition.X, KinectBlobsMatcher.LeftHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.LeftHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
+                    rightHandProvider.Update(KinectBlobsMatcher.RightHandBlob.MBlob, new Vector3(RightSkeleton.Value.X, RightSkeleton.Value.Y, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), CursorState.Tracked);
+                }
+                else
+                {
+                    leftHandProvider.Update(KinectBlobsMatcher.LeftHandBlob.MBlob, new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition.X, KinectBlobsMatcher.LeftHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.LeftHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
+                    rightHandProvider.Update(KinectBlobsMatcher.RightHandBlob.MBlob, new Vector3(KinectBlobsMatcher.RightHandBlob.CursorPosition.X, KinectBlobsMatcher.RightHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.RightHandBlob));
+                }
             }
 
             lock (sync)

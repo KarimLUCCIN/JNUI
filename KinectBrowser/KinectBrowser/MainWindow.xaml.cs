@@ -1,4 +1,6 @@
-﻿using System;
+﻿//#define DISPLAY_KINECT_SKELETON_HANDS
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -706,9 +708,10 @@ namespace KinectBrowser
         bool hasValidatedClickAction = false;
         DateTime waitinForClickActionTime = DateTime.MinValue;
         TimeSpan waitingForClickActionLatency = TimeSpan.FromMilliseconds(500);
-
+        
         private void UpdateKinectSpecificObjects(KinectProvider provider)
         {
+#if(DISPLAY_KINECT_SKELETON_HANDS)
             skeletonCanvas.Visibility = System.Windows.Visibility.Visible;
 
             skeletonLeft.Visibility = provider.LeftSkeleton != null ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
@@ -727,6 +730,7 @@ namespace KinectBrowser
                 Canvas.SetLeft(skeletonRight, provider.RightSkeleton.Value.X);
                 Canvas.SetTop(skeletonRight, provider.RightSkeleton.Value.Y);
             }
+#endif
 
             if (kinectClickAction == SpacialKinectClickAction.Click)
             {
