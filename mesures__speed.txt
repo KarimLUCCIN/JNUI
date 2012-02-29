@@ -1,0 +1,3 @@
+pc kevin:
+proc time : 30
+rd time : 20
