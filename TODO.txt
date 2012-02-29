@@ -1,4 +1,17 @@
-Revoir le clavier de Kévin (il lag)
+* Récupérer les temps sur pc kevin & moi
+* Tester sur les différentes tailles de zone avec kinect mains, kinect squelette, et souris
+24, 32, 64, 72, 92, 128
+* Tester l'écriture de mots avec les 2 claviers
+apple
+morning
+establishment
+agreement
+contribution
+zero
+
+----
+
+Revoir le clavier de Kevin (il lag)
 Augmenter le temps pour l'appui des touches
 Afficher le premier mot par défaut et pas juste les chiffres
 
