@@ -545,7 +545,7 @@ namespace KinectBrowser
         Button currentKeyboardButton = null;
         DateTime lastButtonChangeTime = DateTime.Now;
 
-        TimeSpan keyboardClickLatency = TimeSpan.FromMilliseconds(600);
+        TimeSpan keyboardClickLatency = TimeSpan.FromMilliseconds(1000);
 
         private void KeyboardCursorMoveHandler(Microsoft.Xna.Framework.Vector3 pos)
         {
