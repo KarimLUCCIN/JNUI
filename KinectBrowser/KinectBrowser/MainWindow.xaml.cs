@@ -1126,8 +1126,11 @@ namespace KinectBrowser
 
         #region Statistics
 
-        int lastRenderingDurationMs = -1;
-        int lastProcessingTime = -1;
+        double lastRenderingDurationMs = -1;
+        double lastProcessingTime = -1;
+
+        double renderingAverage = 0;
+        double processingAverage = 0;
 
         void CurrentEngine_AfterRender(object sender, EventArgs e)
         {
@@ -1135,18 +1138,19 @@ namespace KinectBrowser
                 ? (int)InteractionsManager.CurrentProvider.ProcessingTime.TotalMilliseconds
                 : (int)0;
 
-            var currentRenderingDurationMs = (int)SoraEngine.LastRenderingDuration.TotalMilliseconds;
+            processingAverage = processingAverage * 0.95 + 0.05 * p_time;
+            renderingAverage = renderingAverage * 0.95 + 0.05 * SoraEngine.LastRenderingDuration.TotalMilliseconds;
 
-            if (currentRenderingDurationMs != lastRenderingDurationMs || lastProcessingTime != p_time)
+            if (renderingAverage != lastRenderingDurationMs || processingAverage != p_time)
             {
-                lastRenderingDurationMs = currentRenderingDurationMs;
-                lastProcessingTime = (int)(lastProcessingTime * 0.2f + 0.7f * p_time);
+                lastRenderingDurationMs = renderingAverage;
+                lastProcessingTime = processingAverage;
 
                 Dispatcher.Invoke((Action)delegate
                 {
-                    statisticsLabel.Text = String.Format("Rendering time: {0}ms\nProcessing Time: {1}ms", 
-                        (int)SoraEngine.LastRenderingDuration.TotalMilliseconds,
-                        lastProcessingTime);
+                    statisticsLabel.Text = String.Format("Rendering time: {0}ms\nProcessing Time: {1}ms",
+                        (int)renderingAverage,
+                        (int)processingAverage);
                 });
             }
         }

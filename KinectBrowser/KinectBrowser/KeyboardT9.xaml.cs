@@ -50,11 +50,17 @@ namespace KinectBrowser
             this.inputUserCode += (sender as Control).TabIndex;
 			this.viewModel.EncodedText = this.inputUserCode;
 			
-			if (this.CandidatesListBox.Items.Count == 0 )
-            {
+			/*if (this.CandidatesListBox.Items.Count == 0 )
+            {*/
                 this.inputUser.Text += (sender as Control).Tag;
-            }
+            /*}
 			else 
+			{
+				this.inputUser.Text = this.CandidatesListBox.Items[0].ToString();
+				this.inputUserCode =  this.viewModel.EncodeString(this.CandidatesListBox.Items[0].ToString());
+			}*/
+			
+			if (this.CandidatesListBox.Items.Count == 1)
 			{
 				this.inputUser.Text = this.CandidatesListBox.Items[0].ToString();
 				this.inputUserCode =  this.viewModel.EncodeString(this.CandidatesListBox.Items[0].ToString());

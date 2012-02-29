@@ -4,7 +4,7 @@
         xmlns:measurements="clr-namespace:KinectBrowser.Measurements"
         xmlns:Microsoft_Windows_Themes="clr-namespace:Microsoft.Windows.Themes;assembly=PresentationFramework.Aero" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" xmlns:local="clr-namespace:KinectBrowser"
 		xmlns:interop="clr-namespace:System.Windows.Interop;assembly=PresentationCore" xmlns:d3d="clr-namespace:KinectBrowser.D3D.Browser;assembly=KinectBrowser.D3D" x:Class="KinectBrowser.MainWindow"
-        Title="MainWindow" Height="840" Width="1240" WindowStartupLocation="CenterScreen" WindowStyle="None"
+        Title="MainWindow" Height="730" Width="1240" WindowStartupLocation="CenterScreen" WindowStyle="None"
         Background="Black"
         mc:Ignorable="d"
 		Loaded="Window_Loaded" ResizeMode="NoResize" Cursor="None">
