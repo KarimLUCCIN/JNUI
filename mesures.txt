@@ -35,5 +35,32 @@ Pourcentage du temps passé dans la zone : 100
 Distance parcourue en rest (stabilité) : 313,857262960142
 
 ------------------------
+Mode : Mouse
+Zone Size : 72
+Temps moyen pour arriver : 00:00:00.6110000
+Erreur moyenne : 11,9789725490115
+Pourcentage du temps passé dans la zone : 99,7301054911591
+Distance parcourue en rest (stabilité) : 653,620486762828
 
+------------------------
+
+
+Mode : Mouse
+Zone Size : 92
+Temps moyen pour arriver : 00:00:00.5710000
+Erreur moyenne : 26,0423963879933
+Pourcentage du temps passé dans la zone : 99,2232537193741
+Distance parcourue en rest (stabilité) : 1029,58799396944
+
+------------------------
+
+
+Mode : Mouse
+Zone Size : 128
+Temps moyen pour arriver : 00:00:00.4640000
+Erreur moyenne : 50,1164588826986
+Pourcentage du temps passé dans la zone : 99,8667554991926
+Distance parcourue en rest (stabilité) : 2568,41951019526
+
+------------------------
 
