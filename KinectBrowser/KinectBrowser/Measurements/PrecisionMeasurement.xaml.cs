@@ -217,7 +217,10 @@ namespace KinectBrowser.Measurements
         {
             if (currentTestIndex > 0)
             {
-                string resultsString = String.Format("Temps moyen pour arriver : {0}\nErreur moyenne : {1}\nPourcentage du temps passé dans la zone : {2}\nDistance parcourue en rest (stabilité) : {3}",
+                string resultsString = String.Format("Temps moyen pour arriver : {0}" + Environment.NewLine +
+                    "Erreur moyenne : {1}" + Environment.NewLine + 
+                    "Pourcentage du temps passé dans la zone : {2}" + Environment.NewLine +
+                    "Distance parcourue en rest (stabilité) : {3}",
                     TimeSpan.FromSeconds(totalWaitForZoneEnterTime.TotalSeconds / (double)maxTestIndex),
                     restTotalErrorFromCenter / (double)restTotalStepCount,
                     100 * (totalTimePassedInsideTheZone.TotalSeconds / totalZoneTestTime.TotalSeconds),
@@ -228,9 +231,12 @@ namespace KinectBrowser.Measurements
                     using (var writer = new StreamWriter(stream))
                     {
                         writer.WriteLine(String.Format("Mode : {0}", KinectBrowser.Input.Kinect.KinectProvider.HasKinects ? "Kinect" : "Mouse"));
-                        writer.WriteLine(String.Format("Zone Size : {0}", ZoneSize));
+                        writer.WriteLine(String.Format("Zone Size : {0}", ZoneSize * 2));
                         writer.WriteLine(resultsString);
-                        writer.WriteLine("\n------------------------\n\n");
+                        writer.WriteLine("");
+                        writer.WriteLine("------------------------");
+                        writer.WriteLine("");
+                        writer.WriteLine("");
                     }
                 }
 

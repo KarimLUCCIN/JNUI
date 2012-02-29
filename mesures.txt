@@ -1,5 +1,5 @@
 ﻿Mode : Kinect
-Zone Size : 32
+Zone Size : 64
 Temps moyen pour arriver : 00:00:01.5130000
 Erreur moyenne : 24,5697112649676
 Pourcentage du temps passé dans la zone : 85,9370995652283
@@ -9,7 +9,7 @@ Distance parcourue en rest (stabilité) : 1602,941818427
 
 
 Mode : Mouse
-Zone Size : 32
+Zone Size : 64
 Temps moyen pour arriver : 00:00:00.7280000
 Erreur moyenne : 6,84042415065908
 Pourcentage du temps passé dans la zone : 100
@@ -19,11 +19,20 @@ Distance parcourue en rest (stabilité) : 473,966855703595
 
 
 Mode : Mouse
-Zone Size : 12
+Zone Size : 24
 Temps moyen pour arriver : 00:00:00.7650000
 Erreur moyenne : 4,62416098165996
 Pourcentage du temps passé dans la zone : 99,8870578144494
 Distance parcourue en rest (stabilité) : 292,858900368725
+
+------------------------
+
+Mode : Mouse
+Zone Size : 32
+Temps moyen pour arriver : 00:00:00.8180000
+Erreur moyenne : 4,71566438795379
+Pourcentage du temps passé dans la zone : 100
+Distance parcourue en rest (stabilité) : 313,857262960142
 
 ------------------------
 

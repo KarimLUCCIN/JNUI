@@ -6,6 +6,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Canvas>
-        <Ellipse x:Name="cursorTarget" Fill="Gray" Width="64" Height="64" Margin="-32"/>
+        <Ellipse x:Name="cursorTarget" Fill="Gray" Width="32" Height="32" Margin="-32"/>
     </Canvas>
 </UserControl>

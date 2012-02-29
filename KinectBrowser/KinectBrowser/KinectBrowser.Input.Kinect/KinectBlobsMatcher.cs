@@ -174,7 +174,7 @@ namespace KinectBrowser.Input.Kinect
             }
         }
 
-        private double ReScale(double v, double range)
+        public static double ReScale(double v, double range)
         {
             var normalized_v = v / range;
             
