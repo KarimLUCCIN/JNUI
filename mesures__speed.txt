@@ -1,3 +1,11 @@
 pc kevin:
 proc time : 30
 rd time : 20
+
+pc moi:
+proc time : 18
+rd time : 3
+
+pc moi eco:
+proc time : 30
+rd time : 52
