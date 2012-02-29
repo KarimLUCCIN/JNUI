@@ -207,6 +207,9 @@ namespace KinectBrowser.Measurements
                 testZoneCenter = new Point(rd.NextDouble() * width, rd.NextDouble() * height);
             } while (DistanceFromTestZoneCenter < 100);
 
+            testZoneCenter.X = Math.Max(width * 0.1, Math.Min(width * 0.9, testZoneCenter.X));
+            testZoneCenter.Y = Math.Max(height * 0.1, Math.Min(height * 0.9, testZoneCenter.Y));
+
             Canvas.SetLeft(cursorTarget, testZoneCenter.X);
             Canvas.SetTop(cursorTarget, testZoneCenter.Y);
 

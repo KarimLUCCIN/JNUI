@@ -1,14 +1,4 @@
-﻿Mode : Kinect
-Zone Size : 64
-Temps moyen pour arriver : 00:00:01.5130000
-Erreur moyenne : 24,5697112649676
-Pourcentage du temps passé dans la zone : 85,9370995652283
-Distance parcourue en rest (stabilité) : 1602,941818427
-
-------------------------
-
-
-Mode : Mouse
+﻿Mode : Mouse
 Zone Size : 64
 Temps moyen pour arriver : 00:00:00.7280000
 Erreur moyenne : 6,84042415065908
@@ -64,3 +54,125 @@ Distance parcourue en rest (stabilité) : 2568,41951019526
 
 ------------------------
 
+--- MAINS ---
+
+------------------------------------------------
+
+Mode : Kinect
+Zone Size : 24
+Temps moyen pour arriver : 00:00:03.0870000
+Erreur moyenne : 15,07658612542032
+Pourcentage du temps passé dans la zone : 94,8625725750181
+Distance parcourue en rest (stabilité) : 292,207358014795
+
+------------------------
+
+Mode : Kinect
+Zone Size : 32
+Temps moyen pour arriver : 00:00:02.9240000
+Erreur moyenne : 21,16761712929
+Pourcentage du temps passé dans la zone : 74,910218370586
+Distance parcourue en rest (stabilité) : 663,637479139458
+
+------------------------
+
+Mode : Kinect
+Zone Size : 64
+Temps moyen pour arriver : 00:00:02.4530000
+Erreur moyenne : 16,9489814622262
+Pourcentage du temps passé dans la zone : 95,3409226225786
+Distance parcourue en rest (stabilité) : 797,328098304228
+
+------------------------
+
+
+Mode : Kinect
+Zone Size : 72
+Temps moyen pour arriver : 00:00:03.0350000
+Erreur moyenne : 24,9946133181212
+Pourcentage du temps passé dans la zone : 94,5051770794675
+Distance parcourue en rest (stabilité) : 969,205830713327
+
+------------------------
+
+
+Mode : Kinect
+Zone Size : 92
+Temps moyen pour arriver : 00:00:02.2370000
+Erreur moyenne : 31,9977834403771
+Pourcentage du temps passé dans la zone : 100
+Distance parcourue en rest (stabilité) : 790,087084977924
+
+------------------------
+
+
+Mode : Kinect
+Zone Size : 128
+Temps moyen pour arriver : 00:00:02.1440000
+Erreur moyenne : 57,394122279747
+Pourcentage du temps passé dans la zone : 98,5334988041749
+Distance parcourue en rest (stabilité) : 1114,56384945632
+
+------------------------
+
+------------------------
+
+--- SQUELETTE ---
+
+------------------------------------------------
+
+
+Mode : Kinect
+Zone Size : 128
+Temps moyen pour arriver : 00:00:01.7750000
+Erreur moyenne : 57,4477058519606
+Pourcentage du temps passé dans la zone : 100
+Distance parcourue en rest (stabilité) : 681,44490814306
+
+------------------------
+
+
+Mode : Kinect
+Zone Size : 92
+Temps moyen pour arriver : 00:00:02.0840000
+Erreur moyenne : 31,8142646939815
+Pourcentage du temps passé dans la zone : 100
+Distance parcourue en rest (stabilité) : 809,849861403459
+
+------------------------
+
+
+Mode : Kinect
+Zone Size : 72
+Temps moyen pour arriver : 00:00:02.3510000
+Erreur moyenne : 26,0354590566993
+Pourcentage du temps passé dans la zone : 97,4949401773027
+Distance parcourue en rest (stabilité) : 741,192544122607
+
+------------------------
+
+Mode : Kinect
+Zone Size : 64
+Temps moyen pour arriver : 00:00:02.2890000
+Erreur moyenne : 19,2642001266447
+Pourcentage du temps passé dans la zone : 99,2636887529958
+Distance parcourue en rest (stabilité) : 441,268397777052
+
+------------------------
+Mode : Kinect
+Zone Size : 32
+Temps moyen pour arriver : 00:00:06.2230000
+Erreur moyenne : 17,2772526095778
+Pourcentage du temps passé dans la zone : 72,1037674798061
+Distance parcourue en rest (stabilité) : 446,560579329128
+
+------------------------
+
+Mode : Kinect
+Zone Size : 24
+Temps moyen pour arriver : 00:00:03.2260000
+Erreur moyenne : 20,7501767662275
+Pourcentage du temps passé dans la zone : 64,0934147198594
+Distance parcourue en rest (stabilité) : 832,222227235983
+
+------------------------
