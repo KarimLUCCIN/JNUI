@@ -311,7 +311,7 @@ namespace KinectBrowser.Input.Kinect
                      * On force la main droite à être à la position du squelette de la kinect
                      */
                     leftHandProvider.Update(KinectBlobsMatcher.LeftHandBlob.MBlob, new Vector3(KinectBlobsMatcher.LeftHandBlob.CursorPosition.X, KinectBlobsMatcher.LeftHandBlob.CursorPosition.Y, (float)(KinectBlobsMatcher.LeftHandBlob.AverageDepth)), ParseKinectCursorState(KinectBlobsMatcher.LeftHandBlob));
-                    rightHandProvider.Update(KinectBlobsMatcher.RightHandBlob.MBlob, new Vector3(RightSkeleton.Value.X, RightSkeleton.Value.Y, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), CursorState.Tracked);
+                    rightHandProvider.Update(KinectBlobsMatcher.RightHandBlob.MBlob, new Vector3(RightSkeleton.Value.X / Client.ClientArea.Width, RightSkeleton.Value.Y / Client.ClientArea.Height, (float)(KinectBlobsMatcher.RightHandBlob.AverageDepth)), CursorState.Tracked);
                 }
                 else
                 {

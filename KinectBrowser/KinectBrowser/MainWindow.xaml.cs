@@ -1,4 +1,4 @@
-﻿//#define DISPLAY_KINECT_SKELETON_HANDS
+﻿#define DISPLAY_KINECT_SKELETON_HANDS
 
 using System;
 using System.Collections.Generic;
