@@ -1,3 +1,6 @@
+* Mesurer le temps que l'on prend pour input une sentence
+
+
 * Récupérer les temps sur pc kevin & moi
 * Tester sur les différentes tailles de zone avec kinect mains, kinect squelette, et souris
 24, 32, 64, 72, 92, 128
