@@ -489,7 +489,10 @@ namespace KinectBrowser
             get { return isKeyboardActive; }
             set { isKeyboardActive = value; }
         }
-                
+
+        /*DateTime begin;
+        DateTime end;*/
+
         private void BeginKeyboard()
         {
             hasValidatedClickAction = false;
@@ -497,6 +500,7 @@ namespace KinectBrowser
             isKeyboardActive = true;
             virtualKeyboard.inputUser.Text = String.Empty;
             virtualKeyboard.ClearSuggestions();
+            //begin = DateTime.Now;
         }
 
         private void EndKeyboard()
@@ -504,6 +508,9 @@ namespace KinectBrowser
             LeaveKeyboardButtonsHost();
             virtualKeyboard.Visibility = System.Windows.Visibility.Collapsed;
             isKeyboardActive = false;
+            /*end = DateTime.Now;
+            TimeSpan result = end.Subtract(begin);
+            MessageBox.Show(result.TotalSeconds.ToString());*/
         }
 
         KeyboardButtons currentKeyboardButtonsHost = null;
