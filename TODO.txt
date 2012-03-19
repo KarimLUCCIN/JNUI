@@ -1,3 +1,5 @@
+Déposer nos présentations sur le Windows pc où sont toutes les présentations des étudiants (demander aux gens)
+
 * Mesurer le temps que l'on prend pour input une sentence
 
 
