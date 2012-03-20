@@ -1,3 +1,13 @@
+------------------------
+VIDEOS
+
+- Fonctionnalités ( présentation du système, général)
+- Accuracy test
+- Circular Keyboard
+- T9 Keyboard
+
+
+------------------------------
 Déposer nos présentations sur le Windows pc où sont toutes les présentations des étudiants (demander aux gens)
 
 * Mesurer le temps que l'on prend pour input une sentence

@@ -272,8 +272,10 @@
             <Border Visibility="Hidden">
                 <Ellipse x:Name="additionnalActionsUI" Width="72" Height="72" Fill="#250000FF" Margin="-36"/>
             </Border>
+
+            <local:MenuControls Width="180" Height="180" Margin="-90" x:Name="additionnalActionsUIControls" Visibility="Hidden"/>
             
-            <local:MenuControls Width="180" Height="180" Margin="-90" x:Name="additionnalActionsUIControls"/>
+            <local:MenuControls Canvas.Left="400" Canvas.Top="250" Width="180" Height="180" Margin="-90"/>
         </Canvas>
         
 		<!-- Clavier Normal -->
