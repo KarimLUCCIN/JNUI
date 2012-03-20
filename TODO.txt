@@ -2,9 +2,23 @@
 VIDEOS
 
 - Fonctionnalités ( présentation du système, général)
-- Accuracy test
-- Circular Keyboard
+	bouger le curseur
+	taper un mot dans google (japan)
+	clicker sur le 1er lien
+	scroll
+	zoom
+	changer de tab
+	fermer la page
+
+- Accuracy test: filmer un test
+
+- Circular Keyboard: 
+	faire apparaitre le keyboard
+	taper le mot Establishment
+
 - T9 Keyboard
+	faire apparaitre le keyboard
+	taper le mot Establishment
 
 
 ------------------------------
