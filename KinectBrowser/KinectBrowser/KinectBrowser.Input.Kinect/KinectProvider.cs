@@ -463,7 +463,7 @@ namespace KinectBrowser.Input.Kinect
                         var forbiddenBlob = (mainPosition == leftHandProvider) ? KinectBlobsMatcher.LeftHandBlob.MBlob : KinectBlobsMatcher.RightHandBlob.MBlob;
 
                         var candidates = (from blob in KinectBlobsMatcher.AdditionnalBlobs
-                                         where ((blob != forbiddenBlob) && (blob.Current.PixelCount >= 1024))
+                                          where ((blob != forbiddenBlob) && (blob.Current.PixelCount >= MinimumClickBlobPixelCount))
                                          select blob).ToList();
 
                         /* on ajoute aussi le blob non utilisé pour l'autre main */
@@ -484,6 +484,14 @@ namespace KinectBrowser.Input.Kinect
                 }
 
                 return mainPosition;
+            }
+        }
+
+        public static int MinimumClickBlobPixelCount
+        {
+            get
+            {
+                return 512;
             }
         }
 

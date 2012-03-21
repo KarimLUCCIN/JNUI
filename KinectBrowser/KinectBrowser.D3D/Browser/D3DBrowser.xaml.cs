@@ -64,6 +64,17 @@ namespace KinectBrowser.D3D.Browser
 
         public SceneObjectTexturedQuad DebugTextureQuad { get; private set; }
 
+        public event EventHandler ActiveAddressChanged;
+
+        protected virtual void RaiseActiveAddressChanged()
+        {
+            Dispatcher.Invoke((Action)delegate
+            {
+                if (ActiveAddressChanged != null)
+                    ActiveAddressChanged(this, EventArgs.Empty);
+            });
+        }
+
         public D3DBrowser()
         {
             IsActive = true;
@@ -500,6 +511,8 @@ namespace KinectBrowser.D3D.Browser
                 }
 
                 RefreshCapabilities();
+
+                RaiseActiveAddressChanged();
             });
         }
 
@@ -541,6 +554,8 @@ namespace KinectBrowser.D3D.Browser
                 }
 
                 RefreshCapabilities();
+
+                RaiseActiveAddressChanged();
             });
         }
         #endregion

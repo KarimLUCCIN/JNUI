@@ -70,6 +70,15 @@ namespace KinectBrowser
             //browser.NewTab("file://C|/Users/Audrey/Downloads/html/Latin%20Union%20-%20Wikipedia,%20the%20free%20encyclopedia.htm");
             //browser.NewTab("file://C|/Users/Audrey/Downloads/html/Latin%20Union%20-%20Wikipedia,%20the%20free%20encyclopedia.htm");
 
+            browser.ActiveAddressChanged += delegate
+            {
+                var page = browser.ActivePage;
+                if (page == null)
+                    websiteText.Text = String.Empty;
+                else
+                    websiteText.Text = page.CurrentUrl;
+            };
+
             InteractionsCore.Core.Loop += new EventHandler(Core_Loop);
 
             InitializeKeyboardActions();
@@ -596,7 +605,7 @@ namespace KinectBrowser
                 }
                 else
                 {
-                    if (sugItem != null && DateTime.Now - lastButtonChangeTime >= TimeSpan.FromSeconds(keyboardClickLatency.TotalSeconds * 6))
+                    if (sugItem != null && DateTime.Now - lastButtonChangeTime >= TimeSpan.FromSeconds(keyboardClickLatency.TotalSeconds * 3))
                     {
                         virtualKeyboard.inputUser.Text = sugItem.Content.ToString();
 

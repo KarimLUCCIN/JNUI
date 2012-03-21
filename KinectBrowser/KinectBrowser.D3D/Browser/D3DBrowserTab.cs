@@ -176,7 +176,9 @@ namespace KinectBrowser.D3D.Browser
             Invalidate();
 
             if (Active && Container.ActivePage == this)
+            {
                 Container.RaiseActivePageLoadCompleted();
+            }
         }
 
         internal void Invalidate()
